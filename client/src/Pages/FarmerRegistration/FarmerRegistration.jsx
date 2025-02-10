@@ -58,7 +58,7 @@ const FarmerRegistration = () => {
   });
   const fetchFarmers = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/farmers/farmers/role/farmer");
+      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer");
       if (response.ok) {
         const data = await response.json();
         setFarmerList(data);
@@ -161,7 +161,7 @@ const FarmerRegistration = () => {
   };
   const registerFarmer = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/farmers/farmers", {
+      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

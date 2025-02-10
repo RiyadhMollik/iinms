@@ -18,7 +18,7 @@ const District = () => {
 
     const fetchDistricts = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/district/districts'); // Adjust API endpoint as needed
+            const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
             setDistricts(response.data);
         } catch (error) {
             console.error("Error fetching districts:", error);
@@ -46,7 +46,7 @@ const District = () => {
         if (isEditMode) {
             // Update existing district
             try {
-                await axios.put(`http://localhost:5000/api/district/districts/${editDistrictId}`, currentDistrict);
+                await axios.put(`https://iinms.brri.gov.bd/api/district/districts/${editDistrictId}`, currentDistrict);
                 fetchDistricts(); // Refresh districts list
             } catch (error) {
                 console.error("Error updating district:", error);
@@ -54,7 +54,7 @@ const District = () => {
         } else {
             // Add new district
             try {
-                await axios.post('http://localhost:5000/api/district/districts', currentDistrict);
+                await axios.post('https://iinms.brri.gov.bd/api/district/districts', currentDistrict);
                 fetchDistricts(); // Refresh districts list
             } catch (error) {
                 console.error("Error adding district:", error);
@@ -66,7 +66,7 @@ const District = () => {
 
     const deleteDistrict = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/district/districts/${id}`);
+            await axios.delete(`https://iinms.brri.gov.bd/api/district/districts/${id}`);
             fetchDistricts(); // Refresh districts list
         } catch (error) {
             console.error("Error deleting district:", error);

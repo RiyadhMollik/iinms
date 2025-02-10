@@ -16,7 +16,7 @@ const Region = () => {
 
   const fetchRegions = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/region/regions");
+      const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
       setRegions(response.data);
     } catch (error) {
       console.error("Error fetching regions:", error);
@@ -43,14 +43,14 @@ const Region = () => {
   const saveRegion = async () => {
     if (isEditMode) {
       try {
-        await axios.put(`http://localhost:5000/api/region/regions/${editRegionId}`, currentRegion);
+        await axios.put(`https://iinms.brri.gov.bd/api/region/regions/${editRegionId}`, currentRegion);
         fetchRegions();
       } catch (error) {
         console.error("Error updating region:", error);
       }
     } else {
       try {
-        await axios.post("http://localhost:5000/api/region/regions", currentRegion);
+        await axios.post("https://iinms.brri.gov.bd/api/region/regions", currentRegion);
         fetchRegions();
       } catch (error) {
         console.error("Error adding region:", error);
@@ -62,7 +62,7 @@ const Region = () => {
 
   const deleteRegion = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/region/regions/${id}`);
+      await axios.delete(`https://iinms.brri.gov.bd/api/region/regions/${id}`);
       fetchRegions();
     } catch (error) {
       console.error("Error deleting region:", error);

@@ -19,7 +19,7 @@ const AEZ = () => {
 
     const fetchDistricts = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/district/districts'); // Adjust API endpoint as needed
+            const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
             setDistrictsList(response.data);
         } catch (error) {
             console.error("Error fetching districts:", error);
@@ -28,7 +28,7 @@ const AEZ = () => {
     console.log(districtsList);
 
     // Base API URL
-    const API_URL = "http://localhost:5000/api/aezs"; // Changed endpoint for AEZ
+    const API_URL = "https://iinms.brri.gov.bd/api/aezs"; // Changed endpoint for AEZ
 
     // Fetch all AEZs
     const fetchRoles = async () => {

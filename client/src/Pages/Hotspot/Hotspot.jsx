@@ -19,7 +19,7 @@ const Hotspot = () => {
 
     const fetchDistricts = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/district/districts'); // Adjust API endpoint as needed
+            const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
             setDistrictsList(response.data);
         } catch (error) {
             console.error("Error fetching districts:", error);
@@ -28,7 +28,7 @@ const Hotspot = () => {
     console.log(districtsList);
 
     // Base API URL
-    const API_URL = "http://localhost:5000/api/hotspots";
+    const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
 
     // Fetch all hotspots
     const fetchRoles = async () => {

@@ -17,7 +17,7 @@ const Upazila = () => {
 
     const fetchUpazilas = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/upazila/upazilas'); // Adjust API endpoint as needed
+            const response = await axios.get('https://iinms.brri.gov.bd/api/upazila/upazilas'); // Adjust API endpoint as needed
             setUpazilas(response.data);
         } catch (error) {
             console.error("Error fetching upazilas:", error);
@@ -45,7 +45,7 @@ const Upazila = () => {
         if (isEditMode) {
             // Update existing upazila
             try {
-                await axios.put(`http://localhost:5000/api/upazila/upazilas/${editUpazilaId}`, currentUpazila);
+                await axios.put(`https://iinms.brri.gov.bd/api/upazila/upazilas/${editUpazilaId}`, currentUpazila);
                 fetchUpazilas(); // Refresh upazilas list
             } catch (error) {
                 console.error("Error updating upazila:", error);
@@ -53,7 +53,7 @@ const Upazila = () => {
         } else {
             // Add new upazila
             try {
-                await axios.post('http://localhost:5000/api/upazila/upazilas', currentUpazila);
+                await axios.post('https://iinms.brri.gov.bd/api/upazila/upazilas', currentUpazila);
                 fetchUpazilas(); // Refresh upazilas list
             } catch (error) {
                 console.error("Error adding upazila:", error);
@@ -65,7 +65,7 @@ const Upazila = () => {
 
     const deleteUpazila = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/upazila/upazilas/${id}`);
+            await axios.delete(`https://iinms.brri.gov.bd/api/upazila/upazilas/${id}`);
             fetchUpazilas(); // Refresh upazilas list
         } catch (error) {
             console.error("Error deleting upazila:", error);

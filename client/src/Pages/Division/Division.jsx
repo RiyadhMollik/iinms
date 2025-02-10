@@ -21,7 +21,7 @@ const Division = () => {
 
   const fetchDivisions = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/division/divisions'); // Adjust API endpoint as needed
+      const response = await axios.get('https://iinms.brri.gov.bd/api/division/divisions'); // Adjust API endpoint as needed
       setDivisions(response.data);
     } catch (error) {
       console.error("Error fetching divisions:", error);
@@ -49,7 +49,7 @@ const Division = () => {
     if (isEditMode) {
       // Update existing division
       try {
-        await axios.put(`http://localhost:5000/api/division/divisions/${editDivisionId}`, currentDivision);
+        await axios.put(`https://iinms.brri.gov.bd/api/division/divisions/${editDivisionId}`, currentDivision);
         fetchDivisions(); // Refresh divisions list
       } catch (error) {
         console.error("Error updating division:", error);
@@ -57,7 +57,7 @@ const Division = () => {
     } else {
       // Add new division
       try {
-        await axios.post('http://localhost:5000/api/division/divisions', currentDivision);
+        await axios.post('https://iinms.brri.gov.bd/api/division/divisions', currentDivision);
         fetchDivisions(); // Refresh divisions list
       } catch (error) {
         console.error("Error adding division:", error);
@@ -69,7 +69,7 @@ const Division = () => {
 
   const deleteDivision = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/division/divisions/${id}`);
+      await axios.delete(`https://iinms.brri.gov.bd/api/division/divisions/${id}`);
       fetchDivisions(); // Refresh divisions list
     } catch (error) {
       console.error("Error deleting division:", error);

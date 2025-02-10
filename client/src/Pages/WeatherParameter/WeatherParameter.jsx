@@ -14,7 +14,7 @@ const WeatherParameter = () => {
     const [editParameterId, setEditParameterId] = useState(null);
 
     // API Base URL
-    const API_URL = "http://localhost:5000/api/weather-parameters/weather-parameters";
+    const API_URL = "https://iinms.brri.gov.bd/api/weather-parameters/weather-parameters";
 
     // Fetch parameters from the server
     const fetchParameters = async () => {

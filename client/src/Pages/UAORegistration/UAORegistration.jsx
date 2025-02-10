@@ -56,7 +56,7 @@ const UAORegistration = () => {
   });
   const fetchUAOs = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/farmers/farmers/role/UAO");
+      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/UAO");
       if (response.ok) {
         const data = await response.json();
         setUAOList(data);
@@ -157,7 +157,7 @@ const UAORegistration = () => {
   };
   const registerUAO = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/farmers/farmers", {
+      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
