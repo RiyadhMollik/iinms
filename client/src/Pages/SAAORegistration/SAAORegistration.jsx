@@ -56,7 +56,7 @@ const SAAORegistration = () => {
   });
   const fetchSAAOs = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/saao");
+      const response = await fetch("http://localhost:5000/api/farmers/farmers/role/saao");
       if (response.ok) {
         const data = await response.json();
         setSAAOList(data);
@@ -157,7 +157,7 @@ const SAAORegistration = () => {
   };
   const registerSAAO = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
+      const response = await fetch("http://localhost:5000/api/farmers/farmers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

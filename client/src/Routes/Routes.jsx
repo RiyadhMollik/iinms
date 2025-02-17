@@ -31,6 +31,8 @@ import Laser from "../Pages/Laser/Laser";
 import UltraSound from "../Pages/Ultra-Sound/UltraSound";
 import About from "../Pages/About/About";
 import OneFactorRCBD from "../Pages/OneFactorRCBD/OneFactorRCBD";
+import AddData from "../Pages/AddData/AddData";
+import Union from "../Pages/Union/Union";
 
 export const router = createBrowserRouter([
   {
@@ -140,6 +142,14 @@ export const router = createBrowserRouter([
       {
         path: "/about",
         element: <About/> , 
+      },  
+      {
+        path: "/add-data",
+        element: <AddData/> , 
+      },  
+      {
+        path: "/union",
+        element: <Union/> , 
       },  
       
         

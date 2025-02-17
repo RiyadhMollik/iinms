@@ -45,7 +45,7 @@ const AdminRegistration = () => {
   });
   const fetchAdmins = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/Admin");
+      const response = await fetch("http://localhost:5000/api/farmers/farmers/role/Admin");
       if (response.ok) {
         const data = await response.json();
         setAdminList(data);
@@ -134,7 +134,7 @@ const AdminRegistration = () => {
   };
   const registerAdmin = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
+      const response = await fetch("http://localhost:5000/api/farmers/farmers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -7,14 +7,12 @@ const WeatherParameter = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [currentParameter, setCurrentParameter] = useState({
         name: "",
-        latitude: "",
-        longitude: "",
     });
     const [isEditMode, setIsEditMode] = useState(false);
     const [editParameterId, setEditParameterId] = useState(null);
 
     // API Base URL
-    const API_URL = "https://iinms.brri.gov.bd/api/weather-parameters/weather-parameters";
+    const API_URL = "http://localhost:5000/api/weather-parameters/weather-parameters";
 
     // Fetch parameters from the server
     const fetchParameters = async () => {
@@ -32,7 +30,7 @@ const WeatherParameter = () => {
     }, []);
 
     const openAddParameterModal = () => {
-        setCurrentParameter({ name: "", latitude: "", longitude: "" });
+        setCurrentParameter({ name: ""});
         setIsEditMode(false);
         setEditParameterId(null);
         setModalVisible(true);
@@ -79,7 +77,7 @@ const WeatherParameter = () => {
             console.error("Error saving parameter:", error);
         } finally {
             setModalVisible(false);
-            setCurrentParameter({ name: "", latitude: "", longitude: "" });
+            setCurrentParameter({ name: ""});
         }
     };
 
@@ -117,8 +115,6 @@ const WeatherParameter = () => {
                             <tr>
                                 <th className="border-b px-6 py-3 text-left">ID</th>
                                 <th className="border-b px-6 py-3 text-left">Name</th>
-                                <th className="border-b px-6 py-3 text-left">Latitude</th>
-                                <th className="border-b px-6 py-3 text-left">Longitude</th>
                                 <th className="border-b px-6 py-3 text-left">Action</th>
                             </tr>
                         </thead>
@@ -127,8 +123,6 @@ const WeatherParameter = () => {
                                 <tr key={parameter.id} className="hover:bg-gray-100">
                                     <td className="border-b px-6 py-3">{parameter.id}</td>
                                     <td className="border-b px-6 py-3">{parameter.name}</td>
-                                    <td className="border-b px-6 py-3">{parameter.latitude}</td>
-                                    <td className="border-b px-6 py-3">{parameter.longitude}</td>
                                     <td className="border-b px-6 py-3 flex gap-4">
                                         <button
                                             onClick={() => openEditParameterModal(parameter.id)}
@@ -163,26 +157,6 @@ const WeatherParameter = () => {
                                     }
                                     className="w-full border px-4 py-2 rounded mb-4"
                                     placeholder="Enter name"
-                                />
-                                <label className="block mb-2 font-medium">Latitude</label>
-                                <input
-                                    type="number"
-                                    value={currentParameter.latitude}
-                                    onChange={(e) =>
-                                        setCurrentParameter({ ...currentParameter, latitude: e.target.value })
-                                    }
-                                    className="w-full border px-4 py-2 rounded mb-4"
-                                    placeholder="Enter latitude"
-                                />
-                                <label className="block mb-2 font-medium">Longitude</label>
-                                <input
-                                    type="number"
-                                    value={currentParameter.longitude}
-                                    onChange={(e) =>
-                                        setCurrentParameter({ ...currentParameter, longitude: e.target.value })
-                                    }
-                                    className="w-full border px-4 py-2 rounded mb-4"
-                                    placeholder="Enter longitude"
                                 />
                                 <div className="flex justify-end gap-4">
                                     <button

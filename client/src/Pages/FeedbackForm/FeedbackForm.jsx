@@ -29,7 +29,7 @@ const FeedbackForm = () => {
     }
 
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/feedback", {
+      const response = await fetch("http://localhost:5000/api/feedback", {
         method: "POST",
         body: formData,
       });

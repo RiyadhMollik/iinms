@@ -11,15 +11,7 @@ const Region = sequelize.define("Region", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  latitude: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  longitude: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
+  }
 });
 
 export default Region;

@@ -12,9 +12,9 @@ export const getAllDistricts = async (req, res) => {
 
 // Create a new district
 export const createDistrict = async (req, res) => {
-  const { name, latitude, longitude } = req.body;
+  const { name} = req.body;
   try {
-    const newDistrict = await District.create({ name, latitude, longitude });
+    const newDistrict = await District.create({ name});
     res.status(201).json(newDistrict);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -24,15 +24,11 @@ export const createDistrict = async (req, res) => {
 // Update a district
 export const updateDistrict = async (req, res) => {
   const { id } = req.params;
-  const { name, latitude, longitude } = req.body;
+  const { name} = req.body;
   try {
     const district = await District.findByPk(id);
     if (!district) return res.status(404).json({ message: "District not found" });
-
     district.name = name || district.name;
-    district.latitude = latitude || district.latitude;
-    district.longitude = longitude || district.longitude;
-
     await district.save();
     res.status(200).json(district);
   } catch (error) {

@@ -6,7 +6,7 @@ import axios from "axios";
 const Region = () => {
   const [regions, setRegions] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentRegion, setCurrentRegion] = useState({ name: "", latitude: "", longitude: "" });
+  const [currentRegion, setCurrentRegion] = useState({ name: ""});
   const [isEditMode, setIsEditMode] = useState(false);
   const [editRegionId, setEditRegionId] = useState(null);
 
@@ -16,7 +16,7 @@ const Region = () => {
 
   const fetchRegions = async () => {
     try {
-      const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
+      const response = await axios.get("http://localhost:5000/api/region/regions");
       setRegions(response.data);
     } catch (error) {
       console.error("Error fetching regions:", error);
@@ -24,7 +24,7 @@ const Region = () => {
   };
 
   const openAddRegionModal = () => {
-    setCurrentRegion({ name: "", latitude: "", longitude: "" });
+    setCurrentRegion({ name: ""});
     setIsEditMode(false);
     setEditRegionId(null);
     setModalVisible(true);
@@ -43,26 +43,26 @@ const Region = () => {
   const saveRegion = async () => {
     if (isEditMode) {
       try {
-        await axios.put(`https://iinms.brri.gov.bd/api/region/regions/${editRegionId}`, currentRegion);
+        await axios.put(`http://localhost:5000/api/region/regions/${editRegionId}`, currentRegion);
         fetchRegions();
       } catch (error) {
         console.error("Error updating region:", error);
       }
     } else {
       try {
-        await axios.post("https://iinms.brri.gov.bd/api/region/regions", currentRegion);
+        await axios.post("http://localhost:5000/api/region/regions", currentRegion);
         fetchRegions();
       } catch (error) {
         console.error("Error adding region:", error);
       }
     }
     setModalVisible(false);
-    setCurrentRegion({ name: "", latitude: "", longitude: "" });
+    setCurrentRegion({ name: "" });
   };
 
   const deleteRegion = async (id) => {
     try {
-      await axios.delete(`https://iinms.brri.gov.bd/api/region/regions/${id}`);
+      await axios.delete(`http://localhost:5000/api/region/regions/${id}`);
       fetchRegions();
     } catch (error) {
       console.error("Error deleting region:", error);
@@ -89,8 +89,6 @@ const Region = () => {
               <tr>
                 <th className="border-b px-6 py-3 text-left">ID</th>
                 <th className="border-b px-6 py-3 text-left">Name</th>
-                <th className="border-b px-6 py-3 text-left">Latitude</th>
-                <th className="border-b px-6 py-3 text-left">Longitude</th>
                 <th className="border-b px-6 py-3 text-left">Action</th>
               </tr>
             </thead>
@@ -99,8 +97,6 @@ const Region = () => {
                 <tr key={region.id} className="hover:bg-gray-100">
                   <td className="border-b px-6 py-3 w-24">{region.id}</td>
                   <td className="border-b px-6 py-3">{region.name}</td>
-                  <td className="border-b px-6 py-3">{region.latitude}</td>
-                  <td className="border-b px-6 py-3">{region.longitude}</td>
                   <td className="border-b px-6 py-3 h-full flex gap-4">
                     <button
                       onClick={() => openEditRegionModal(region.id)}
@@ -135,26 +131,6 @@ const Region = () => {
                   }
                   className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
                   placeholder="Enter Region name"
-                />
-                <label className="block mb-2 font-medium">Latitude</label>
-                <input
-                  type="text"
-                  value={currentRegion.latitude}
-                  onChange={(e) =>
-                    setCurrentRegion({ ...currentRegion, latitude: e.target.value })
-                  }
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  placeholder="Enter Latitude"
-                />
-                <label className="block mb-2 font-medium">Longitude</label>
-                <input
-                  type="text"
-                  value={currentRegion.longitude}
-                  onChange={(e) =>
-                    setCurrentRegion({ ...currentRegion, longitude: e.target.value })
-                  }
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  placeholder="Enter Longitude"
                 />
                 <div className="flex justify-end gap-4">
                   <button

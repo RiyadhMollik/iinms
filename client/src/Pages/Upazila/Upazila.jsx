@@ -6,7 +6,7 @@ import axios from 'axios'; // Add axios for API requests
 const Upazila = () => {
     const [upazilas, setUpazilas] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [currentUpazila, setCurrentUpazila] = useState({ name: "", latitude: "", longitude: "" });
+    const [currentUpazila, setCurrentUpazila] = useState({ name: "" });
     const [isEditMode, setIsEditMode] = useState(false);
     const [editUpazilaId, setEditUpazilaId] = useState(null);
 
@@ -17,7 +17,7 @@ const Upazila = () => {
 
     const fetchUpazilas = async () => {
         try {
-            const response = await axios.get('https://iinms.brri.gov.bd/api/upazila/upazilas'); // Adjust API endpoint as needed
+            const response = await axios.get('http://localhost:5000/api/upazila/upazilas'); // Adjust API endpoint as needed
             setUpazilas(response.data);
         } catch (error) {
             console.error("Error fetching upazilas:", error);
@@ -25,7 +25,7 @@ const Upazila = () => {
     };
 
     const openAddUpazilaModal = () => {
-        setCurrentUpazila({ name: "", latitude: "", longitude: "" });
+        setCurrentUpazila({ name: ""});
         setIsEditMode(false);
         setEditUpazilaId(null);
         setModalVisible(true);
@@ -45,7 +45,7 @@ const Upazila = () => {
         if (isEditMode) {
             // Update existing upazila
             try {
-                await axios.put(`https://iinms.brri.gov.bd/api/upazila/upazilas/${editUpazilaId}`, currentUpazila);
+                await axios.put(`http://localhost:5000/api/upazila/upazilas/${editUpazilaId}`, currentUpazila);
                 fetchUpazilas(); // Refresh upazilas list
             } catch (error) {
                 console.error("Error updating upazila:", error);
@@ -53,7 +53,7 @@ const Upazila = () => {
         } else {
             // Add new upazila
             try {
-                await axios.post('https://iinms.brri.gov.bd/api/upazila/upazilas', currentUpazila);
+                await axios.post('http://localhost:5000/api/upazila/upazilas', currentUpazila);
                 fetchUpazilas(); // Refresh upazilas list
             } catch (error) {
                 console.error("Error adding upazila:", error);
@@ -65,7 +65,7 @@ const Upazila = () => {
 
     const deleteUpazila = async (id) => {
         try {
-            await axios.delete(`https://iinms.brri.gov.bd/api/upazila/upazilas/${id}`);
+            await axios.delete(`http://localhost:5000/api/upazila/upazilas/${id}`);
             fetchUpazilas(); // Refresh upazilas list
         } catch (error) {
             console.error("Error deleting upazila:", error);
@@ -102,8 +102,6 @@ const Upazila = () => {
                             <tr>
                                 <th className="border-b px-6 py-3 text-left">ID</th>
                                 <th className="border-b px-6 py-3 text-left">Name</th>
-                                <th className="border-b px-6 py-3 text-left">Latitude</th>
-                                <th className="border-b px-6 py-3 text-left">Longitude</th>
                                 <th className="border-b px-6 py-3 text-left">Action</th>
                             </tr>
                         </thead>
@@ -112,8 +110,6 @@ const Upazila = () => {
                                 <tr key={upazila.id} className="hover:bg-gray-100">
                                     <td className="border-b px-6 py-3 w-24">{upazila.id}</td>
                                     <td className="border-b px-6 py-3">{upazila.name}</td>
-                                    <td className="border-b px-6 py-3">{upazila.latitude}</td>
-                                    <td className="border-b px-6 py-3">{upazila.longitude}</td>
                                     <td className="border-b px-6 py-3 h-full flex gap-4">
                                         <button
                                             onClick={() => openEditUpazilaModal(upazila.id)}
@@ -148,22 +144,7 @@ const Upazila = () => {
                                     className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
                                     placeholder="Enter Upazila name"
                                 />
-                                <label className="block mb-2 font-medium">Latitude</label>
-                                <input
-                                    type="text"
-                                    value={currentUpazila.latitude}
-                                    onChange={(e) => setCurrentUpazila({ ...currentUpazila, latitude: e.target.value })}
-                                    className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                                    placeholder="Enter Latitude"
-                                />
-                                <label className="block mb-2 font-medium">Longitude</label>
-                                <input
-                                    type="text"
-                                    value={currentUpazila.longitude}
-                                    onChange={(e) => setCurrentUpazila({ ...currentUpazila, longitude: e.target.value })}
-                                    className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                                    placeholder="Enter Longitude"
-                                />
+                                
                                 <div className="flex justify-end gap-4">
                                     <button
                                         onClick={() => setModalVisible(false)}

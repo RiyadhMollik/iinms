@@ -7,9 +7,7 @@ const Division = () => {
   const [divisions, setDivisions] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentDivision, setCurrentDivision] = useState({
-    name: "",
-    latitude: "",
-    longitude: ""
+    name: ""
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const [editDivisionId, setEditDivisionId] = useState(null);
@@ -21,7 +19,7 @@ const Division = () => {
 
   const fetchDivisions = async () => {
     try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/division/divisions'); // Adjust API endpoint as needed
+      const response = await axios.get('http://localhost:5000/api/division/divisions'); // Adjust API endpoint as needed
       setDivisions(response.data);
     } catch (error) {
       console.error("Error fetching divisions:", error);
@@ -29,7 +27,7 @@ const Division = () => {
   };
 
   const openAddDivisionModal = () => {
-    setCurrentDivision({ name: "", latitude: "", longitude: "" });
+    setCurrentDivision({ name: ""});
     setIsEditMode(false);
     setEditDivisionId(null);
     setModalVisible(true);
@@ -49,7 +47,7 @@ const Division = () => {
     if (isEditMode) {
       // Update existing division
       try {
-        await axios.put(`https://iinms.brri.gov.bd/api/division/divisions/${editDivisionId}`, currentDivision);
+        await axios.put(`http://localhost:5000/api/division/divisions/${editDivisionId}`, currentDivision);
         fetchDivisions(); // Refresh divisions list
       } catch (error) {
         console.error("Error updating division:", error);
@@ -57,19 +55,19 @@ const Division = () => {
     } else {
       // Add new division
       try {
-        await axios.post('https://iinms.brri.gov.bd/api/division/divisions', currentDivision);
+        await axios.post('http://localhost:5000/api/division/divisions', currentDivision);
         fetchDivisions(); // Refresh divisions list
       } catch (error) {
         console.error("Error adding division:", error);
       }
     }
     setModalVisible(false);
-    setCurrentDivision({ name: "", latitude: "", longitude: "" });
+    setCurrentDivision({ name: "" });
   };
 
   const deleteDivision = async (id) => {
     try {
-      await axios.delete(`https://iinms.brri.gov.bd/api/division/divisions/${id}`);
+      await axios.delete(`http://localhost:5000/api/division/divisions/${id}`);
       fetchDivisions(); // Refresh divisions list
     } catch (error) {
       console.error("Error deleting division:", error);
@@ -94,8 +92,6 @@ const Division = () => {
               <tr>
                 <th className="border-b px-6 py-3 text-left">ID</th>
                 <th className="border-b px-6 py-3 text-left">Name</th>
-                <th className="border-b px-6 py-3 text-left">Latitude</th>
-                <th className="border-b px-6 py-3 text-left">Longitude</th>
                 <th className="border-b px-6 py-3 text-left">Action</th>
               </tr>
             </thead>
@@ -104,8 +100,6 @@ const Division = () => {
                 <tr key={division.id} className="hover:bg-gray-100">
                   <td className="border-b px-6 py-3 w-24">{division.id}</td>
                   <td className="border-b px-6 py-3">{division.name}</td>
-                  <td className="border-b px-6 py-3">{division.latitude}</td>
-                  <td className="border-b px-6 py-3">{division.longitude}</td>
                   <td className="border-b px-6 py-3 h-full flex gap-4">
                     <button onClick={() => openEditDivisionModal(division.id)} className="text-slate-600 hover:underline">
                       <FaPen />
@@ -133,22 +127,6 @@ const Division = () => {
                   onChange={(e) => setCurrentDivision({ ...currentDivision, name: e.target.value })}
                   className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
                   placeholder="Enter Division name"
-                />
-                <label className="block mb-2 font-medium">Latitude</label>
-                <input
-                  type="text"
-                  value={currentDivision.latitude}
-                  onChange={(e) => setCurrentDivision({ ...currentDivision, latitude: e.target.value })}
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  placeholder="Enter Latitude"
-                />
-                <label className="block mb-2 font-medium">Longitude</label>
-                <input
-                  type="text"
-                  value={currentDivision.longitude}
-                  onChange={(e) => setCurrentDivision({ ...currentDivision, longitude: e.target.value })}
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  placeholder="Enter Longitude"
                 />
                 <div className="flex justify-end gap-4">
                   <button onClick={() => setModalVisible(false)} className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400">

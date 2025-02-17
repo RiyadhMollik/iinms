@@ -7,7 +7,7 @@ import axios from 'axios'; // Add axios for API requests
 const District = () => {
     const [districts, setDistricts] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
-    const [currentDistrict, setCurrentDistrict] = useState({ name: "", latitude: "", longitude: "" });
+    const [currentDistrict, setCurrentDistrict] = useState({ name: "" });
     const [isEditMode, setIsEditMode] = useState(false);
     const [editDistrictId, setEditDistrictId] = useState(null);
 
@@ -18,7 +18,7 @@ const District = () => {
 
     const fetchDistricts = async () => {
         try {
-            const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
+            const response = await axios.get('http://localhost:5000/api/district/districts'); // Adjust API endpoint as needed
             setDistricts(response.data);
         } catch (error) {
             console.error("Error fetching districts:", error);
@@ -26,7 +26,7 @@ const District = () => {
     };
 
     const openAddDistrictModal = () => {
-        setCurrentDistrict({ name: "", latitude: "", longitude: "" });
+        setCurrentDistrict({ name: "" });
         setIsEditMode(false);
         setEditDistrictId(null);
         setModalVisible(true);
@@ -46,7 +46,7 @@ const District = () => {
         if (isEditMode) {
             // Update existing district
             try {
-                await axios.put(`https://iinms.brri.gov.bd/api/district/districts/${editDistrictId}`, currentDistrict);
+                await axios.put(`http://localhost:5000/api/district/districts/${editDistrictId}`, currentDistrict);
                 fetchDistricts(); // Refresh districts list
             } catch (error) {
                 console.error("Error updating district:", error);
@@ -54,19 +54,19 @@ const District = () => {
         } else {
             // Add new district
             try {
-                await axios.post('https://iinms.brri.gov.bd/api/district/districts', currentDistrict);
+                await axios.post('http://localhost:5000/api/district/districts', currentDistrict);
                 fetchDistricts(); // Refresh districts list
             } catch (error) {
                 console.error("Error adding district:", error);
             }
         }
         setModalVisible(false);
-        setCurrentDistrict({ name: "", latitude: "", longitude: "" });
+        setCurrentDistrict({ name: "" });
     };
 
     const deleteDistrict = async (id) => {
         try {
-            await axios.delete(`https://iinms.brri.gov.bd/api/district/districts/${id}`);
+            await axios.delete(`http://localhost:5000/api/district/districts/${id}`);
             fetchDistricts(); // Refresh districts list
         } catch (error) {
             console.error("Error deleting district:", error);
@@ -103,8 +103,6 @@ const District = () => {
                             <tr>
                                 <th className="border-b px-6 py-3 text-left">ID</th>
                                 <th className="border-b px-6 py-3 text-left">Name</th>
-                                <th className="border-b px-6 py-3 text-left">Latitude</th>
-                                <th className="border-b px-6 py-3 text-left">Longitude</th>
                                 <th className="border-b px-6 py-3 text-left">Action</th>
                             </tr>
                         </thead>
@@ -113,8 +111,6 @@ const District = () => {
                                 <tr key={district.id} className="hover:bg-gray-100">
                                     <td className="border-b px-6 py-3 w-24">{district.id}</td>
                                     <td className="border-b px-6 py-3">{district.name}</td>
-                                    <td className="border-b px-6 py-3">{district.latitude}</td>
-                                    <td className="border-b px-6 py-3">{district.longitude}</td>
                                     <td className="border-b px-6 py-3 h-full flex gap-4">
                                         <button
                                             onClick={() => openEditDistrictModal(district.id)}
@@ -148,22 +144,6 @@ const District = () => {
                                     onChange={(e) => setCurrentDistrict({ ...currentDistrict, name: e.target.value })}
                                     className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
                                     placeholder="Enter District name"
-                                />
-                                <label className="block mb-2 font-medium">Latitude</label>
-                                <input
-                                    type="text"
-                                    value={currentDistrict.latitude}
-                                    onChange={(e) => setCurrentDistrict({ ...currentDistrict, latitude: e.target.value })}
-                                    className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                                    placeholder="Enter Latitude"
-                                />
-                                <label className="block mb-2 font-medium">Longitude</label>
-                                <input
-                                    type="text"
-                                    value={currentDistrict.longitude}
-                                    onChange={(e) => setCurrentDistrict({ ...currentDistrict, longitude: e.target.value })}
-                                    className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                                    placeholder="Enter Longitude"
                                 />
                                 <div className="flex justify-end gap-4">
                                     <button

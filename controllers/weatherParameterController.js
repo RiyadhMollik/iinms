@@ -12,9 +12,9 @@ export const getAllWeatherParameters = async (req, res) => {
 
 // Create a new weather parameter
 export const createWeatherParameter = async (req, res) => {
-  const { name, latitude, longitude } = req.body;
+  const { name} = req.body;
   try {
-    const newParameter = await WeatherParameter.create({ name, latitude, longitude });
+    const newParameter = await WeatherParameter.create({ name});
     res.status(201).json(newParameter);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -24,15 +24,11 @@ export const createWeatherParameter = async (req, res) => {
 // Update a weather parameter
 export const updateWeatherParameter = async (req, res) => {
   const { id } = req.params;
-  const { name, latitude, longitude } = req.body;
+  const { name} = req.body;
   try {
     const parameter = await WeatherParameter.findByPk(id);
     if (!parameter) return res.status(404).json({ message: "Weather Parameter not found" });
-
     parameter.name = name || parameter.name;
-    parameter.latitude = latitude || parameter.latitude;
-    parameter.longitude = longitude || parameter.longitude;
-
     await parameter.save();
     res.status(200).json(parameter);
   } catch (error) {

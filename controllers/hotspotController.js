@@ -10,9 +10,9 @@ export const getAllHotspots = async (req, res) => {
 };
 
 export const createHotspot = async (req, res) => {
-  const { name, district } = req.body;
+  const { name} = req.body;
   try {
-    const hotspot = await Hotspot.create({ name, district });
+    const hotspot = await Hotspot.create({ name});
     res.status(201).json(hotspot);
   } catch (error) {
     res.status(500).json({ error: "Error creating hotspot" });
@@ -21,14 +21,12 @@ export const createHotspot = async (req, res) => {
 
 export const updateHotspot = async (req, res) => {
   const { id } = req.params;
-  const { name, district } = req.body;
+  const { name} = req.body;
 
   try {
     const hotspot = await Hotspot.findByPk(id);
     if (!hotspot) return res.status(404).json({ error: "Hotspot not found" });
-
     hotspot.name = name;
-    hotspot.district = district;
     await hotspot.save();
     res.status(200).json(hotspot);
   } catch (error) {

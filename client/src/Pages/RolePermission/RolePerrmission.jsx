@@ -10,7 +10,7 @@ function RolePermission() {
     useEffect(() => {
         const fetchRoles = async () => {
             try {
-                const response = await fetch("https://iinms.brri.gov.bd/api/roles");
+                const response = await fetch("http://localhost:5000/api/roles");
                 const data = await response.json();
                 setRoles(data);
                 if (data.length > 0) {
@@ -31,7 +31,7 @@ function RolePermission() {
             setLoading(true);
             try {
                 const response = await fetch(
-                    `https://iinms.brri.gov.bd/api/roles/roles/${selectedRole}/permissions`
+                    `http://localhost:5000/api/roles/roles/${selectedRole}/permissions`
                 );
                 const data = await response.json();
                 setPermissions(data); // Assuming API returns a list of permission objects
@@ -63,7 +63,7 @@ console.log(permissions);
                 id,
                 isGranted,
             }));
-            await fetch(`https://iinms.brri.gov.bd/api/roles/roles/${selectedRole}/permissions`, {
+            await fetch(`http://localhost:5000/api/roles/roles/${selectedRole}/permissions`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

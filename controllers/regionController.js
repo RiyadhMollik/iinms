@@ -12,9 +12,9 @@ export const getAllRegions = async (req, res) => {
 
 // Create a new region
 export const createRegion = async (req, res) => {
-  const { name, latitude, longitude } = req.body;
+  const { name} = req.body;
   try {
-    const newRegion = await Region.create({ name, latitude, longitude });
+    const newRegion = await Region.create({ name});
     res.status(201).json(newRegion);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -24,15 +24,11 @@ export const createRegion = async (req, res) => {
 // Update a region
 export const updateRegion = async (req, res) => {
   const { id } = req.params;
-  const { name, latitude, longitude } = req.body;
+  const { name} = req.body;
   try {
     const region = await Region.findByPk(id);
     if (!region) return res.status(404).json({ message: "Region not found" });
-
     region.name = name || region.name;
-    region.latitude = latitude || region.latitude;
-    region.longitude = longitude || region.longitude;
-
     await region.save();
     res.status(200).json(region);
   } catch (error) {

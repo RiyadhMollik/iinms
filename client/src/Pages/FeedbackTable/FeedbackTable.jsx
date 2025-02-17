@@ -9,7 +9,7 @@ const FeedbackTable = () => {
   useEffect(() => {
     const fetchFeedback = async () => {
       try {
-        const response = await fetch("https://iinms.brri.gov.bd/api/feedback");
+        const response = await fetch("http://localhost:5000/api/feedback");
         if (!response.ok) {
           throw new Error("Failed to fetch feedback data.");
         }

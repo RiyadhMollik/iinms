@@ -17,6 +17,8 @@ import csaRoutes from "./routes/csaRoutes.js";
 import farmerRoutes from "./routes/registedUserRoutes.js";
 import saaOFormRoutes from "./routes/saaOFormRoutes.js";
 import feedbackRoutes from "./routes/feedbackRoutes.js";
+import unionRoutes from './routes/unionRoutes.js';
+import dataRoutes from "./routes/dataRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
@@ -38,6 +40,8 @@ app.use("/api/csas", csaRoutes);
 app.use("/api/farmers", farmerRoutes);
 app.use("/api/saaOForms", saaOFormRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use('/api/unions', unionRoutes);
+app.use("/api/data", dataRoutes); 
 app.use(express.static(path.join(__dirname, "/client/dist")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

@@ -8,7 +8,7 @@ const Role = () => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [editRoleId, setEditRoleId] = useState(null);
 
-    const API_URL = "https://iinms.brri.gov.bd/api/roles"; // Update with your API base URL
+    const API_URL = "http://localhost:5000/api/roles"; // Update with your API base URL
 
     // Fetch roles from API
     const fetchRoles = async () => {

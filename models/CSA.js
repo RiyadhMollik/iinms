@@ -10,11 +10,7 @@ const CSA = sequelize.define("CSA", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  district: {
-    type: DataTypes.JSON, // Store districts as an array
-    allowNull: false,
-  },
+  }
 });
 
 export default CSA;

@@ -12,9 +12,9 @@ export const getAllDivisions = async (req, res) => {
 
 // Create a new division
 export const createDivision = async (req, res) => {
-  const { name, latitude, longitude } = req.body;
+  const { name } = req.body;
   try {
-    const newDivision = await Division.create({ name, latitude, longitude });
+    const newDivision = await Division.create({ name });
     res.status(201).json(newDivision);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -24,15 +24,11 @@ export const createDivision = async (req, res) => {
 // Update a division
 export const updateDivision = async (req, res) => {
   const { id } = req.params;
-  const { name, latitude, longitude } = req.body;
+  const { name } = req.body;
   try {
     const division = await Division.findByPk(id);
     if (!division) return res.status(404).json({ message: "Division not found" });
-
     division.name = name || division.name;
-    division.latitude = latitude || division.latitude;
-    division.longitude = longitude || division.longitude;
-
     await division.save();
     res.status(200).json(division);
   } catch (error) {
@@ -46,7 +42,6 @@ export const deleteDivision = async (req, res) => {
   try {
     const division = await Division.findByPk(id);
     if (!division) return res.status(404).json({ message: "Division not found" });
-
     await division.destroy();
     res.status(200).json({ message: "Division deleted successfully" });
   } catch (error) {

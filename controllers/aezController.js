@@ -10,9 +10,9 @@ export const getAllAEZs = async (req, res) => {
 };
 
 export const createAEZ = async (req, res) => {
-  const { name, district } = req.body;
+  const { name } = req.body;
   try {
-    const aez = await AEZ.create({ name, district });
+    const aez = await AEZ.create({ name });
     res.status(201).json(aez);
   } catch (error) {
     res.status(500).json({ error: "Error creating AEZ" });
@@ -21,14 +21,11 @@ export const createAEZ = async (req, res) => {
 
 export const updateAEZ = async (req, res) => {
   const { id } = req.params;
-  const { name, district } = req.body;
-
+  const { name } = req.body;
   try {
     const aez = await AEZ.findByPk(id);
     if (!aez) return res.status(404).json({ error: "AEZ not found" });
-
     aez.name = name;
-    aez.district = district;
     await aez.save();
     res.status(200).json(aez);
   } catch (error) {

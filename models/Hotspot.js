@@ -10,11 +10,7 @@ const Hotspot = sequelize.define("Hotspot", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
-  },
-  district: {
-    type: DataTypes.JSON, 
-    allowNull: false,
-  },
+  }
 });
 
 export default Hotspot;

@@ -43,7 +43,7 @@ const ADRegistration = () => {
   });
   const fetchADs = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/AD");
+      const response = await fetch("http://localhost:5000/api/farmers/farmers/role/AD");
       if (response.ok) {
         const data = await response.json();
         setADList(data);
@@ -130,7 +130,7 @@ const ADRegistration = () => {
   };
   const registerAD = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
+      const response = await fetch("http://localhost:5000/api/farmers/farmers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

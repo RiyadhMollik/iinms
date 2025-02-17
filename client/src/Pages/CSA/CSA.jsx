@@ -11,25 +11,9 @@ const CSA = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const [editRoleId, setEditRoleId] = useState(null);
-  const [districtsList, setDistrictsList] = useState([]);
-
-  useEffect(() => {
-    fetchDistricts();
-  }, []);
-
-  const fetchDistricts = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
-      setDistrictsList(response.data);
-    } catch (error) {
-      console.error("Error fetching districts:", error);
-    }
-  };
-
-  console.log(districtsList);
 
   // Base API URL for CSA
-  const API_URL = "https://iinms.brri.gov.bd/api/csas"; // Changed endpoint for CSA
+  const API_URL = "http://localhost:5000/api/csas"; // Changed endpoint for CSA
 
   // Fetch all CSAs
   const fetchRoles = async () => {
@@ -117,20 +101,7 @@ const CSA = () => {
     setEditRoleId(null);
   };
 
-  const filteredDistricts = districtsList.filter((district) =>
-    district.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
-  const addDistrict = (districtName) => {
-    if (!currentDistricts.includes(districtName)) {
-      setCurrentDistricts([...currentDistricts, districtName]);
-    }
-    setSearchQuery("");
-  };
-
-  const removeDistrict = (districtName) => {
-    setCurrentDistricts(currentDistricts.filter((d) => d !== districtName));
-  };
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen w-[159vh]">
@@ -148,7 +119,6 @@ const CSA = () => {
           <tr>
             <th className="border border-gray-300 px-4 py-2">ID</th>
             <th className="border border-gray-300 px-4 py-2">CSA Name</th>
-            <th className="border border-gray-300 px-4 py-2">Districts</th>
             <th className="border border-gray-300 px-4 py-2">Actions</th>
           </tr>
         </thead>
@@ -157,7 +127,6 @@ const CSA = () => {
             <tr key={role.id} className="hover:bg-gray-100">
               <td className="border-b px-6 py-3 w-24">{role.id}</td>
               <td className="border-b px-6 py-3">{role.name}</td>
-              <td className="border-b px-6 py-3">{role.district.join(", ")}</td>
               <td className="border-b px-6 py-3 flex gap-4">
                 <button onClick={() => openEditRoleModal(role.id)} className="text-slate-600 hover:underline">
                   <FaPen />
@@ -186,38 +155,6 @@ const CSA = () => {
               className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
               placeholder="Enter CSA name"
             />
-            <label className="block mb-2 font-medium">Search District</label>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-              placeholder="Search districts"
-            />
-            <ul className="border rounded px-4 py-2 max-h-40 overflow-y-auto">
-              {filteredDistricts.map((district) => (
-                <li
-                  key={district.id}
-                  onClick={() => addDistrict(district.name)}
-                  className="cursor-pointer hover:bg-gray-200 px-2 py-1"
-                >
-                  {district.name}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4">
-              <label className="block mb-2 font-medium">Selected Districts</label>
-              <div className="flex flex-wrap gap-2">
-                {currentDistricts.map((districtName) => (
-                  <div key={districtName} className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2">
-                    {districtName}
-                    <button onClick={() => removeDistrict(districtName)} className="text-white font-bold">
-                      &times;
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
             <div className="flex justify-end gap-4 mt-4">
               <button
                 onClick={() => setModalVisible(false)}
