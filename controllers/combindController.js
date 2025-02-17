@@ -6,7 +6,7 @@ import Hotspot from "../models/Hotspot.js";
 import Region from "../models/Region.js";
 import Upazila from "../models/Upazila.js";
 import Union from "../models/Union.js";
-import Block from "../models/Block.js";
+import Block from "../models/block.js";
 
 export const getAllData = async (req, res) => {
     try {
