@@ -15,7 +15,7 @@ const Union = () => {
     }, []);
     const fetchUnions = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/unions');
+            const response = await axios.get('https://iinms.brri.gov.bd/api/unions');
             setUnions(response.data);
         } catch (error) {
             console.error("Error fetching unions:", error);
@@ -39,14 +39,14 @@ const Union = () => {
     const saveUnion = async () => {
         if (isEditMode) {
             try {
-                await axios.put(`http://localhost:5000/api/unions/${editUnionId}`, currentUnion);
+                await axios.put(`https://iinms.brri.gov.bd/api/unions/${editUnionId}`, currentUnion);
                 fetchUnions();
             } catch (error) {
                 console.error("Error updating union:", error);
             }
         } else {
             try {
-                await axios.post('http://localhost:5000/api/unions', currentUnion);
+                await axios.post('https://iinms.brri.gov.bd/api/unions', currentUnion);
                 fetchUnions();
             } catch (error) {
                 console.error("Error adding union:", error);
@@ -57,7 +57,7 @@ const Union = () => {
     };
     const deleteUnion = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/unions/${id}`);
+            await axios.delete(`https://iinms.brri.gov.bd/api/unions/${id}`);
             fetchUnions();
         } catch (error) {
             console.error("Error deleting union:", error);

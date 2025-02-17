@@ -23,7 +23,7 @@ const Block = () => {
   // Fetch blocks from the backend
   const fetchBlocks = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/bloks/blocks");
+      const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks");
       const data = await response.json();
       setRoles(data);
     } catch (error) {
@@ -32,7 +32,7 @@ const Block = () => {
   };
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/data");
+      const response = await fetch("https://iinms.brri.gov.bd/api/data");
       const data = await response.json();
       setData(data);
     } catch (error) {
@@ -92,7 +92,7 @@ const Block = () => {
     if (isEditMode) {
       // Update existing block
       try {
-        const response = await fetch(`http://localhost:5000/api/bloks/blocks/${editRoleId}`, {
+        const response = await fetch(`https://iinms.brri.gov.bd/api/bloks/blocks/${editRoleId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot, aez, csa, region, division, district, upazila, union }),
@@ -107,7 +107,7 @@ const Block = () => {
     } else {
       // Add new block
       try {
-        const response = await fetch("http://localhost:5000/api/bloks/blocks", {
+        const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot, aez, csa, region, division, district, upazila, union }),
@@ -124,7 +124,7 @@ const Block = () => {
 
   const deleteRole = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/bloks/blocks/${id}`, {
+      await fetch(`https://iinms.brri.gov.bd/api/bloks/blocks/${id}`, {
         method: "DELETE",
       });
       setRoles(roles.filter((role) => role.id !== id));

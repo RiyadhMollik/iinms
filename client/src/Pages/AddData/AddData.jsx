@@ -19,7 +19,7 @@ const AddData = () => {
 
     const fetchDistricts = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/district/districts'); // Adjust API endpoint as needed
+            const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
             setDistrictsList(response.data);
         } catch (error) {
             console.error("Error fetching districts:", error);
@@ -28,7 +28,7 @@ const AddData = () => {
     console.log(districtsList);
 
     // Base API URL
-    const API_URL = "http://localhost:5000/api/AddDatas"; // Changed endpoint for AddData
+    const API_URL = "https://iinms.brri.gov.bd/api/AddDatas"; // Changed endpoint for AddData
 
     // Fetch all AddDatas
     const fetchRoles = async () => {

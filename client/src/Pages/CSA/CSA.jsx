@@ -13,7 +13,7 @@ const CSA = () => {
   const [editRoleId, setEditRoleId] = useState(null);
 
   // Base API URL for CSA
-  const API_URL = "http://localhost:5000/api/csas"; // Changed endpoint for CSA
+  const API_URL = "https://iinms.brri.gov.bd/api/csas"; // Changed endpoint for CSA
 
   // Fetch all CSAs
   const fetchRoles = async () => {

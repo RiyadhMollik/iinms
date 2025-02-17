@@ -13,7 +13,7 @@ const AEZ = () => {
     const [editRoleId, setEditRoleId] = useState(null);
 
     // Base API URL
-    const API_URL = "http://localhost:5000/api/aezs"; // Changed endpoint for AEZ
+    const API_URL = "https://iinms.brri.gov.bd/api/aezs"; // Changed endpoint for AEZ
 
     // Fetch all AEZs
     const fetchRoles = async () => {

@@ -13,7 +13,7 @@ const Hotspot = () => {
     const [editRoleId, setEditRoleId] = useState(null);
 
     // Base API URL
-    const API_URL = "http://localhost:5000/api/hotspots";
+    const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
 
     // Fetch all hotspots
     const fetchRoles = async () => {

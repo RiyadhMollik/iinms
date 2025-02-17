@@ -42,7 +42,7 @@ export default function OneFactorRCBD() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:5000/upload", {
+      const response = await fetch("https://iinms.brri.gov.bd/upload", {
         method: "POST",
         body: formData,
       });

@@ -136,7 +136,7 @@ function WeatherForecast() {
   });
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/data/filters?filterBy=Hotspot&value=''`)
+    fetch(`https://iinms.brri.gov.bd/api/data/filters?filterBy=Hotspot&value=''`)
       .then((res) => res.json())
       .then((data) => setOptions((prev) => ({ ...prev, Hotspot: data })));
   }, []);
@@ -148,7 +148,7 @@ console.log(options);
 
     const nextFilter = getNextFilter(name);
     if (nextFilter) {
-      fetch(`http://localhost:5000/api/data/filters?filterBy=${name}&value=${value}`)
+      fetch(`https://iinms.brri.gov.bd/api/data/filters?filterBy=${name}&value=${value}`)
         .then((res) => res.json())
         .then((data) =>
           setOptions((prev) => ({ ...prev, [nextFilter]: data }))
