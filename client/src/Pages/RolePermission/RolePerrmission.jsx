@@ -117,7 +117,7 @@ console.log(permissions);
                         </div>
                     </div>
                     <div>
-                        <h2 className="text-lg font-semibold mb-3">Set Permissions for {selectedRole}</h2>
+                        <h2 className="text-lg font-semibold mb-3">Set Permissions </h2>
                         <div className="grid grid-cols-2 gap-4">
                             {permissions.map((permission) => (
                                 <label key={permission.id} className="flex items-center space-x-3">

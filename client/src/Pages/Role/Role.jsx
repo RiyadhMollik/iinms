@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaPen } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
 
 const Role = () => {
     const [roles, setRoles] = useState([]);
@@ -115,9 +116,9 @@ const Role = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {roles.map((role) => (
+                            {roles.map((role ,i) => (
                                 <tr key={role.id} className="hover:bg-gray-100">
-                                    <td className="border-b px-6 py-3">{role.id}</td>
+                                    <td className="border-b px-6 py-3">{i + 1}</td>
                                     <td className="border-b px-6 py-3">{role.name}</td>
                                     <td className="border-b px-6 py-3 flex gap-4">
                                         <button
@@ -130,7 +131,7 @@ const Role = () => {
                                             onClick={() => deleteRole(role.id)}
                                             className="text-red-600 hover:underline"
                                         >
-                                            Delete
+                                           <MdDelete/>
                                         </button>
                                     </td>
                                 </tr>

@@ -55,19 +55,20 @@ const Sidebar = () => {
             <li><Link to="/farmer-registration" className="hover:text-green-700">Farmer</Link></li>
           </ul>
         </div>
+       
         <div>
-          <button
-            className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/water-level") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
-            onClick={() => toggleMenu("water-level")}
-          >
-            <span className="flex items-center"><FaWater className="mr-3" /> IoT Data Visualization</span>
-            <IoIosAddCircle />
-          </button>
-          <ul className={`mt-2 ${openMenus["water-level"] ? "block" : "hidden"} pl-4 space-y-1`}>
-            <li><Link to="/potentiometer" className="hover:text-green-700">Potentiometer</Link></li>
-            <li><Link to="/laser" className="hover:text-green-700">Laser</Link></li>
-            <li><Link to="/ultra-sound" className="hover:text-green-700">Ultra Sound</Link></li>
-          </ul>
+          <Link to="/water-lavel">
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/water-lavel") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <FaCloudSun className="mr-3" /> Water Level
+            </button>
+          </Link>
+        </div>
+        <div>
+          <Link to="">
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/iiii") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <FaCloudSun className="mr-3" />Nutrient Status
+            </button>
+          </Link>
         </div>
         <div>
           <Link to="/weather-forecast">
@@ -77,11 +78,18 @@ const Sidebar = () => {
           </Link>
         </div>
         <div>
+          <Link to="/crop-water">
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/about") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <FaWater className="mr-3" /> Crop-Water Balance
+            </button>
+          </Link>
+        </div>
+        {/* <div>
           <button
             className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/crop-water") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
             onClick={() => toggleMenu("crop-water")}
           >
-            <span className="flex items-center"><FaWater className="mr-3" /> Crop-Water Balance</span>
+            <span className="flex items-center"> Crop-Water Balance</span>
             <IoIosAddCircle />
           </button>
           <ul className={`mt-2 ${openMenus["crop-water"] ? "block" : "hidden"} pl-4 space-y-1`}>
@@ -89,7 +97,7 @@ const Sidebar = () => {
             <li><Link to="/laser" className="hover:text-green-700">Laser</Link></li>
             <li><Link to="/ultra-sound" className="hover:text-green-700">Ultra Sound</Link></li>
           </ul>
-        </div>
+        </div> */}
 
         <div>
           <Link to="/pump-control">

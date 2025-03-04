@@ -39,66 +39,135 @@ export const getAllData = async (req, res) => {
     }
 };
 
-export const getFilterOptions = async (req, res) => {
+export const getHotspots = async (req, res) => {
   try {
-    const { filterBy, value } = req.query;
-
-    if (!filterBy) {
-      return res.status(400).json({ error: "Missing filterBy parameter" });
-    }
-
-    let nextFilter;
-    let whereCondition = {};  
-
-    switch (filterBy) {
-      case "Hotspot":
-        nextFilter = "hotspot";
-        break;
-      case "CSA":
-        nextFilter = "csa";
-        if (value) whereCondition = { hotspot: value };
-        break;
-      case "Region":
-        nextFilter = "region";
-        if (value) whereCondition = { csa: value };
-        break;
-      case "Division":
-        nextFilter = "division";
-        if (value) whereCondition = { region: value };
-        break;
-      case "District":
-        nextFilter = "district";
-        if (value) whereCondition = { division: value };
-        break;
-      case "Upazila":
-        nextFilter = "upazila";
-        if (value) whereCondition = { district: value };
-        break;
-      case "Union":
-        nextFilter = "union";
-        if (value) whereCondition = { upazila: value };
-        break;
-      case "Block":
-        nextFilter = "block";
-        if (value) whereCondition = { union: value };
-        break;
-      default:
-        return res.status(400).json({ error: "Invalid filter selection" });
-    }
-
-    // Fetch unique values based on filter
-    const data = await Block.findAll({
-      attributes: [[Block.sequelize.fn("DISTINCT", Block.sequelize.col(nextFilter)), nextFilter]],
-      where: Object.keys(whereCondition).length ? whereCondition : undefined, // Only apply filter if value exists
+    const hotspots = await Block.findAll({
+      attributes: ["hotspot"],
+      group: ["hotspot"],
     });
 
-    const filteredData = data.map((item) => item[nextFilter]).filter(Boolean);
-
-    res.json(filteredData.length > 0 ? filteredData : []);
+    res.json(hotspots.map((item) => item.hotspot));
   } catch (error) {
-    console.error("Error fetching filter options:", error);
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: error.message });
   }
 };
 
+// Get unique CSA based on selected Hotspot
+export const getCSAByHotspot = async (req, res) => {
+  try {
+    const { hotspot } = req.query;
+
+    const csaList = await Block.findAll({
+      attributes: ["csa"],
+      where: { hotspot },
+      group: ["csa"],
+    });
+
+    res.json(csaList.map((item) => item.csa));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get unique Regions based on Hotspot and CSA
+export const getRegionsByCSA = async (req, res) => {
+  try {
+    const { hotspot, csa } = req.query;
+    console.log(hotspot, csa);
+    const regions = await Block.findAll({
+      attributes: ["region"],
+      where: { hotspot, csa },
+      group: ["region"],
+    });
+
+    res.json(regions.map((item) => item.region));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get unique Divisions based on Region
+export const getDivisionsByRegion = async (req, res) => {
+  try {
+    const { hotspot, csa, region } = req.query;
+
+    const divisions = await Block.findAll({
+      attributes: ["division"],
+      where: { hotspot, csa, region },
+      group: ["division"],
+    });
+
+    res.json(divisions.map((item) => item.division));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get unique Districts based on Division
+export const getDistrictsByDivision = async (req, res) => {
+  try {
+    const { hotspot, csa, region, division } = req.query;
+
+    const districts = await Block.findAll({
+      attributes: ["district"],
+      where: { hotspot, csa, region, division },
+      group: ["district"],
+    });
+
+    res.json(districts.map((item) => item.district));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get unique Upazilas based on District
+export const getUpazilasByDistrict = async (req, res) => {
+  try {
+    const { hotspot, csa, region, division, district } = req.query;
+
+    const upazilas = await Block.findAll({
+      attributes: ["upazila"],
+      where: { hotspot, csa, region, division, district },
+      group: ["upazila"],
+    });
+
+    res.json(upazilas.map((item) => item.upazila));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get unique Unions based on Upazila
+export const getUnionsByUpazila = async (req, res) => {
+  try {
+    const { hotspot, csa, region, division, district, upazila } = req.query;
+
+    const unions = await Block.findAll({
+      attributes: ["union"],
+      where: { hotspot, csa, region, division, district, upazila },
+      group: ["union"],
+    });
+
+    res.json(unions.map((item) => item.union));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Get unique Blocks based on Union
+export const getBlocksByUnion = async (req, res) => {
+  try {
+    const { hotspot, csa, region, division, district, upazila, union } = req.query;
+
+    const blocks = await Block.findAll({
+      attributes: ["block"],
+      where: { hotspot, csa, region, division, district, upazila, union },
+      group: ["block"],
+    });
+
+    res.json(blocks.map((item) => item.block));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
   

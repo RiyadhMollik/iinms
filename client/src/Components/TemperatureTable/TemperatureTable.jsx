@@ -1,17 +1,7 @@
-const temperatureData = [
-  { date: "2024-12-29", min: 13.968, max: 26.5917 },
-  { date: "2024-12-30", min: 11.6554, max: 26.8987 },
-  { date: "2024-12-31", min: 10.3446, max: 26.0563 },
-  { date: "2025-01-01", min: 9.71222, max: 25.7137 },
-  { date: "2025-01-02", min: 9.45499, max: 25.629 },
-  { date: "2025-01-03", min: 8.71124, max: 25.9198 },
-  { date: "2025-01-03", min: 8.71124, max: 25.9198 },
-  { date: "2025-01-03", min: 8.71124, max: 25.9198 },
-  { date: "2025-01-03", min: 8.71124, max: 25.9198 },
 
-];
+const TemperatureTable = ({data}) => {
 
-const TemperatureTable = () => {
+  
   return (
    <div>
     
@@ -27,7 +17,7 @@ const TemperatureTable = () => {
             </tr>
           </thead>
           <tbody>
-            {temperatureData.map((data, index) => (
+            {data?.map((data, index) => (
               <tr
                 key={index}
                 className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}

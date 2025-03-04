@@ -1,31 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 
 export default function Barchart() {
-  // Chart options
+  const [rainfallData, setRainfallData] = useState([]);
+  const [dates, setDates] = useState([]);
+
+  useEffect(() => {
+    fetch('https://iinms.brri.gov.bd/api/weather/rainfall?lat=21.1&lon=88.1')
+      .then((response) => response.json())
+      .then((data) => {
+        const formattedDates = Object.keys(data.rainfall).map((date) => {
+          return new Date(date).toLocaleDateString('en-US');
+        });
+        
+        const values = Object.values(data.rainfall).map(value => parseFloat(value.toFixed(3)));
+        
+        setDates(formattedDates);
+        setRainfallData(values);
+      })
+      .catch((error) => console.error('Error fetching rainfall data:', error));
+  }, []);
+
   const options = {
     xAxis: {
       type: 'category',
-      data: [
-        '12/28/2024',
-        '12/27/2024',
-        '12/26/2024',
-        '12/25/2024',
-        '12/24/2024',
-        '12/23/2024',
-        '12/22/2024',
-      ], // Dates in descending order
+      data: dates,
       axisLabel: {
         rotate: 0, // Rotate labels for better visibility
       },
     },
     yAxis: {
-      type: 'value',
-      name: '', // Label for the y-axis
+      type: 'value'
     },
     series: [
       {
-        data: [0, 0, 0, 0, 0, 0, 0], // Rainfall data corresponding to each date
+        data: rainfallData,
         type: 'bar',
         itemStyle: {
           color: '#73C0DE', // Bar color for rainfall
@@ -35,12 +44,10 @@ export default function Barchart() {
     tooltip: {
       trigger: 'axis',
       axisPointer: {
-        type: 'shadow', // Tooltip shadow for bars
+        type: 'shadow',
       },
     },
   };
-  
-  
 
   return (
     <div>

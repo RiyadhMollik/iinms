@@ -33,6 +33,9 @@ import About from "../Pages/About/About";
 import OneFactorRCBD from "../Pages/OneFactorRCBD/OneFactorRCBD";
 import AddData from "../Pages/AddData/AddData";
 import Union from "../Pages/Union/Union";
+import PumpControl from "../Pages/PumpControl/PumpControl";
+import CIS from "../Pages/CIS/CIS";
+import CISTable from "../Pages/CIS/CISTable";
 
 export const router = createBrowserRouter([
   {
@@ -112,7 +115,7 @@ export const router = createBrowserRouter([
         element: <WeatherParameter/> , 
       },  
       {
-        path: "/potentiometer",
+        path: "/water-lavel",
         element: <Protentiometer/> , 
       },  
       {
@@ -132,7 +135,7 @@ export const router = createBrowserRouter([
         element: <WeatherForecast/> , 
       },  
       {
-        path: "/laser",
+        path: "/crop-water",
         element: <Laser/> , 
       },  
       {
@@ -152,6 +155,11 @@ export const router = createBrowserRouter([
         element: <Union/> , 
       },  
       
+      {
+        path: "/pump-control",
+        element: <PumpControl/> , 
+      },  
+      
         
     ],
   },
@@ -162,5 +170,13 @@ export const router = createBrowserRouter([
   {
     path: "/OneFactorRCBD",
     element: <OneFactorRCBD/> , 
+  },  
+  {
+    path: "/cis",
+    element: <CIS/> , 
+  },  
+  {
+    path: "/cis-table",
+    element: <CISTable/> , 
   },  
 ]);
