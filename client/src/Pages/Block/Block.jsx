@@ -9,8 +9,6 @@ const Block = () => {
   const [editRoleId, setEditRoleId] = useState(null);
   const [data, setData] = useState({});
   const [selectedHotspot, setSelectedHotspot] = useState("");
-  const [aez, setAez] = useState("");
-  const [csa, setCsa] = useState("");
   const [region, setRegion] = useState("");
   const [division, setDivision] = useState("");
   const [district, setDistrict] = useState("");
@@ -52,8 +50,6 @@ const Block = () => {
 
     // Reset all state variables to empty values when adding a new role
     setSelectedHotspot('');
-    setAez('');
-    setCsa('');
     setRegion('');
     setDivision('');
     setDistrict('');
@@ -74,8 +70,6 @@ const Block = () => {
       // Prepopulate the form with the role data
       setModalVisible(true);
       setSelectedHotspot(roleToEdit.hotspot);
-      setAez(roleToEdit.aez);
-      setCsa(roleToEdit.csa);
       setRegion(roleToEdit.region);
       setDivision(roleToEdit.division);
       setDistrict(roleToEdit.district);
@@ -157,8 +151,6 @@ const Block = () => {
                   <th className="border-b px-6 py-3 text-left">ID</th>
                   <th className="border-b px-6 py-3 text-left">Block</th>
                   <th className="border-b px-6 py-3 text-left">Hotspot</th>
-                  <th className="border-b px-6 py-3 text-left">AEZ</th>
-                  <th className="border-b px-6 py-3 text-left">CSA</th>
                   <th className="border-b px-6 py-3 text-left">Region</th>
                   <th className="border-b px-6 py-3 text-left">Division</th>
                   <th className="border-b px-6 py-3 text-left">District</th>
@@ -175,8 +167,6 @@ const Block = () => {
                     <td className="border-b px-6 py-3 w-24">{role.id}</td>
                     <td className="border-b px-6 py-3">{role.block}</td>
                     <td className="border-b px-6 py-3">{role.hotspot}</td>
-                    <td className="border-b px-6 py-3">{role.aez}</td>
-                    <td className="border-b px-6 py-3">{role.csa}</td>
                     <td className="border-b px-6 py-3">{role.region}</td>
                     <td className="border-b px-6 py-3">{role.division}</td>
                     <td className="border-b px-6 py-3">{role.district}</td>
@@ -225,35 +215,6 @@ const Block = () => {
                     </option>
                   ))}
                 </select>
-                <label className="block mb-2 font-medium">AEZ</label>
-                <select
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  value={aez}
-                  onChange={(e) => setAez(e.target.value)}
-                >
-                  <option value="">Select AEZ</option>
-                  {data.aez.map((item) => (
-                    <option key={item.id} value={item.name}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-
-                {/* CSA */}
-                <label className="block mb-2 font-medium">CSA</label>
-                <select
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  value={csa}
-                  onChange={(e) => setCsa(e.target.value)}
-                >
-                  <option value="">Select CSA</option>
-                  {data.csa.map((item) => (
-                    <option key={item.id} value={item.name}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-
                 {/* Region */}
                 <label className="block mb-2 font-medium">Region</label>
                 <select
