@@ -2,19 +2,33 @@ import db from "../config/db.js";
 
 export const getTemperatureStats = async (req, res) => {
     try {
-        const query = `
+        const queryLast20 = `
             SELECT 
-                \`date\`,
-                AVG(temperature) AS avg_temperature, 
-                MIN(temperature) AS min, 
-                MAX(temperature) AS max
+                dataInputdate AS date,
+                MIN(temperature) AS min_temperature,
+                MAX(temperature) AS max_temperature
             FROM \`1100012410150002\`
-            GROUP BY \`date\`
-            ORDER BY \`date\` DESC;
+            GROUP BY dataInputdate
+            ORDER BY dataInputdate DESC
+            LIMIT 10;
         `;
 
-        const [results] = await db.query(query);
-        res.json(results);
+        const query = `
+            SELECT 
+                \`timestamp\`,
+                temperature
+            FROM \`1100012410150002\`
+            ORDER BY \`timestamp\` DESC
+            LIMIT 20;
+        `;
+
+        const [last20Results] = await db.query(query);
+        const [avgResult] = await db.query(queryLast20);
+
+        res.json({
+            last20: last20Results,
+            average: avgResult
+        });
 
     } catch (error) {
         console.error("Error fetching temperature data:", error);

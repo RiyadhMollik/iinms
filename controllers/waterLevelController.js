@@ -2,19 +2,33 @@ import db from "../config/db.js";
 
 export const getWaterLevelStats = async (req, res) => {
     try {
-        const query = `
+        const queryLast20 = `
             SELECT 
-    date,
-    AVG(water_level) AS avg_water_level, 
-    MIN(water_level) AS min, 
-    MAX(water_level) AS max
-  FROM \`1100012410150002\`
-  GROUP BY date
-  ORDER BY date DESC;
+                dataInputdate AS date,
+                MIN(water_level) AS min_water_level,
+                MAX(water_level) AS max_water_level
+            FROM \`1100012410150002\`
+            GROUP BY dataInputdate
+            ORDER BY dataInputdate DESC
+            LIMIT 10;
         `;
 
-        const [results] = await db.query(query);
-        res.json(results);
+        const query = `
+            SELECT 
+                \`timestamp\`,
+                water_level
+            FROM \`1100012410150002\`
+            ORDER BY \`timestamp\` DESC
+            LIMIT 20;
+        `;
+
+        const [last20Results] = await db.query(query);
+        const [avgResult] = await db.query(queryLast20);
+
+        res.json({
+            last20: last20Results,
+            average: avgResult
+        });
 
     } catch (error) {
         console.error("Error fetching water level data:", error);

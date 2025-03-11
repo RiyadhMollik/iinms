@@ -2,19 +2,33 @@ import db from "../config/db.js";
 
 export const getSoilMoistureStats = async (req, res) => {
     try {
-        const query = `
-          SELECT 
-        \`date\`,
-        AVG(soil_moisture) AS avg_soil_moisture,
-        MIN(soil_moisture) AS min,
-        MAX(soil_moisture) AS max
-    FROM \`1100012410150002\`
-    GROUP BY \`date\`
-    ORDER BY \`date\` DESC;
+        const queryLast20 = `
+            SELECT 
+                dataInputdate AS date,
+                MIN(soil_moisture) AS min_soil_moisture,
+                MAX(soil_moisture) AS max_soil_moisture
+            FROM \`1100012410150002\`
+            GROUP BY dataInputdate
+            ORDER BY dataInputdate DESC
+            LIMIT 10;
         `;
 
-        const [results] = await db.query(query);
-        res.json(results);
+        const query = `
+            SELECT 
+                \`timestamp\`,
+                soil_moisture
+            FROM \`1100012410150002\`
+            ORDER BY \`timestamp\` DESC
+            LIMIT 20;
+        `;
+
+        const [last20Results] = await db.query(query);
+        const [avgResult] = await db.query(queryLast20);
+
+        res.json({
+            last20: last20Results,
+            average: avgResult
+        });
 
     } catch (error) {
         console.error("Error fetching soil moisture data:", error);
