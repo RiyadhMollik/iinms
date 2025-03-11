@@ -6,13 +6,13 @@ export default function PumpControl() {
 
   const handleToggleAuto = async () => {
     const endpoint = isAuto ? "/pump/auto-off" : "/pump/auto-on";
-    await fetch(`http://localhost:5000${endpoint}`, { method: "POST" });
+    await fetch(`https://iinms.brri.gov.bd${endpoint}`, { method: "POST" });
     setIsAuto(!isAuto);
   };
 
   const handleTogglePump = async () => {
     const endpoint = isOn ? "/pump/stop" : "/pump/start";
-    await fetch(`http://localhost:5000${endpoint}`, { method: "POST" });
+    await fetch(`https://iinms.brri.gov.bd${endpoint}`, { method: "POST" });
     setIsOn(!isOn);
   };
 

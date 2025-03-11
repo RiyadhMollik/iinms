@@ -25,7 +25,7 @@ const Sidebar = () => {
   return (
     <div
       className={`w-72 h-screen bg-white text-gray-800 shadow-lg fixed lg:sticky md:sticky top-0 transition-all duration-300 z-[1000] ${isslider ? 'left-0' : 'left-[-360px]'
-        } flex flex-col overflow-y-auto`}
+        } flex flex-col overflow-y-auto font-montserrat font-extralight`}
     >
       <div className="flex items-center px-4 py-5 border-b relative">
         <img src={logo} alt="Logo" className="w-12 h-12 rounded-full mr-4" />
