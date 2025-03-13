@@ -250,17 +250,6 @@ const ADRegistration = () => {
                           {col.name === "AEZ" && AD.aez}
                           {col.name === "Hotspot" && AD.hotspot}
                           {col.name === "CSA" && AD.csa}
-                          {col.name === "Farm Size" && AD.farmSize}
-                          {col.name === "Land Type" && AD.landType}
-                          {col.name === "Cultivation Season" && AD.cultivationSeason}
-                          {col.name === "Major Crops" && AD.majorCrops}
-                          {col.name === "Cropping Pattern" && AD.croppingPattern}
-                          {col.name === "Rice Varieties" && AD.riceVarieties}
-                          {col.name === "Planting Method" && AD.plantingMethod}
-                          {col.name === "Irrigation Practices" && AD.irrigationPractices}
-                          {col.name === "Fertilizer Usage" && AD.fertilizerUsage}
-                          {col.name === "Soil Type" && AD.soilType}
-                          {col.name === "Avg Production" && AD.avgProduction}
                           {col.name === "Action" && (
                             <i className="fas fa-ellipsis-h text-gray-500"></i>
                           )}
@@ -466,97 +455,6 @@ const ADRegistration = () => {
                     onChange={handleChange}
                   />
                 </div>
-                {/* Step 3: Rice Crop Details */}
-                <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
-                  <input
-                    type="text"
-                    name="farmSize"
-                    placeholder="Farm Size (in acres/hectares)"
-                    className="border w-full p-2 rounded"
-                    value={formData.farmSize}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="landType"
-                    placeholder="Land Type"
-                    className="border w-full p-2 rounded"
-                    value={formData.landType}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="cultivationSeason"
-                    placeholder="Season of Cultivation"
-                    className="border w-full p-2 rounded"
-                    value={formData.cultivationSeason}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="majorCrops"
-                    placeholder="Major Crops"
-                    className="border w-full p-2 rounded"
-                    value={formData.majorCrops}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="croppingPattern"
-                    placeholder="Cropping Pattern"
-                    className="border w-full p-2 rounded"
-                    value={formData.croppingPattern}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="riceVarieties"
-                    placeholder="Rice Varieties"
-                    className="border w-full p-2 rounded"
-                    value={formData.riceVarieties}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="plantingMethod"
-                    placeholder="Planting Method"
-                    className="border w-full p-2 rounded"
-                    value={formData.plantingMethod}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="irrigationPractices"
-                    placeholder="Irrigation Practices"
-                    className="border w-full p-2 rounded"
-                    value={formData.irrigationPractices}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="fertilizerUsage"
-                    placeholder="Fertilizer Usage"
-                    className="border w-full p-2 rounded"
-                    value={formData.fertilizerUsage}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="soilType"
-                    placeholder="Soil Type"
-                    className="border w-full p-2 rounded"
-                    value={formData.soilType}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="avgProduction"
-                    placeholder="Average Production (e.g., per season/year)"
-                    className="border w-full p-2 rounded"
-                    value={formData.avgProduction}
-                    onChange={handleChange}
-                  />
-                </div>
               </form>
 
               {/* Navigation Buttons */}
@@ -569,7 +467,7 @@ const ADRegistration = () => {
                 >
                   Previous
                 </button>
-                {currentStep === 3 ?
+                {currentStep === 2 ?
                   <button
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                     onClick={registerAD}

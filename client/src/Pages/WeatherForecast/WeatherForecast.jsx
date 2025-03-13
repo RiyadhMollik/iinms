@@ -113,7 +113,7 @@ const Sunshine = () => {
   useEffect(() => {
     const fetchSunshineData = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/sunshine?lat=22.1785&lon=90.7101");
+        const response = await fetch("https://iinms.brri.gov.bd/api/sunshine?lat=22.1785&lon=90.7101");
         const data = await response.json();
 
         if (data && data.length > 0) {
@@ -478,12 +478,12 @@ function WeatherForecast() {
             <Sunshine />
           </div>
         </div>
-        <div className="bg-white shadow rounded-lg p-4">
+        {/* <div className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg font-bold mb-4">Wind Speed (km/hr)</h2>
           <div className="p-14">
             <SoilChart />
           </div>
-        </div>
+        </div> */}
         
         <div className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg font-bold mb-4">Soil Moisture (%)</h2>
@@ -491,12 +491,12 @@ function WeatherForecast() {
             <SoilChart />
           </div>
         </div>
-        <div className="bg-white shadow rounded-lg p-4">
+        {/* <div className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg font-bold mb-4">Water Requirement (mm)</h2>
           <div className="p-14">
             <SoilChart />
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

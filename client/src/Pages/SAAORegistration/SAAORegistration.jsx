@@ -282,7 +282,7 @@ const SAAORegistration = () => {
                           {col.name === "AEZ" && SAAO.aez}
                           {col.name === "Hotspot" && SAAO.hotspot}
                           {col.name === "CSA" && SAAO.csa}
-                          {col.name === "Farm Size" && SAAO.farmSize}
+                          {/* {col.name === "Farm Size" && SAAO.farmSize}
                           {col.name === "Land Type" && SAAO.landType}
                           {col.name === "Cultivation Season" && SAAO.cultivationSeason}
                           {col.name === "Major Crops" && SAAO.majorCrops}
@@ -299,7 +299,7 @@ const SAAORegistration = () => {
                           {col.name === "Watering Stages" && SAAO.wateringStages}
                           {col.name === "Harvest Date" && new Date(SAAO.harvestDate).toLocaleDateString()}
                           {col.name === "Pest Diseases" && SAAO.pestDiseases}
-                          {col.name === "Weed Management" && SAAO.weedManagement}
+                          {col.name === "Weed Management" && SAAO.weedManagement} */}
                           {col.name === "Action" && (
                             <i className="fas fa-ellipsis-h text-gray-500"></i>
                           )}
@@ -549,7 +549,7 @@ const SAAORegistration = () => {
 
 
                 {/* Step 3: Rice Crop Details */}
-                <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
+                {/* <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
                   <input
                     type="text"
                     name="farmSize"
@@ -638,11 +638,11 @@ const SAAORegistration = () => {
                     value={formData.avgProduction}
                     onChange={handleChange}
                   />
-                </div>
+                </div> */}
 
 
                 {/* Step 4: Crop Management */}
-                <div className={`space-y-4 ${currentStep === 4 ? "" : "hidden"}`}>
+                {/* <div className={`space-y-4 ${currentStep === 4 ? "" : "hidden"}`}>
                   <input
                     type="date"
                     name="plantingDate"
@@ -699,7 +699,7 @@ const SAAORegistration = () => {
                     value={formData.weedManagement}
                     onChange={handleChange}
                   />
-                </div>
+                </div> */}
 
               </form>
 
@@ -713,7 +713,7 @@ const SAAORegistration = () => {
                 >
                   Previous
                 </button>
-                {currentStep === 4 ?
+                {currentStep === 2 ?
                   <button
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                     onClick={registerSAAO}

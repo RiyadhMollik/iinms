@@ -282,7 +282,7 @@ const UAORegistration = () => {
                           {col.name === "AEZ" && UAO.aez}
                           {col.name === "Hotspot" && UAO.hotspot}
                           {col.name === "CSA" && UAO.csa}
-                          {col.name === "Farm Size" && UAO.farmSize}
+                          {/* {col.name === "Farm Size" && UAO.farmSize}
                           {col.name === "Land Type" && UAO.landType}
                           {col.name === "Cultivation Season" && UAO.cultivationSeason}
                           {col.name === "Major Crops" && UAO.majorCrops}
@@ -299,7 +299,7 @@ const UAORegistration = () => {
                           {col.name === "Watering Stages" && UAO.wateringStages}
                           {col.name === "Harvest Date" && new Date(UAO.harvestDate).toLocaleDateString()}
                           {col.name === "Pest Diseases" && UAO.pestDiseases}
-                          {col.name === "Weed Management" && UAO.weedManagement}
+                          {col.name === "Weed Management" && UAO.weedManagement} */}
                           {col.name === "Action" && (
                             <i className="fas fa-ellipsis-h text-gray-500"></i>
                           )}
@@ -549,7 +549,7 @@ const UAORegistration = () => {
 
 
                 {/* Step 3: Rice Crop Details */}
-                <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
+                {/* <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
                   <input
                     type="text"
                     name="farmSize"
@@ -638,11 +638,11 @@ const UAORegistration = () => {
                     value={formData.avgProduction}
                     onChange={handleChange}
                   />
-                </div>
+                </div> */}
 
 
                 {/* Step 4: Crop Management */}
-                <div className={`space-y-4 ${currentStep === 4 ? "" : "hidden"}`}>
+                {/* <div className={`space-y-4 ${currentStep === 4 ? "" : "hidden"}`}>
                   <input
                     type="date"
                     name="plantingDate"
@@ -699,7 +699,7 @@ const UAORegistration = () => {
                     value={formData.weedManagement}
                     onChange={handleChange}
                   />
-                </div>
+                </div> */}
 
               </form>
 
@@ -713,7 +713,7 @@ const UAORegistration = () => {
                 >
                   Previous
                 </button>
-                {currentStep === 4 ?
+                {currentStep === 2 ?
                   <button
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                     onClick={registerUAO}
