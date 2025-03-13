@@ -89,7 +89,7 @@ const Block = () => {
         const response = await fetch(`https://iinms.brri.gov.bd/api/bloks/blocks/${editRoleId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot, aez, csa, region, division, district, upazila, union }),
+          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot,  region, division, district, upazila, union }),
         });
         const updatedRole = await response.json();
         setRoles((prevRoles) =>
@@ -104,7 +104,7 @@ const Block = () => {
         const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot, aez, csa, region, division, district, upazila, union }),
+          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot,  region, division, district, upazila, union }),
         });
         const newBlock = await response.json();
         setRoles([...roles, newBlock]);
