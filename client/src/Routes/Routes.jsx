@@ -36,6 +36,7 @@ import Union from "../Pages/Union/Union";
 import PumpControl from "../Pages/PumpControl/PumpControl";
 import CIS from "../Pages/CIS/CIS";
 import CISTable from "../Pages/CIS/CISTable";
+import MLModel from "../Pages/MLModel/MLModel";
 
 export const router = createBrowserRouter([
   {
@@ -178,5 +179,9 @@ export const router = createBrowserRouter([
   {
     path: "/cis-table",
     element: <CISTable/> , 
+  },  
+  {
+    path: "/model-analysis",
+    element: <MLModel/> , 
   },  
 ]);

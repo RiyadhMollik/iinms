@@ -22,6 +22,7 @@ import unionRoutes from './routes/unionRoutes.js';
 import dataRoutes from "./routes/dataRoutes.js";
 import weatherRoutes from './routes/weatherRoutes.js';
 import statsRoutes from "./routes/statsRoutes.js";
+import sunshineRoutes from "./routes/sunshineRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
@@ -49,7 +50,7 @@ app.use('/api/weather', weatherRoutes);
 app.use("/api/stats", statsRoutes);
 app.use(express.static(path.join(__dirname, "/client/dist")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use('/api', sunshineRoutes);
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
 });

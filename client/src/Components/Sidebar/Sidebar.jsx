@@ -139,6 +139,7 @@ const Sidebar = () => {
             <li><Link className="hover:text-green-700" to="/role">Role</Link></li>
             <li><Link className="hover:text-green-700" to="/role-permission">Role Permission</Link></li>
             <li><Link className="hover:text-green-700" to="/block">Add Block</Link></li>
+            <li><Link className="hover:text-green-700" to="/union">Add Union</Link></li>
             <li><Link className="hover:text-green-700" to="/upazila">Add Upazila</Link></li>
             <li><Link className="hover:text-green-700" to="/district">Add District</Link></li>
             <li><Link className="hover:text-green-700" to="/division">Add Division</Link></li>
