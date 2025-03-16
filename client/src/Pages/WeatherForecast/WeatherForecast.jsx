@@ -21,13 +21,13 @@ const RainfallChart = () => {
       try {
         const response = await fetch("https://iinms.brri.gov.bd/api/weather/temperature?lat=21.1&lon=88.1");
         const data = await response.json();
-        
+
         if (data.temperature) {
           const formattedData = Object.entries(data.temperature).map(([date, temp]) => ({
             date: new Date(date).toLocaleDateString("en-US"),
             Temperature: parseFloat(temp.toFixed(3)),
           }));
-          
+
           setTemperatureData(formattedData);
         }
       } catch (error) {
@@ -68,13 +68,13 @@ const SoilChart = () => {
       try {
         const response = await fetch("https://iinms.brri.gov.bd/api/weather/soil-moisture?lat=21.1&lon=88.1");
         const data = await response.json();
-        
+
         if (data.soil_moisture) {
           const formattedData = Object.entries(data.soil_moisture).map(([date, moisture]) => ({
             date: new Date(date).toLocaleDateString("en-US"),
             SoilMoisture: parseFloat(moisture.toFixed(3)),
           }));
-          
+
           setSoilMoistureData(formattedData);
         }
       } catch (error) {
@@ -121,7 +121,7 @@ const Sunshine = () => {
             date: `${item.year}-${item.month}-${item.day}`,
             predictedSunshine: item.predictedSunshine,
           }));
-          
+
           setSunshineData(formattedData);
         }
       } catch (error) {
@@ -196,8 +196,6 @@ const HumidityChart = () => {
 function WeatherForecast() {
   const [hotsopt, setHotspot] = useState([]);
   const [selectedHotspot, setSelectedHotspot] = useState("");
-  const [csa, setCsa] = useState([]);
-  const [selectedCsa, setSelectedCsa] = useState("");
   const [region, setRegion] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState("");
   const [division, setDivision] = useState([]);
@@ -225,25 +223,12 @@ function WeatherForecast() {
   }, []);
 
   useEffect(() => {
-    const fetchCsa = async () => {
-      try {
-        const response = await fetch(`https://iinms.brri.gov.bd/api/data/csa?hotspot=${selectedHotspot}`);
-        const data = await response.json();
-        setCsa(data);
-      } catch (error) {
-        console.error("Error fetching hotspot data:", error);
-      }
-    }
-    fetchCsa();
-  }, [selectedHotspot]);
-
-  useEffect(() => {
-    if (!selectedCsa || !selectedHotspot) return; // Prevent unnecessary API calls
+    if (!selectedHotspot) return; // Prevent unnecessary API calls
 
     const fetchRegion = async () => {
       try {
         const response = await fetch(
-          `https://iinms.brri.gov.bd/api/data/regions?csa=${selectedCsa}&hotspot=${selectedHotspot}`
+          `https://iinms.brri.gov.bd/api/data/regions?hotspot=${selectedHotspot}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch region data");
@@ -256,15 +241,15 @@ function WeatherForecast() {
     };
 
     fetchRegion();
-  }, [selectedCsa, selectedHotspot]);
+  }, [ selectedHotspot]);
 
   useEffect(() => {
-    if (!selectedRegion || !selectedCsa || !selectedHotspot) return; // Prevent unnecessary API calls 
+    if (!selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls 
 
     const fetchDivision = async () => {
       try {
         const response = await fetch(
-          `https://iinms.brri.gov.bd/api/data/divisions?region=${selectedRegion}&csa=${selectedCsa}&hotspot=${selectedHotspot}`
+          `https://iinms.brri.gov.bd/api/data/divisions?region=${selectedRegion}&hotspot=${selectedHotspot}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch division data");
@@ -277,15 +262,15 @@ function WeatherForecast() {
     };
 
     fetchDivision();
-  }, [selectedRegion, selectedCsa, selectedHotspot]);
+  }, [selectedRegion,  selectedHotspot]);
 
   useEffect(() => {
-    if (!selectedDivision || !selectedRegion || !selectedCsa || !selectedHotspot) return; // Prevent unnecessary API calls
+    if (!selectedDivision || !selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls
 
     const fetchDistrict = async () => {
       try {
         const response = await fetch(
-          `https://iinms.brri.gov.bd/api/data/districts?division=${selectedDivision}&region=${selectedRegion}&csa=${selectedCsa}&hotspot=${selectedHotspot}`
+          `https://iinms.brri.gov.bd/api/data/districts?division=${selectedDivision}&region=${selectedRegion}&hotspot=${selectedHotspot}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch district data");
@@ -298,15 +283,15 @@ function WeatherForecast() {
     };
 
     fetchDistrict();
-  }, [selectedDivision, selectedRegion, selectedCsa, selectedHotspot]);
+  }, [selectedDivision, selectedRegion,  selectedHotspot]);
 
   useEffect(() => {
-    if (!selectedDistrict || !selectedDivision || !selectedRegion || !selectedCsa || !selectedHotspot) return; // Prevent unnecessary API calls
+    if (!selectedDistrict || !selectedDivision || !selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls
 
     const fetchUpazila = async () => {
       try {
         const response = await fetch(
-          `https://iinms.brri.gov.bd/api/data/upazilas?district=${selectedDistrict}&division=${selectedDivision}&region=${selectedRegion}&csa=${selectedCsa}&hotspot=${selectedHotspot}`
+          `https://iinms.brri.gov.bd/api/data/upazilas?district=${selectedDistrict}&division=${selectedDivision}&region=${selectedRegion}&hotspot=${selectedHotspot}`
         );
         if (!response.ok) {
           throw new Error("Failed to fetch upazila data");
@@ -319,14 +304,14 @@ function WeatherForecast() {
     };
 
     fetchUpazila();
-  }, [selectedDistrict, selectedDivision, selectedRegion, selectedCsa, selectedHotspot]);
+  }, [selectedDistrict, selectedDivision, selectedRegion,  selectedHotspot]);
 
   useEffect(() => {
-    if (!selectedUpazila || !selectedDistrict || !selectedDivision || !selectedRegion || !selectedCsa || !selectedHotspot) return; // Prevent unnecessary API calls
+    if (!selectedUpazila || !selectedDistrict || !selectedDivision || !selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls
 
     const fetchUnion = async () => {
       try {
-        const response = await fetch(`https://iinms.brri.gov.bd/api/data/unions?upazila=${selectedUpazila}&district=${selectedDistrict}&division=${selectedDivision}&region=${selectedRegion}&csa=${selectedCsa}&hotspot=${selectedHotspot}`);
+        const response = await fetch(`https://iinms.brri.gov.bd/api/data/unions?upazila=${selectedUpazila}&district=${selectedDistrict}&division=${selectedDivision}&region=${selectedRegion}&hotspot=${selectedHotspot}`);
         if (!response.ok) {
           throw new Error("Failed to fetch union data");
         }
@@ -338,13 +323,13 @@ function WeatherForecast() {
     };
 
     fetchUnion();
-  }, [selectedUpazila, selectedDistrict, selectedDivision, selectedRegion, selectedCsa, selectedHotspot]);
+  }, [selectedUpazila, selectedDistrict, selectedDivision, selectedRegion,  selectedHotspot]);
   useEffect(() => {
-    if (!selectedUnion || !selectedUpazila || !selectedDistrict || !selectedDivision || !selectedRegion || !selectedCsa || !selectedHotspot) return; // Prevent unnecessary API calls
+    if (!selectedUnion || !selectedUpazila || !selectedDistrict || !selectedDivision || !selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls
 
     const fetchBlock = async () => {
       try {
-        const response = await fetch(`https://iinms.brri.gov.bd/api/data/blocks?union=${selectedUnion}&upazila=${selectedUpazila}&district=${selectedDistrict}&division=${selectedDivision}&region=${selectedRegion}&csa=${selectedCsa}&hotspot=${selectedHotspot}`);
+        const response = await fetch(`https://iinms.brri.gov.bd/api/data/blocks?union=${selectedUnion}&upazila=${selectedUpazila}&district=${selectedDistrict}&division=${selectedDivision}&region=${selectedRegion}&hotspot=${selectedHotspot}`);
         if (!response.ok) {
           throw new Error("Failed to fetch block data");
         }
@@ -356,8 +341,8 @@ function WeatherForecast() {
     };
 
     fetchBlock();
-  }, [selectedUnion, selectedUpazila, selectedDistrict, selectedDivision, selectedRegion, selectedCsa, selectedHotspot]);
-       
+  }, [selectedUnion, selectedUpazila, selectedDistrict, selectedDivision, selectedRegion,  selectedHotspot]);
+
   return (
     <div className="min-h-screen bg-gray-100 p-4 min-w-full">
       {/* Location Filters */}
@@ -371,17 +356,6 @@ function WeatherForecast() {
 
             <option key={hotspot} value={hotspot}>
               {hotspot}
-            </option>
-          ))}
-        </select>
-        <select
-          onChange={(e) => setSelectedCsa(e.target.value)}
-          className="bg-white border border-gray-300 rounded-md px-4 py-2 text-sm"
-        >
-          <option value="">Select CSA</option>
-          {csa.map((csa) => (
-            <option key={csa} value={csa}>
-              {csa}
             </option>
           ))}
         </select>
@@ -438,10 +412,10 @@ function WeatherForecast() {
             <option key={union} value={union}>
               {union}
             </option>
-        ))}
+          ))}
         </select>
         <select
-          onChange={(e)=> setSelectedBlock(e.target.value)}
+          onChange={(e) => setSelectedBlock(e.target.value)}
           className="bg-white border border-gray-300 rounded-md px-4 py-2 text-sm"
         >
           <option value="">Select Block</option>
@@ -449,7 +423,7 @@ function WeatherForecast() {
             <option key={block} value={block}>
               {block}
             </option>
-        ))}
+          ))}
         </select>
       </div>
 
@@ -484,7 +458,7 @@ function WeatherForecast() {
             <SoilChart />
           </div>
         </div> */}
-        
+
         <div className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg font-bold mb-4">Soil Moisture (%)</h2>
           <div className="p-14">

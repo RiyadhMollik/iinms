@@ -7,7 +7,6 @@ import moment from 'moment';
 let sunshineData = [];
 const csvFilePath = 'E:/client/controllers/sunshine.csv';
 
-
 fs.createReadStream(csvFilePath)
   .pipe(csvParser())
   .on('data', (row) => {

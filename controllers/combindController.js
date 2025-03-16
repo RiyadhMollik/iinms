@@ -10,7 +10,7 @@ import Block from "../models/block.js";
 
 export const getAllData = async (req, res) => {
     try {
-        const [aez, csa, districts, divisions, hotspots, regions, upazilas, unions, blocks] = await Promise.all([
+        const [aez,  districts, divisions, hotspots, regions, upazilas, unions, blocks] = await Promise.all([
             AEZ.findAll(),
             CSA.findAll(),
             District.findAll(),
@@ -24,7 +24,7 @@ export const getAllData = async (req, res) => {
 
         res.json({
             aez,
-            csa,
+            
             districts,
             divisions,
             hotspots,
@@ -72,11 +72,10 @@ export const getCSAByHotspot = async (req, res) => {
 // Get unique Regions based on Hotspot and CSA
 export const getRegionsByCSA = async (req, res) => {
   try {
-    const { hotspot, csa } = req.query;
-    console.log(hotspot, csa);
+    const { hotspot} = req.query;
     const regions = await Block.findAll({
       attributes: ["region"],
-      where: { hotspot, csa },
+      where: { hotspot },
       group: ["region"],
     });
 
@@ -89,11 +88,11 @@ export const getRegionsByCSA = async (req, res) => {
 // Get unique Divisions based on Region
 export const getDivisionsByRegion = async (req, res) => {
   try {
-    const { hotspot, csa, region } = req.query;
+    const { hotspot, region } = req.query;
 
     const divisions = await Block.findAll({
       attributes: ["division"],
-      where: { hotspot, csa, region },
+      where: { hotspot,  region },
       group: ["division"],
     });
 
@@ -106,11 +105,11 @@ export const getDivisionsByRegion = async (req, res) => {
 // Get unique Districts based on Division
 export const getDistrictsByDivision = async (req, res) => {
   try {
-    const { hotspot, csa, region, division } = req.query;
+    const { hotspot,  region, division } = req.query;
 
     const districts = await Block.findAll({
       attributes: ["district"],
-      where: { hotspot, csa, region, division },
+      where: { hotspot,  region, division },
       group: ["district"],
     });
 
@@ -123,11 +122,11 @@ export const getDistrictsByDivision = async (req, res) => {
 // Get unique Upazilas based on District
 export const getUpazilasByDistrict = async (req, res) => {
   try {
-    const { hotspot, csa, region, division, district } = req.query;
+    const { hotspot,  region, division, district } = req.query;
 
     const upazilas = await Block.findAll({
       attributes: ["upazila"],
-      where: { hotspot, csa, region, division, district },
+      where: { hotspot,  region, division, district },
       group: ["upazila"],
     });
 
@@ -140,11 +139,11 @@ export const getUpazilasByDistrict = async (req, res) => {
 // Get unique Unions based on Upazila
 export const getUnionsByUpazila = async (req, res) => {
   try {
-    const { hotspot, csa, region, division, district, upazila } = req.query;
+    const { hotspot,  region, division, district, upazila } = req.query;
 
     const unions = await Block.findAll({
       attributes: ["union"],
-      where: { hotspot, csa, region, division, district, upazila },
+      where: { hotspot,  region, division, district, upazila },
       group: ["union"],
     });
 
@@ -157,11 +156,11 @@ export const getUnionsByUpazila = async (req, res) => {
 // Get unique Blocks based on Union
 export const getBlocksByUnion = async (req, res) => {
   try {
-    const { hotspot, csa, region, division, district, upazila, union } = req.query;
+    const { hotspot,  region, division, district, upazila, union } = req.query;
 
     const blocks = await Block.findAll({
       attributes: ["block"],
-      where: { hotspot, csa, region, division, district, upazila, union },
+      where: { hotspot,  region, division, district, upazila, union },
       group: ["block"],
     });
 
