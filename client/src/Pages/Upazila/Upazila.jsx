@@ -18,7 +18,7 @@ const Upazila = () => {
     const fetchUpazilas = async () => {
         try {
             const response = await axios.get('https://iinms.brri.gov.bd/api/upazila/upazilas'); // Adjust API endpoint as needed
-            setUpazilas(response.data);
+            setUpazilas(response.data.reverse());   
         } catch (error) {
             console.error("Error fetching upazilas:", error);
         }
@@ -73,7 +73,7 @@ const Upazila = () => {
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "row", height: "100vh" }}>
+        <div style={{ display: "flex", flexDirection: "row" }}>
             {/* Main Content */}
             <div
                 style={{
@@ -99,18 +99,18 @@ const Upazila = () => {
 
                     <table className="w-full border-collapse bg-white rounded shadow-lg">
                         <thead className="bg-slate-700 text-white">
-                            <tr>
-                                <th className="border-b px-6 py-3 text-left">ID</th>
-                                <th className="border-b px-6 py-3 text-left">Name</th>
-                                <th className="border-b px-6 py-3 text-left">Action</th>
+                            <tr >
+                                <th className=" px-6 py-3 text-left">#</th>
+                                <th className=" px-6 py-3 text-left">Name</th>
+                                <th className=" px-6 py-3 text-left">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {upazilas?.map((upazila) => (
-                                <tr key={upazila.id} className="hover:bg-gray-100">
-                                    <td className="border-b px-6 py-3 w-24">{upazila.id}</td>
-                                    <td className="border-b px-6 py-3">{upazila.name}</td>
-                                    <td className="border-b px-6 py-3 h-full flex gap-4">
+                            {upazilas?.map((upazila , index) => (
+                                <tr key={upazila.id} className="hover:bg-gray-100 border-b">
+                                    <td className=" px-6 py-3 w-24">{index + 1}</td>
+                                    <td className=" px-6 py-3">{upazila.name}</td>
+                                    <td className=" px-6 py-3 h-full flex gap-4">
                                         <button
                                             onClick={() => openEditUpazilaModal(upazila.id)}
                                             className="text-slate-600 hover:underline"

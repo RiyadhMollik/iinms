@@ -19,7 +19,7 @@ const District = () => {
     const fetchDistricts = async () => {
         try {
             const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
-            setDistricts(response.data);
+            setDistricts(response.data.reverse());
         } catch (error) {
             console.error("Error fetching districts:", error);
         }
@@ -74,7 +74,7 @@ const District = () => {
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "row", height: "100vh" }}>
+        <div style={{ display: "flex", flexDirection: "row"}}>
             {/* Main Content */}
             <div
                 style={{
@@ -101,17 +101,17 @@ const District = () => {
                     <table className="w-full border-collapse bg-white rounded shadow-lg">
                         <thead className="bg-slate-700 text-white">
                             <tr>
-                                <th className="border-b px-6 py-3 text-left">ID</th>
-                                <th className="border-b px-6 py-3 text-left">Name</th>
-                                <th className="border-b px-6 py-3 text-left">Action</th>
+                                <th className=" px-6 py-3 text-left">#</th>
+                                <th className=" px-6 py-3 text-left">Name</th>
+                                <th className=" px-6 py-3 text-left">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {districts?.map((district) => (
-                                <tr key={district.id} className="hover:bg-gray-100">
-                                    <td className="border-b px-6 py-3 w-24">{district.id}</td>
-                                    <td className="border-b px-6 py-3">{district.name}</td>
-                                    <td className="border-b px-6 py-3 h-full flex gap-4">
+                            {districts?.map((district , index) => (
+                                <tr key={district.id} className="hover:bg-gray-100 border-b">
+                                    <td className=" px-6 py-3 w-24">{index + 1}</td>
+                                    <td className=" px-6 py-3">{district.name}</td>
+                                    <td className=" px-6 py-3 h-full flex gap-4">
                                         <button
                                             onClick={() => openEditDistrictModal(district.id)}
                                             className="text-slate-600 hover:underline"

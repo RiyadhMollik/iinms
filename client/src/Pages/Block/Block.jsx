@@ -32,7 +32,7 @@ const Block = () => {
     try {
       const response = await fetch("https://iinms.brri.gov.bd/api/data");
       const data = await response.json();
-      setData(data);
+      setData(data.reverse());
     } catch (error) {
       console.error("Error fetching blocks:", error);
     }
@@ -148,7 +148,7 @@ const Block = () => {
             <table className="w-full border-collapse bg-white rounded shadow-lg ">
               <thead className="bg-slate-700 text-white">
                 <tr>
-                  <th className="border-b px-6 py-3 text-left">ID</th>
+                  <th className="border-b px-6 py-3 text-left">#</th>
                   <th className="border-b px-6 py-3 text-left">Block</th>
                   <th className="border-b px-6 py-3 text-left">Hotspot</th>
                   <th className="border-b px-6 py-3 text-left">Region</th>
@@ -162,9 +162,9 @@ const Block = () => {
                 </tr>
               </thead>
               <tbody>
-                {roles.map((role) => (
+                {roles.map((role , index) => (
                   <tr key={role.id} className="hover:bg-gray-100">
-                    <td className="border-b px-6 py-3 w-24">{role.id}</td>
+                    <td className="border-b px-6 py-3 w-24">{index + 1}</td>
                     <td className="border-b px-6 py-3">{role.block}</td>
                     <td className="border-b px-6 py-3">{role.hotspot}</td>
                     <td className="border-b px-6 py-3">{role.region}</td>

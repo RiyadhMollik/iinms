@@ -20,7 +20,7 @@ const Hotspot = () => {
         try {
             const response = await fetch(API_URL);
             const data = await response.json();
-            setRoles(data);
+            setRoles(data.reverse());
         } catch (error) {
             console.error("Error fetching hotspots:", error);
         }
@@ -105,15 +105,15 @@ const Hotspot = () => {
             <table className="w-full border-collapse bg-white rounded shadow-lg">
                 <thead className="bg-slate-700 text-white">
                     <tr>
-                        <th className="border border-gray-300 px-4 py-2">ID</th>
+                        <th className="border border-gray-300 px-4 py-2">#</th>
                         <th className="border border-gray-300 px-4 py-2">Hotspot Name</th>
                         <th className="border border-gray-300 px-4 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {roles.map((role) => (
+                    {roles.map((role , index) => (
                         <tr key={role.id} className="hover:bg-gray-100">
-                            <td className="border-b px-6 py-3 w-24">{role.id}</td>
+                            <td className="border-b px-6 py-3 w-24">{index + 1}</td>
                             <td className="border-b px-6 py-3">{role.name}</td>
                             <td className="border-b px-6 py-3 flex gap-4">
                                 <button onClick={() => openEditRoleModal(role.id)} className="text-slate-600 hover:underline">

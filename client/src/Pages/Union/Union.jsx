@@ -16,7 +16,7 @@ const Union = () => {
     const fetchUnions = async () => {
         try {
             const response = await axios.get('https://iinms.brri.gov.bd/api/unions');
-            setUnions(response.data);
+            setUnions(response.data.reverse());
         } catch (error) {
             console.error("Error fetching unions:", error);
         }
@@ -64,7 +64,7 @@ const Union = () => {
         }
     };
     return (
-        <div style={{ display: "flex", flexDirection: "row", height: "100vh" }}>
+        <div style={{ display: "flex", flexDirection: "row"}}>
             <div style={{ padding: "25px", flexGrow: 1, backgroundColor: "#f9fafb" }}>
                 <div className="p-6 bg-gray-50 min-h-screen w-[159vh]">
                     <div className="flex justify-between">
@@ -81,18 +81,18 @@ const Union = () => {
 
                     <table className="w-full border-collapse bg-white rounded shadow-lg">
                         <thead className="bg-slate-700 text-white">
-                            <tr>
-                                <th className="border-b px-6 py-3 text-left">ID</th>
-                                <th className="border-b px-6 py-3 text-left">Name</th>
-                                <th className="border-b px-6 py-3 text-left">Action</th>
+                            <tr className="border-b">
+                                <th className=" px-6 py-3 text-left">#</th>
+                                <th className=" px-6 py-3 text-left">Name</th>
+                                <th className=" px-6 py-3 text-left">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {unions?.map((union) => (
-                                <tr key={union.id} className="hover:bg-gray-100">
-                                    <td className="border-b px-6 py-3 w-24">{union.id}</td>
-                                    <td className="border-b px-6 py-3">{union.name}</td>
-                                    <td className="border-b px-6 py-3 h-full flex gap-4">
+                            {unions?.map((union , index) => (
+                                <tr key={union.id} className="hover:bg-gray-100 border-b">
+                                    <td className=" px-6 py-3 w-24">{index + 1}</td>
+                                    <td className=" px-6 py-3">{union.name}</td>
+                                    <td className=" px-6 py-3 h-full flex gap-4">
                                         <button onClick={() => openEditUnionModal(union.id)} className="text-slate-600 hover:underline">
                                             <FaPen />
                                         </button>

@@ -20,7 +20,7 @@ const Division = () => {
   const fetchDivisions = async () => {
     try {
       const response = await axios.get('https://iinms.brri.gov.bd/api/division/divisions'); // Adjust API endpoint as needed
-      setDivisions(response.data);
+      setDivisions(response.data.reverse());
     } catch (error) {
       console.error("Error fetching divisions:", error);
     }
@@ -75,7 +75,7 @@ const Division = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "row", height: "100vh" }}>
+    <div style={{ display: "flex", flexDirection: "row" }}>
       {/* Main Content */}
       <div style={{ padding: "25px", flexGrow: 1, backgroundColor: "#f9fafb" }}>
         <div className="p-6 bg-gray-50 min-h-screen w-[159vh]">
@@ -90,17 +90,17 @@ const Division = () => {
           <table className="w-full border-collapse bg-white rounded shadow-lg">
             <thead className="bg-slate-700 text-white">
               <tr>
-                <th className="border-b px-6 py-3 text-left">ID</th>
-                <th className="border-b px-6 py-3 text-left">Name</th>
-                <th className="border-b px-6 py-3 text-left">Action</th>
+                <th className=" px-6 py-3 text-left">#</th>
+                <th className=" px-6 py-3 text-left">Name</th>
+                <th className=" px-6 py-3 text-left">Action</th>
               </tr>
             </thead>
             <tbody>
-              {divisions?.map((division) => (
-                <tr key={division.id} className="hover:bg-gray-100">
-                  <td className="border-b px-6 py-3 w-24">{division.id}</td>
-                  <td className="border-b px-6 py-3">{division.name}</td>
-                  <td className="border-b px-6 py-3 h-full flex gap-4">
+              {divisions?.map((division , index) => (
+                <tr key={division.id} className="hover:bg-gray-100 border-b">
+                  <td className=" px-6 py-3 w-24">{index + 1}</td>
+                  <td className=" px-6 py-3">{division.name}</td>
+                  <td className=" px-6 py-3 h-full flex gap-4">
                     <button onClick={() => openEditDivisionModal(division.id)} className="text-slate-600 hover:underline">
                       <FaPen />
                     </button>
