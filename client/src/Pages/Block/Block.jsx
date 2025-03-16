@@ -107,7 +107,7 @@ const Block = () => {
           body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot,  region, division, district, upazila, union }),
         });
         const newBlock = await response.json();
-        setRoles([...roles, newBlock]);
+        fetchBlocks();
       } catch (error) {
         console.error("Error adding block:", error);
       }
