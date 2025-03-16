@@ -1,5 +1,4 @@
 import AEZ from "../models/AEZ.js";
-import CSA from "../models/CSA.js";
 import District from "../models/District.js";
 import Division from "../models/Division.js";
 import Hotspot from "../models/Hotspot.js";
@@ -12,7 +11,6 @@ export const getAllData = async (req, res) => {
     try {
         const [aez,  districts, divisions, hotspots, regions, upazilas, unions, blocks] = await Promise.all([
             AEZ.findAll(),
-            CSA.findAll(),
             District.findAll(),
             Division.findAll(),
             Hotspot.findAll(),
@@ -24,7 +22,6 @@ export const getAllData = async (req, res) => {
 
         res.json({
             aez,
-            
             districts,
             divisions,
             hotspots,

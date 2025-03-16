@@ -23,7 +23,7 @@ const Block = () => {
     try {
       const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks");
       const data = await response.json();
-      setRoles(data);
+      setRoles(data.reverse());
     } catch (error) {
       console.error("Error fetching blocks:", error);
     }
@@ -32,7 +32,7 @@ const Block = () => {
     try {
       const response = await fetch("https://iinms.brri.gov.bd/api/data");
       const data = await response.json();
-      setData(data.reverse());
+      setData(data);
     } catch (error) {
       console.error("Error fetching blocks:", error);
     }
