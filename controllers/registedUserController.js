@@ -3,6 +3,8 @@ import Farmer from "../models/RegistedUser.js";
 
 // Create a new farmer
 export const createFarmer = async (req, res) => {
+  
+  console.log(req.body);
   try {
     const farmer = await Farmer.create(req.body);
     res.status(201).json(farmer);

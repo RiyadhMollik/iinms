@@ -15,10 +15,6 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  age: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
   mobileNumber: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -93,9 +89,9 @@ const RegistedUser = sequelize.define("RegistedUser", {
     allowNull: true,
   },
   hotspot: {
-    type: DataTypes.STRING,
+    type: DataTypes.JSON,
     allowNull: true,
-  },
+  },  
   csa: {
     type: DataTypes.STRING,
     allowNull: true,

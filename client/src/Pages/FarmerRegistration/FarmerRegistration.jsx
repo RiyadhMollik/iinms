@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
-
+import { MdGpsFixed } from "react-icons/md";
+import axios from "axios";
 const FarmerRegistration = () => {
   const [isFarmerModalOpen, setIsFarmerModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -8,6 +9,119 @@ const FarmerRegistration = () => {
   const [farmerList, setFarmerList] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [regions, setRegions] = useState([]);
+  const [hotspot, setHotspot] = useState([]);
+  const [selectedHotspots, setSelectedHotspots] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [divisions, setDivisions] = useState([]);
+  const [upazilas, setUpazilas] = useState([]);
+  const [unions, setUnions] = useState([]);
+  const [block, setBlock] = useState([]);
+  const fetchBlocks = async () => {
+    try {
+      const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks");
+      const data = await response.json();
+      setBlock(data.reverse());
+    } catch (error) {
+      console.error("Error fetching blocks:", error);
+    }
+  };
+  useEffect(() => {
+    fetchBlocks();
+    fetchUnions();
+  }, []);
+  const fetchUnions = async () => {
+    try {
+      const response = await axios.get('https://iinms.brri.gov.bd/api/unions');
+      setUnions(response.data.reverse());
+    } catch (error) {
+      console.error("Error fetching unions:", error);
+    }
+  };
+  useEffect(() => {
+    fetchUpazilas();
+  }, []);
+
+  const fetchUpazilas = async () => {
+    try {
+      const response = await axios.get('https://iinms.brri.gov.bd/api/upazila/upazilas'); // Adjust API endpoint as needed
+      setUpazilas(response.data.reverse());
+    } catch (error) {
+      console.error("Error fetching upazilas:", error);
+    }
+  };
+  useEffect(() => {
+    fetchDivisions();
+  }, []);
+
+  const fetchDivisions = async () => {
+    try {
+      const response = await axios.get('https://iinms.brri.gov.bd/api/division/divisions'); // Adjust API endpoint as needed
+      setDivisions(response.data.reverse());
+    } catch (error) {
+      console.error("Error fetching divisions:", error);
+    }
+  };
+  useEffect(() => {
+    fetchDistricts();
+  }, []);
+
+  const fetchDistricts = async () => {
+    try {
+      const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
+      setDistricts(response.data.reverse());
+    } catch (error) {
+      console.error("Error fetching districts:", error);
+    }
+  };
+  useEffect(() => {
+    fetchRegions();
+  }, []);
+
+  const fetchRegions = async () => {
+    try {
+      const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
+      console.log(response);
+
+      setRegions(response.data.reverse());
+    } catch (error) {
+      console.error("Error fetching regions:", error);
+    }
+  };
+  // Base API URL
+  const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
+
+  // Fetch all hotspots
+  const fetchRoles = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setHotspot(data.reverse());
+    } catch (error) {
+      console.error("Error fetching hotspots:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+  const handleUseMyLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          setFormData({ ...formData, coordinates: `${lat}, ${lon}` });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          alert("Failed to fetch location. Please enable GPS.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  };
   const [formData, setFormData] = useState({
     name: "",
     fatherName: "",
@@ -31,9 +145,7 @@ const FarmerRegistration = () => {
     division: "",
     region: "",
     coordinates: "",
-    aez: "",
     hotspot: "",
-    csa: "",
     // Rice Crop Details
     farmSize: "",
     landType: "",
@@ -55,6 +167,7 @@ const FarmerRegistration = () => {
     pestDiseases: "",
     weedManagement: "",
     role: "farmer",
+    eduOther: " "
   });
   const fetchFarmers = async () => {
     try {
@@ -98,9 +211,7 @@ const FarmerRegistration = () => {
     { name: "Division", visible: true },
     { name: "Region", visible: true },
     { name: "Coordinates", visible: true },
-    { name: "AEZ", visible: true },
     { name: "Hotspot", visible: true },
-    { name: "CSA", visible: true },
     // Rice Crop Details
     { name: "Farm Size", visible: true },
     { name: "Land Type", visible: true },
@@ -112,16 +223,16 @@ const FarmerRegistration = () => {
     { name: "Irrigation Practices", visible: true },
     { name: "Fertilizer Usage", visible: true },
     { name: "Soil Type", visible: true },
-    { name: "Avg Production", visible: true },
+    // { name: "Avg Production", visible: true },
     // Stage-wise Crop Management
-    { name: "Planting Date", visible: true },
-    { name: "Seedling Age", visible: true },
-    { name: "Transplantation Date", visible: true },
-    { name: "Watering Stages", visible: true },
-    { name: "Harvest Date", visible: true },
-    { name: "Pest Diseases", visible: true },
-    { name: "Weed Management", visible: true },
-    { name: "Action", visible: true },
+    // { name: "Planting Date", visible: true },
+    // { name: "Seedling Age", visible: true },
+    // { name: "Transplantation Date", visible: true },
+    // { name: "Watering Stages", visible: true },
+    // { name: "Harvest Date", visible: true },
+    // { name: "Pest Diseases", visible: true },
+    // { name: "Weed Management", visible: true },
+    // { name: "Action", visible: true },
   ];
 
 
@@ -188,6 +299,19 @@ const FarmerRegistration = () => {
       farmer.email.toLowerCase().includes(searchText.toLowerCase())
     );
   });
+  const handleSelect = (e) => {
+    const selectedValue = e.target.value;
+    // Check if the value is already selected
+    if (!selectedHotspots.includes(selectedValue)) {
+      setSelectedHotspots([...selectedHotspots, selectedValue]);
+    }
+  };
+
+  const handleDelete = (valueToDelete) => {
+    // Remove selected value
+    const updatedHotspot = selectedHotspots.filter((value) => value !== valueToDelete);
+    setSelectedHotspots(updatedHotspot);
+  };
   return (
     <div className="min-h-screen w-full bg-gray-100">
 
@@ -284,9 +408,7 @@ const FarmerRegistration = () => {
                           {col.name === "Division" && farmer.division}
                           {col.name === "Region" && farmer.region}
                           {col.name === "Coordinates" && farmer.coordinates}
-                          {col.name === "AEZ" && farmer.aez}
                           {col.name === "Hotspot" && farmer.hotspot}
-                          {col.name === "CSA" && farmer.csa}
                           {col.name === "Farm Size" && farmer.farmSize}
                           {col.name === "Land Type" && farmer.landType}
                           {col.name === "Cultivation Season" && farmer.cultivationSeason}
@@ -297,14 +419,14 @@ const FarmerRegistration = () => {
                           {col.name === "Irrigation Practices" && farmer.irrigationPractices}
                           {col.name === "Fertilizer Usage" && farmer.fertilizerUsage}
                           {col.name === "Soil Type" && farmer.soilType}
-                          {col.name === "Avg Production" && farmer.avgProduction}
-                          {col.name === "Planting Date" && new Date(farmer.plantingDate).toLocaleDateString()}
+                          {/* {col.name === "Avg Production" && farmer.avgProduction} */}
+                          {/* {col.name === "Planting Date" && new Date(farmer.plantingDate).toLocaleDateString()}
                           {col.name === "Seedling Age" && farmer.seedlingAge}
                           {col.name === "Transplantation Date" && new Date(farmer.transplantationDate).toLocaleDateString()}
                           {col.name === "Watering Stages" && farmer.wateringStages}
                           {col.name === "Harvest Date" && new Date(farmer.harvestDate).toLocaleDateString()}
                           {col.name === "Pest Diseases" && farmer.pestDiseases}
-                          {col.name === "Weed Management" && farmer.weedManagement}
+                          {col.name === "Weed Management" && farmer.weedManagement} */}
                           {col.name === "Action" && (
                             <i className="fas fa-ellipsis-h text-gray-500"></i>
                           )}
@@ -359,6 +481,7 @@ const FarmerRegistration = () => {
               <form>
                 {/* Step 1: Farmer Identification */}
                 <div className={`space-y-4 ${currentStep === 1 ? "" : "hidden"}`}>
+                  <h1 className="text-xl">Personal Information</h1>
                   <input
                     type="text"
                     name="name"
@@ -456,7 +579,7 @@ const FarmerRegistration = () => {
                   <input
                     type="text"
                     name="agrilCard"
-                    placeholder="Agril Card"
+                    placeholder="Agril Card No"
                     className="border w-full p-2 rounded"
                     value={formData.agrilCard}
                     onChange={handleChange}
@@ -475,6 +598,11 @@ const FarmerRegistration = () => {
                     <option value="other">Other</option>
                   </select>
                 </div>
+                {
+                  formData.educationStatus === 'other' && <input type="text" name="eduOther" placeholder="Education Status" className="border w-full p-2 mt-2 rounded" value={formData.eduOther}
+
+                    onChange={handleChange} />
+                }
                 {/* Step 2: Location Information */}
                 <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>
                   <input
@@ -485,91 +613,144 @@ const FarmerRegistration = () => {
                     value={formData.village}
                     onChange={handleChange}
                   />
-                  <input
-                    type="text"
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      name="coordinates"
+                      placeholder="Coordinates (e.g., Latitude, Longitude)"
+                      className="border w-full p-2 rounded"
+                      value={formData.coordinates}
+                      onChange={handleChange}
+                    />
+                    <button
+                      type="button"
+                      className="text-blue-500 text-white  rounded"
+                      onClick={handleUseMyLocation}
+                    >
+                      <MdGpsFixed className="text-blue-500" />
+                    </button>
+                  </div>
+                  <select
                     name="block"
-                    placeholder="Block"
                     className="border w-full p-2 rounded"
                     value={formData.block}
                     onChange={handleChange}
-                  />
-                  <input
-                    type="text"
+                    required
+                  >
+                    <option value="">Select Block</option>
+                    {block?.map((block) => (
+                      <option key={block.id} value={block.block}>
+                        {block.block}
+                      </option>
+                    ))}
+                  </select>
+                  <select
                     name="union"
-                    placeholder="Union"
                     className="border w-full p-2 rounded"
                     value={formData.union}
                     onChange={handleChange}
-                  />
-                  <input
-                    type="text"
+                    required
+                  >
+                    <option value="">Select Union</option>
+                    {unions?.map((union) => (
+                      <option key={union.id} value={union.name}>
+                        {union.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
                     name="upazila"
-                    placeholder="Upazila"
                     className="border w-full p-2 rounded"
                     value={formData.upazila}
                     onChange={handleChange}
-                  />
-                  <input
-                    type="text"
+                    required
+                  >
+                    <option value="">Select Upazila</option>
+                    {upazilas?.map((upazila) => (
+                      <option key={upazila.id} value={upazila.name}>
+                        {upazila.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select
                     name="district"
-                    placeholder="District"
                     className="border w-full p-2 rounded"
                     value={formData.district}
                     onChange={handleChange}
-                  />
-                  <input
-                    type="text"
+                    required
+                  >
+                    <option value="">Select District</option>
+                    {districts?.map((district) => (
+                      <option key={district.id} value={district.name}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
                     name="division"
-                    placeholder="Division"
                     className="border w-full p-2 rounded"
                     value={formData.division}
                     onChange={handleChange}
-                  />
-                  <input
-                    type="text"
+                    required
+                  >
+                    <option value="">Select Division</option>
+                    {divisions?.map((division) => (
+                      <option key={division.id} value={division.name}>
+                        {division.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
                     name="region"
-                    placeholder="Region"
                     className="border w-full p-2 rounded"
                     value={formData.region}
                     onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="coordinates"
-                    placeholder="Coordinates (e.g., Latitude, Longitude)"
-                    className="border w-full p-2 rounded"
-                    value={formData.coordinates}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="aez"
-                    placeholder="AEZ (Agro-Ecological Zone)"
-                    className="border w-full p-2 rounded"
-                    value={formData.aez}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
+                    required
+                  >
+                    <option value="">Select Region</option>
+                    {regions?.map((hotspot) => (
+                      <option key={hotspot.id} value={hotspot.name}>
+                        {hotspot.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {selectedHotspots.map((hotspotName) => (
+                      <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
+                        <span>{hotspotName}</span>
+                        <button
+                          type="button"
+                          className="ml-2 text-red-500"
+                          onClick={() => handleDelete(hotspotName)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <select
                     name="hotspot"
-                    placeholder="Hotspot"
                     className="border w-full p-2 rounded"
-                    value={formData.hotspot}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="csa"
-                    placeholder="CSA (Climate Smart Agriculture)"
-                    className="border w-full p-2 rounded"
-                    value={formData.csa}
-                    onChange={handleChange}
-                  />
+                    value="" // No value here as it's not multiple
+                    onChange={handleSelect}
+                    required
+                  >
+                    <option value="">Select Hotspot</option>
+                    {hotspot?.map((hotspot) => (
+                      <option key={hotspot.id} value={hotspot.name}>
+                        {hotspot.name}
+                      </option>
+                    ))}
+                  </select>
+
                 </div>
 
 
                 {/* Step 3: Rice Crop Details */}
                 <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
+                  <h1 className="text-xl">Farming Information</h1>
                   <input
                     type="text"
                     name="farmSize"
@@ -578,14 +759,18 @@ const FarmerRegistration = () => {
                     value={formData.farmSize}
                     onChange={handleChange}
                   />
-                  <input
-                    type="text"
+                  <select
                     name="landType"
-                    placeholder="Land Type"
                     className="border w-full p-2 rounded"
                     value={formData.landType}
                     onChange={handleChange}
-                  />
+                    required
+                  >
+                    <option value="">Select Land Type</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                  </select>
                   <input
                     type="text"
                     name="cultivationSeason"
@@ -650,19 +835,19 @@ const FarmerRegistration = () => {
                     value={formData.soilType}
                     onChange={handleChange}
                   />
-                  <input
+                  {/* <input
                     type="text"
                     name="avgProduction"
                     placeholder="Average Production (e.g., per season/year)"
                     className="border w-full p-2 rounded"
                     value={formData.avgProduction}
                     onChange={handleChange}
-                  />
+                  /> */}
                 </div>
 
 
                 {/* Step 4: Crop Management */}
-                <div className={`space-y-4 ${currentStep === 4 ? "" : "hidden"}`}>
+                {/* <div className={`space-y-4 ${currentStep === 4 ? "" : "hidden"}`}>
                   <input
                     type="date"
                     name="plantingDate"
@@ -719,7 +904,7 @@ const FarmerRegistration = () => {
                     value={formData.weedManagement}
                     onChange={handleChange}
                   />
-                </div>
+                </div> */}
 
               </form>
 
@@ -733,7 +918,7 @@ const FarmerRegistration = () => {
                 >
                   Previous
                 </button>
-                {currentStep === 4 ?
+                {currentStep === 3 ?
                   <button
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                     onClick={registerFarmer}

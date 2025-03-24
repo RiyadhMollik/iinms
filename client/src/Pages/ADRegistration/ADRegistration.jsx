@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaBars } from "react-icons/fa";
+import axios from "axios";
+import { MdGpsFixed } from "react-icons/md";
 
 const ADRegistration = () => {
   const [isADModalOpen, setIsADModalOpen] = useState(false);
@@ -8,11 +10,63 @@ const ADRegistration = () => {
   const [ADList, setADList] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [regions, setRegions] = useState([]);
+  const [hotspot, setHotspot] = useState([]);
+  const [selectedHotspots, setSelectedHotspots] = useState([]);
+
+  const handleUseMyLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          setFormData({ ...formData, coordinates: `${lat}, ${lon}` });
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          alert("Failed to fetch location. Please enable GPS.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  };
+  useEffect(() => {
+    fetchRegions();
+  }, []);
+
+  const fetchRegions = async () => {
+    try {
+      const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
+      console.log(response);
+
+      setRegions(response.data.reverse());
+    } catch (error) {
+      console.error("Error fetching regions:", error);
+    }
+  };
+  // Base API URL
+  const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
+
+  // Fetch all hotspots
+  const fetchRoles = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setHotspot(data.reverse());
+    } catch (error) {
+      console.error("Error fetching hotspots:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     fatherName: "",
     gender: "",
-    age: "",
     mobileNumber: "",
     whatsappNumber: "",
     imoNumber: "",
@@ -20,13 +74,10 @@ const ADRegistration = () => {
     email: "",
     alternateContact: "",
     nationalId: "",
-    educationStatus: "",
     // Location Information
     region: "",
     coordinates: "",
-    aez: "",
     hotspot: "",
-    csa: "",
     // Rice Crop Details
     farmSize: "",
     landType: "",
@@ -64,7 +115,6 @@ const ADRegistration = () => {
     { name: "AD Name", visible: true },
     { name: "Father Name", visible: true },
     { name: "Gender", visible: true },
-    { name: "Age", visible: true },
     { name: "Mobile Number", visible: true },
     { name: "Whatsapp Number", visible: true },
     { name: "Imo Number", visible: true },
@@ -72,13 +122,10 @@ const ADRegistration = () => {
     { name: "Email", visible: true },
     { name: "Alternate Contact", visible: true },
     { name: "National ID", visible: true },
-    { name: "Education Status", visible: true },
     // Location Information
     { name: "Region", visible: true },
     { name: "Coordinates", visible: true },
-    { name: "AEZ", visible: true },
     { name: "Hotspot", visible: true },
-    { name: "CSA", visible: true },
     // Rice Crop Details
     { name: "Farm Size", visible: true },
     { name: "Land Type", visible: true },
@@ -157,6 +204,20 @@ const ADRegistration = () => {
       AD.email.toLowerCase().includes(searchText.toLowerCase())
     );
   });
+
+  const handleSelect = (e) => {
+    const selectedValue = e.target.value;
+    // Check if the value is already selected
+    if (!selectedHotspots.includes(selectedValue)) {
+      setSelectedHotspots([...selectedHotspots, selectedValue]);
+    }
+  };
+
+  const handleDelete = (valueToDelete) => {
+    // Remove selected value
+    const updatedHotspot = selectedHotspots.filter((value) => value !== valueToDelete);
+    setSelectedHotspots(updatedHotspot);
+  };
   return (
     <div className="min-h-screen w-full bg-gray-100">
 
@@ -235,7 +296,6 @@ const ADRegistration = () => {
                           {col.name === "AD Name" && AD.name}
                           {col.name === "Father Name" && AD.fatherName}
                           {col.name === "Gender" && AD.gender}
-                          {col.name === "Age" && AD.age}
                           {col.name === "Mobile Number" && AD.mobileNumber}
                           {col.name === "Whatsapp Number" && AD.whatsappNumber}
                           {col.name === "Imo Number" && AD.imoNumber}
@@ -244,12 +304,9 @@ const ADRegistration = () => {
                           {col.name === "Alternate Contact" && AD.alternateContact}
                           {col.name === "National ID" && AD.nationalId}
                           {col.name === "Agriculture Card" && AD.agrilCard}
-                          {col.name === "Education Status" && AD.educationStatus}
                           {col.name === "Region" && AD.region}
                           {col.name === "Coordinates" && AD.coordinates}
-                          {col.name === "AEZ" && AD.aez}
                           {col.name === "Hotspot" && AD.hotspot}
-                          {col.name === "CSA" && AD.csa}
                           {col.name === "Action" && (
                             <i className="fas fa-ellipsis-h text-gray-500"></i>
                           )}
@@ -333,15 +390,6 @@ const ADRegistration = () => {
                     <option value="female">Female</option>
                   </select>
                   <input
-                    type="number"
-                    name="age"
-                    placeholder="Age"
-                    className="border w-full p-2 rounded"
-                    value={formData.age}
-                    onChange={handleChange}
-                    required
-                  />
-                  <input
                     type="text"
                     name="mobileNumber"
                     placeholder="Mobile Number"
@@ -398,62 +446,69 @@ const ADRegistration = () => {
                     value={formData.nationalId}
                     onChange={handleChange}
                   />
-                  <select
-                    name="educationStatus"
-                    className="border w-full p-2 rounded"
-                    value={formData.educationStatus}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Education Status</option>
-                    <option value="illiterate">Illiterate</option>
-                    <option value="primary">Primary</option>
-                    <option value="secondary">Secondary</option>
-                    <option value="higher">Higher</option>
-                    <option value="other">Other</option>
-                  </select>
                 </div>
                 {/* Step 2: Location Information */}
                 <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>
-                  <input
-                    type="text"
+                  <select
                     name="region"
-                    placeholder="Region"
                     className="border w-full p-2 rounded"
                     value={formData.region}
                     onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="coordinates"
-                    placeholder="Coordinates (e.g., Latitude, Longitude)"
-                    className="border w-full p-2 rounded"
-                    value={formData.coordinates}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="aez"
-                    placeholder="AEZ (Agro-Ecological Zone)"
-                    className="border w-full p-2 rounded"
-                    value={formData.aez}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
+                    required
+                  >
+                    <option value="">Select Region</option>
+                    {regions?.map((hotspot) => (
+                      <option key={hotspot.id} value={hotspot.name}>
+                        {hotspot.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      name="coordinates"
+                      placeholder="Coordinates (e.g., Latitude, Longitude)"
+                      className="border w-full p-2 rounded"
+                      value={formData.coordinates}
+                      onChange={handleChange}
+                    />
+                    <button
+                      type="button"
+                      className="text-blue-500 text-white  rounded"
+                      onClick={handleUseMyLocation}
+                    >
+                      <MdGpsFixed className="text-blue-500" />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {selectedHotspots.map((hotspotName) => (
+                      <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
+                        <span>{hotspotName}</span>
+                        <button
+                          type="button"
+                          className="ml-2 text-red-500"
+                          onClick={() => handleDelete(hotspotName)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <select
                     name="hotspot"
-                    placeholder="Hotspot"
                     className="border w-full p-2 rounded"
-                    value={formData.hotspot}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="csa"
-                    placeholder="CSA (Climate Smart Agriculture)"
-                    className="border w-full p-2 rounded"
-                    value={formData.csa}
-                    onChange={handleChange}
-                  />
+                    value="" // No value here as it's not multiple
+                    onChange={handleSelect}
+                    required
+                  >
+                    <option value="">Select Hotspot</option>
+                    {hotspot?.map((hotspot) => (
+                      <option key={hotspot.id} value={hotspot.name}>
+                        {hotspot.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </form>
 
