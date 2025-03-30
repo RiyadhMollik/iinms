@@ -68,7 +68,7 @@ const Dashboard = () => {
         This is where you can manage all your irrigation and nutrient requirements.
       </p>
       {
-        authUser.role == 'farmer' && <>
+        authUser?.role == 'farmer' && <>
           <Farmer />
           <div className="md:p-4 lg:p-4">
             <div className="flex flex-col lg:flex-row gap-5 mt-10 w-full">
@@ -91,16 +91,16 @@ const Dashboard = () => {
         </>
       }
       {
-        authUser.role == 'super admin' && <>
+        authUser?.role == 'super admin' && <>
           <SuperAdminDashboard />
         </>
       }
       {
-        authUser.role == 'admin' && <>
+        authUser?.role == 'admin' && <>
           <AdminDashboard />
         </>
       }
-      {(authUser.role === 'saao' || authUser.role === 'uao') && <SsDashboard />}
+      {(authUser?.role === 'saao' || authUser?.role === 'uao') && <SsDashboard />}
 
       
     </div>

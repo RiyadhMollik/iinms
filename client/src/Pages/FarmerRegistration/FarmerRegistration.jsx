@@ -81,7 +81,6 @@ const FarmerRegistration = () => {
   const fetchRegions = async () => {
     try {
       const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
-      console.log(response);
 
       setRegions(response.data.reverse());
     } catch (error) {
@@ -126,7 +125,6 @@ const FarmerRegistration = () => {
     name: "",
     fatherName: "",
     gender: "",
-    age: "",
     mobileNumber: "",
     whatsappNumber: "",
     imoNumber: "",
@@ -145,7 +143,7 @@ const FarmerRegistration = () => {
     division: "",
     region: "",
     coordinates: "",
-    hotspot: "",
+    hotspot: selectedHotspots,
     // Rice Crop Details
     farmSize: "",
     landType: "",
@@ -172,6 +170,8 @@ const FarmerRegistration = () => {
   const fetchFarmers = async () => {
     try {
       const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer");
+      console.log(response);
+      
       if (response.ok) {
         const data = await response.json();
         setFarmerList(data);
@@ -192,7 +192,6 @@ const FarmerRegistration = () => {
     { name: "Farmer Name", visible: true },
     { name: "Father Name", visible: true },
     { name: "Gender", visible: true },
-    { name: "Age", visible: true },
     { name: "Mobile Number", visible: true },
     { name: "Whatsapp Number", visible: true },
     { name: "Imo Number", visible: true },
@@ -279,6 +278,8 @@ const FarmerRegistration = () => {
         },
         body: JSON.stringify(formData),
       });
+      console.log(response);
+      
       if (response.ok) {
         const data = await response.json();
         setIsFarmerModalOpen(false);
@@ -390,7 +391,6 @@ const FarmerRegistration = () => {
                           {col.name === "Farmer Name" && farmer.name}
                           {col.name === "Father Name" && farmer.fatherName}
                           {col.name === "Gender" && farmer.gender}
-                          {col.name === "Age" && farmer.age}
                           {col.name === "Mobile Number" && farmer.mobileNumber}
                           {col.name === "Whatsapp Number" && farmer.whatsappNumber}
                           {col.name === "Imo Number" && farmer.imoNumber}
@@ -771,22 +771,70 @@ const FarmerRegistration = () => {
                     <option value="medium">Medium</option>
                     <option value="low">Low</option>
                   </select>
-                  <input
-                    type="text"
+                  <select
                     name="cultivationSeason"
-                    placeholder="Season of Cultivation"
                     className="border w-full p-2 rounded"
                     value={formData.cultivationSeason}
                     onChange={handleChange}
-                  />
-                  <input
-                    type="text"
+                    required
+                  >
+                    <option value="">Select Season</option>
+                    <option value="aus">Aus</option>
+                    <option value="aman">Aman</option>
+                    <option value="boro">Boro</option>
+                  </select>
+                  <select
                     name="majorCrops"
-                    placeholder="Major Crops"
                     className="border w-full p-2 rounded"
                     value={formData.majorCrops}
                     onChange={handleChange}
-                  />
+                  >
+                    <option value="">Select Major Crops</option>
+                    <option value="rice">Rice</option>
+                    <option value="wheat">Wheat</option>
+                    <option value="maize">Maize</option>
+                    <option value="vegetables">Vegetables</option>
+                    <option value="others">Others</option>
+                  </select>
+
+                  <select
+                    name="plantingMethod"
+                    className="border w-full p-2 rounded"
+                    value={formData.plantingMethod}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Planting Method</option>
+                    <option value="directSeeding">Direct Seeding</option>
+                    <option value="transplanting">Transplanting</option>
+                  </select>
+
+                  <select
+                    name="irrigationPractices"
+                    className="border w-full p-2 rounded"
+                    value={formData.irrigationPractices}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Irrigation Practices</option>
+                    <option value="AWD">AWD</option>
+                    <option value="continuousFlooding">Continuous Flooding</option>
+                    <option value="others">Others</option>
+                  </select>
+
+                  <select
+                    name="soilType"
+                    className="border w-full p-2 rounded"
+                    value={formData.soilType}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Soil Type</option>
+                    <option value="clay">Clay</option>
+                    <option value="clayLoam">Clay Loam</option>
+                    <option value="sandy">Sandy</option>
+                    <option value="silt">Silt</option>
+                    <option value="sandyLoam">Sandy Loam</option>
+                    <option value="others">Others</option>
+                  </select>
+
                   <input
                     type="text"
                     name="croppingPattern"
@@ -795,6 +843,7 @@ const FarmerRegistration = () => {
                     value={formData.croppingPattern}
                     onChange={handleChange}
                   />
+
                   <input
                     type="text"
                     name="riceVarieties"
@@ -803,38 +852,16 @@ const FarmerRegistration = () => {
                     value={formData.riceVarieties}
                     onChange={handleChange}
                   />
-                  <input
-                    type="text"
-                    name="plantingMethod"
-                    placeholder="Planting Method"
-                    className="border w-full p-2 rounded"
-                    value={formData.plantingMethod}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="irrigationPractices"
-                    placeholder="Irrigation Practices"
-                    className="border w-full p-2 rounded"
-                    value={formData.irrigationPractices}
-                    onChange={handleChange}
-                  />
+
                   <input
                     type="text"
                     name="fertilizerUsage"
-                    placeholder="Fertilizer Usage"
+                    placeholder="Fertilizer Usage (Urea)/season"
                     className="border w-full p-2 rounded"
                     value={formData.fertilizerUsage}
                     onChange={handleChange}
                   />
-                  <input
-                    type="text"
-                    name="soilType"
-                    placeholder="Soil Type"
-                    className="border w-full p-2 rounded"
-                    value={formData.soilType}
-                    onChange={handleChange}
-                  />
+
                   {/* <input
                     type="text"
                     name="avgProduction"

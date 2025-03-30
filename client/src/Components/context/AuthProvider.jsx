@@ -12,6 +12,7 @@ export const AuthContextProvider = ({ children }) => {
     const [isslider, setIsslider] = useState(false);
 
     useEffect(() => {
+
         const fetchUserData = async (userId) => {
             setLoadingUser(true);
             try {

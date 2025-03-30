@@ -19,14 +19,18 @@ const RainfallChart = () => {
   useEffect(() => {
     const fetchTemperatureData = async () => {
       try {
-        const response = await fetch("https://iinms.brri.gov.bd/api/weather/temperature?lat=21.1&lon=88.1");
+        const response = await fetch(
+          "https://iinms.brri.gov.bd/api/weather/temperature?lat=21.1&lon=88.1"
+        );
         const data = await response.json();
 
         if (data.temperature) {
-          const formattedData = Object.entries(data.temperature).map(([date, temp]) => ({
-            date: new Date(date).toLocaleDateString("en-US"),
-            Temperature: parseFloat(temp.toFixed(3)),
-          }));
+          const formattedData = Object.entries(data.temperature).map(
+            ([date, temp]) => ({
+              date: new Date(date).toLocaleDateString("en-US"),
+              Temperature: parseFloat(temp.toFixed(3)),
+            })
+          );
 
           setTemperatureData(formattedData);
         }
@@ -39,24 +43,44 @@ const RainfallChart = () => {
   }, []);
 
   return (
-    <div className="h-64">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={temperatureData}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Line
-            type="monotone"
-            dataKey="Temperature"
-            stroke="#f10c0c"
-            strokeWidth={2}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="flex flex-col md:flex-row lg:flex-row gap-5">
+      <div className="w-full md:w-2/3 lg:w-2/3  mb-6">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={temperatureData}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="Temperature"
+              stroke="#f10c0c"
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="w-full md:w-1/3 lg:w-1/3 overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="py-2 px-4 border">Date</th>
+              <th className="py-2 px-4 border">Temperature (°C)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {temperatureData.map((entry, index) => (
+              <tr key={index} className="border">
+                <td className="py-2 px-4 border">{entry.date}</td>
+                <td className="py-2 px-4 border">{entry.Temperature}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
@@ -66,14 +90,18 @@ const SoilChart = () => {
   useEffect(() => {
     const fetchSoilMoistureData = async () => {
       try {
-        const response = await fetch("https://iinms.brri.gov.bd/api/weather/soil-moisture?lat=21.1&lon=88.1");
+        const response = await fetch(
+          "https://iinms.brri.gov.bd/api/weather/soil-moisture?lat=21.1&lon=88.1"
+        );
         const data = await response.json();
 
         if (data.soil_moisture) {
-          const formattedData = Object.entries(data.soil_moisture).map(([date, moisture]) => ({
-            date: new Date(date).toLocaleDateString("en-US"),
-            SoilMoisture: parseFloat(moisture.toFixed(3)),
-          }));
+          const formattedData = Object.entries(data.soil_moisture).map(
+            ([date, moisture]) => ({
+              date: new Date(date).toLocaleDateString("en-US"),
+              SoilMoisture: parseFloat(moisture.toFixed(3)),
+            })
+          );
 
           setSoilMoistureData(formattedData);
         }
@@ -86,38 +114,61 @@ const SoilChart = () => {
   }, []);
 
   return (
-    <div className="h-64">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={soilMoistureData}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Line
-            type="monotone"
-            dataKey="SoilMoisture"
-            stroke="#b5ae9b"
-            strokeWidth={2}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="flex flex-col md:flex-row lg:flex-row w-full p-4 gap-5">
+      <div className="w-full md:w-2/3 lg:w-2/3  mb-6">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={soilMoistureData}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="SoilMoisture"
+              stroke="#b5ae9b"
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="w-full md:w-1/3 lg:w-1/3 overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="py-2 px-4 border">Date</th>
+              <th className="py-2 px-4 border">Soil Moisture (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {soilMoistureData.map((entry, index) => (
+              <tr key={index} className="border">
+                <td className="py-2 px-4 border">{entry.date}</td>
+                <td className="py-2 px-4 border">{entry.SoilMoisture}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
+
 const Sunshine = () => {
   const [sunshineData, setSunshineData] = useState([]);
 
   useEffect(() => {
     const fetchSunshineData = async () => {
       try {
-        const response = await fetch("https://iinms.brri.gov.bd/api/sunshine?lat=22.1785&lon=90.7101");
+        const response = await fetch(
+          "https://iinms.brri.gov.bd/api/sunshine?lat=22.1785&lon=90.7101"
+        );
         const data = await response.json();
 
         if (data && data.length > 0) {
-          const formattedData = data.map(item => ({
+          const formattedData = data.map((item) => ({
             date: `${item.year}-${item.month}-${item.day}`,
             predictedSunshine: item.predictedSunshine,
           }));
@@ -133,27 +184,48 @@ const Sunshine = () => {
   }, []);
 
   return (
-    <div className="h-64">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart
-          data={sunshineData}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Line
-            type="monotone"
-            dataKey="predictedSunshine"
-            stroke="#8884d8"
-            strokeWidth={2}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="flex flex-col md:flex-row lg:flex-row w-full p-4 gap-5">
+      <div className="w-full md:w-2/3 lg:w-2/3 mb-6">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={sunshineData}
+            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="predictedSunshine"
+              stroke="#8884d8"
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="w-full md:w-1/3 lg:w-1/3 overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="py-2 px-4 border">Date</th>
+              <th className="py-2 px-4 border">Predicted Sunshine (hours)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sunshineData.map((entry, index) => (
+              <tr key={index} className="border">
+                <td className="py-2 px-4 border">{entry.date}</td>
+                <td className="py-2 px-4 border">{entry.predictedSunshine}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
+
 
 const HumidityChart = () => {
   const [humidityData, setHumidityData] = useState([]);
@@ -179,16 +251,36 @@ const HumidityChart = () => {
   }, []);
 
   return (
-    <div className="h-64">
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={humidityData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="Humidity" stroke="#0cebfb" strokeWidth={2} />
-        </LineChart>
-      </ResponsiveContainer>
+    <div className="flex flex-col md:flex-row lg:flex-row w-full p-4 gap-5">
+      <div className="w-full md:w-2/3 lg:w-2/3 mb-6">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={humidityData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="Humidity" stroke="#0cebfb" strokeWidth={2} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="w-full md:w-1/3 lg:w-1/3 overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="py-2 px-4 border">Date</th>
+              <th className="py-2 px-4 border">Humidity (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {humidityData.map((entry, index) => (
+              <tr key={index} className="border">
+                <td className="py-2 px-4 border">{entry.date}</td>
+                <td className="py-2 px-4 border">{entry.Humidity}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
@@ -241,7 +333,7 @@ function WeatherForecast() {
     };
 
     fetchRegion();
-  }, [ selectedHotspot]);
+  }, [selectedHotspot]);
 
   useEffect(() => {
     if (!selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls 
@@ -262,7 +354,7 @@ function WeatherForecast() {
     };
 
     fetchDivision();
-  }, [selectedRegion,  selectedHotspot]);
+  }, [selectedRegion, selectedHotspot]);
 
   useEffect(() => {
     if (!selectedDivision || !selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls
@@ -283,7 +375,7 @@ function WeatherForecast() {
     };
 
     fetchDistrict();
-  }, [selectedDivision, selectedRegion,  selectedHotspot]);
+  }, [selectedDivision, selectedRegion, selectedHotspot]);
 
   useEffect(() => {
     if (!selectedDistrict || !selectedDivision || !selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls
@@ -304,7 +396,7 @@ function WeatherForecast() {
     };
 
     fetchUpazila();
-  }, [selectedDistrict, selectedDivision, selectedRegion,  selectedHotspot]);
+  }, [selectedDistrict, selectedDivision, selectedRegion, selectedHotspot]);
 
   useEffect(() => {
     if (!selectedUpazila || !selectedDistrict || !selectedDivision || !selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls
@@ -323,7 +415,7 @@ function WeatherForecast() {
     };
 
     fetchUnion();
-  }, [selectedUpazila, selectedDistrict, selectedDivision, selectedRegion,  selectedHotspot]);
+  }, [selectedUpazila, selectedDistrict, selectedDivision, selectedRegion, selectedHotspot]);
   useEffect(() => {
     if (!selectedUnion || !selectedUpazila || !selectedDistrict || !selectedDivision || !selectedRegion || !selectedHotspot) return; // Prevent unnecessary API calls
 
@@ -341,7 +433,7 @@ function WeatherForecast() {
     };
 
     fetchBlock();
-  }, [selectedUnion, selectedUpazila, selectedDistrict, selectedDivision, selectedRegion,  selectedHotspot]);
+  }, [selectedUnion, selectedUpazila, selectedDistrict, selectedDivision, selectedRegion, selectedHotspot]);
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 min-w-full">
