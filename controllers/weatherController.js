@@ -87,7 +87,7 @@ const getWeatherDataByMetric = async (req, res, metric) => {
 
         // Check if data for today and the requested metric is already cached and is not expired
         if (cache[today] && cache[today][metric] && (Date.now() - cache[today][metric].timestamp < CACHE_EXPIRATION_TIME)) {
-            console.log(`Returning cached data for ${metric}:`, today);
+            console.log(`Returning cached data for ${cache[today][metric].data}:`, today);
             return res.json(cache[today][metric].data);
         }
 
