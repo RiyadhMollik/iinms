@@ -68,12 +68,22 @@ function getLatestFilePath() {
     return null; // No file found in the last 30 days
 }
 // Function to get weather data by metric
+const cache = {}; // Simple in-memory cache object
+
 const getWeatherDataByMetric = async (req, res, metric) => {
     try {
         const { lat, lon } = req.query;
 
         if (!lat || !lon) {
             return res.status(400).json({ error: "Latitude and longitude are required." });
+        }
+
+        const today = new Date().toISOString().split('T')[0]; // Get the current date (YYYY-MM-DD)
+
+        // Check if data for today is already cached
+        if (cache[today]) {
+            console.log('Returning cached data for:', today);
+            return res.json(cache[today]);
         }
 
         const filePath = getLatestFilePath();
@@ -122,15 +132,21 @@ const getWeatherDataByMetric = async (req, res, metric) => {
                 : 0;
         });
 
-        res.json({
+        const result = {
             location: nearestLocation,
             [metric]: weatherSummary
-        });
+        };
+
+        // Cache the result for today
+        cache[today] = result;
+
+        res.json(result);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
 
 // Controllers for each metric
 export const getRainfall = async (req, res) => getWeatherDataByMetric(req, res, "rainfall");
