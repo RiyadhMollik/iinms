@@ -13,8 +13,8 @@ const ADRegistration = () => {
   const [regions, setRegions] = useState([]);
   const [hotspot, setHotspot] = useState([]);
   const [selectedHotspots, setSelectedHotspots] = useState([]);
-  const [isEdit , setIsEdit] = useState(false);
-  const [selectedId , setSelectedId] = useState(null);
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
   const handleUseMyLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -79,18 +79,6 @@ const ADRegistration = () => {
     region: "",
     coordinates: "",
     hotspot: selectedHotspots,
-    // Rice Crop Details
-    // farmSize: "",
-    // landType: "",
-    // cultivationSeason: "",
-    // majorCrops: "",
-    // croppingPattern: "",
-    // riceVarieties: "",
-    // plantingMethod: "",
-    // irrigationPractices: "",
-    // fertilizerUsage: "",
-    // soilType: "",
-    // avgProduction: "",
     role: "AD",
   });
   const fetchADs = async () => {
@@ -127,18 +115,6 @@ const ADRegistration = () => {
     { name: "Region", visible: true },
     { name: "Coordinates", visible: true },
     { name: "Hotspot", visible: true },
-    // Rice Crop Details
-    // { name: "Farm Size", visible: true },
-    // { name: "Land Type", visible: true },
-    // { name: "Cultivation Season", visible: true },
-    // { name: "Major Crops", visible: true },
-    // { name: "Cropping Pattern", visible: true },
-    // { name: "Rice Varieties", visible: true },
-    // { name: "Planting Method", visible: true },
-    // { name: "Irrigation Practices", visible: true },
-    // { name: "Fertilizer Usage", visible: true },
-    // { name: "Soil Type", visible: true },
-    // { name: "Avg Production", visible: true },
     { name: "Action", visible: true },
 
   ];
@@ -180,20 +156,43 @@ const ADRegistration = () => {
   };
   const registerAD = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
-        method: "POST",
+      const method = isEdit ? "PUT" : "POST";
+      const url = isEdit
+        ? `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`
+        : "https://iinms.brri.gov.bd/api/farmers/farmers";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
+
       if (response.ok) {
         const data = await response.json();
         setIsADModalOpen(false);
-        console.log("AD registered successfully:", data);
-        fetchADs();
+        setIsEdit(false); // reset edit mode
+        console.log("SAAO saved successfully:", data);
+        fetchADs(); // Refresh the list
       } else {
-        throw new Error("Failed to register AD");
+        throw new Error("Failed to save SAAO");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const handleDeleteSAAO = async (id) => {
+    try {
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        console.log("SAAO deleted successfully");
+        fetchSAAOs(); // Refresh the list
+      } else {
+        throw new Error("Failed to delete SAAO");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -212,15 +211,43 @@ const ADRegistration = () => {
     const selectedValue = e.target.value;
     // Check if the value is already selected
     if (!selectedHotspots.includes(selectedValue)) {
-      setSelectedHotspots([...selectedHotspots, selectedValue]);
+      const updatedHotspots = [...selectedHotspots, selectedValue];
+      setSelectedHotspots(updatedHotspots);
+      setFormData({
+        ...formData,
+        hotspot: updatedHotspots, // Update the formData with the new hotspots list
+      });
     }
-  };
+  }
 
   const handleDelete = (valueToDelete) => {
     // Remove selected value
     const updatedHotspot = selectedHotspots.filter((value) => value !== valueToDelete);
     setSelectedHotspots(updatedHotspot);
   };
+  const handleEdit = (SAAO) => {
+    setIsEdit(true);
+    setIsADModalOpen(true);
+    setSelectedHotspots(SAAO.hotspot || []);
+    setSelectedId(SAAO.id);
+    setFormData({
+      name: SAAO.name || "",
+      fatherName: SAAO.fatherName || "",
+      gender: SAAO.gender || "",
+      mobileNumber: SAAO.mobileNumber || "",
+      whatsappNumber: SAAO.whatsappNumber || "",
+      imoNumber: SAAO.imoNumber || "",
+      messengerId: SAAO.messengerId || "",
+      email: SAAO.email || "",
+      alternateContact: SAAO.alternateContact || "",
+      nationalId: SAAO.nationalId || "",
+      region: SAAO.region || "",
+      coordinates: SAAO.coordinates || "",
+      hotspot: SAAO.hotspot || [],
+      role: "AD",
+    });
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-100">
 
@@ -290,7 +317,7 @@ const ADRegistration = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredADs.slice(0, rowsPerPage).map((AD , index) => (
+                {filteredADs.slice(0, rowsPerPage).map((AD, index) => (
                   <tr key={AD.id}>
                     {columns
                       .filter((col) => col.visible)
@@ -311,13 +338,13 @@ const ADRegistration = () => {
                           {col.name === "Agriculture Card" && AD.agrilCard}
                           {col.name === "Region" && AD.region}
                           {col.name === "Coordinates" && AD.coordinates}
-                          {col.name === "Hotspot" && AD.hotspot}
+                          {col.name === "Hotspot" && AD.hotspot && AD.hotspot.join(", ")}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(SAAO)}>
+                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(AD)}>
                                 <FaEdit />
                               </button>
-                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(SAAO.id)}>
+                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(AD.id)}>
                                 <FaTrash />
                               </button>
                             </div>

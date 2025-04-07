@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { MdGpsFixed } from "react-icons/md";
 import axios from "axios";
 const FarmerRegistration = () => {
@@ -17,6 +17,8 @@ const FarmerRegistration = () => {
   const [upazilas, setUpazilas] = useState([]);
   const [unions, setUnions] = useState([]);
   const [block, setBlock] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
   const fetchBlocks = async () => {
     try {
       const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks");
@@ -171,9 +173,11 @@ const FarmerRegistration = () => {
     try {
       const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer");
       console.log(response);
-      
+
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
+        
         setFarmerList(data);
       } else {
         throw new Error("Failed to fetch farmers");
@@ -222,16 +226,7 @@ const FarmerRegistration = () => {
     { name: "Irrigation Practices", visible: true },
     { name: "Fertilizer Usage", visible: true },
     { name: "Soil Type", visible: true },
-    // { name: "Avg Production", visible: true },
-    // Stage-wise Crop Management
-    // { name: "Planting Date", visible: true },
-    // { name: "Seedling Age", visible: true },
-    // { name: "Transplantation Date", visible: true },
-    // { name: "Watering Stages", visible: true },
-    // { name: "Harvest Date", visible: true },
-    // { name: "Pest Diseases", visible: true },
-    // { name: "Weed Management", visible: true },
-    // { name: "Action", visible: true },
+    { name: "Action", visible: true },
   ];
 
 
@@ -271,22 +266,43 @@ const FarmerRegistration = () => {
   };
   const registerFarmer = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
-        method: "POST",
+      const method = isEdit ? "PUT" : "POST";
+      const url = isEdit
+        ? `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`
+        : "https://iinms.brri.gov.bd/api/farmers/farmers";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-      console.log(response);
-      
+
       if (response.ok) {
         const data = await response.json();
         setIsFarmerModalOpen(false);
-        console.log("Farmer registered successfully:", data);
-        fetchFarmers();
+        setIsEdit(false); // reset edit mode
+        console.log("SAAO saved successfully:", data);
+        fetchFarmers(); // Refresh the list
       } else {
-        throw new Error("Failed to register farmer");
+        throw new Error("Failed to save SAAO");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const handleDeleteSAAO = async (id) => {
+    try {
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        console.log("SAAO deleted successfully");
+        fetchFarmers(); // Refresh the list
+      } else {
+        throw new Error("Failed to delete SAAO");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -304,15 +320,74 @@ const FarmerRegistration = () => {
     const selectedValue = e.target.value;
     // Check if the value is already selected
     if (!selectedHotspots.includes(selectedValue)) {
-      setSelectedHotspots([...selectedHotspots, selectedValue]);
+      const updatedHotspots = [...selectedHotspots, selectedValue];
+      setSelectedHotspots(updatedHotspots);
+      setFormData({
+        ...formData,
+        hotspot: updatedHotspots, // Update the formData with the new hotspots list
+      });
     }
-  };
+  }
 
   const handleDelete = (valueToDelete) => {
     // Remove selected value
     const updatedHotspot = selectedHotspots.filter((value) => value !== valueToDelete);
     setSelectedHotspots(updatedHotspot);
   };
+  const handleEdit = (SAAO) => {
+    setIsEdit(true);
+    setIsFarmerModalOpen(true);
+    setSelectedHotspots(SAAO.hotspot || []);
+    setSelectedId(SAAO.id);
+
+    setFormData({
+      name: SAAO.name || "",
+      fatherName: SAAO.fatherName || "",
+      gender: SAAO.gender || "",
+      mobileNumber: SAAO.mobileNumber || "",
+      whatsappNumber: SAAO.whatsappNumber || "",
+      imoNumber: SAAO.imoNumber || "",
+      messengerId: SAAO.messengerId || "",
+      email: SAAO.email || "",
+      alternateContact: SAAO.alternateContact || "",
+      nationalId: SAAO.nationalId || "",
+      agrilCard: SAAO.agrilCard || "",
+      educationStatus: SAAO.educationStatus || "",
+      // Location
+      village: SAAO.village || "",
+      block: SAAO.block || "",
+      union: SAAO.union || "",
+      upazila: SAAO.upazila || "",
+      district: SAAO.district || "",
+      division: SAAO.division || "",
+      region: SAAO.region || "",
+      coordinates: SAAO.coordinates || "",
+      hotspot: SAAO.hotspot || [],
+      // Rice Crop Details
+      farmSize: SAAO.farmSize || "",
+      landType: SAAO.landType || "",
+      cultivationSeason: SAAO.cultivationSeason || "",
+      majorCrops: SAAO.majorCrops || "",
+      croppingPattern: SAAO.croppingPattern || "",
+      riceVarieties: SAAO.riceVarieties || "",
+      plantingMethod: SAAO.plantingMethod || "",
+      irrigationPractices: SAAO.irrigationPractices || "",
+      fertilizerUsage: SAAO.fertilizerUsage || "",
+      soilType: SAAO.soilType || "",
+      avgProduction: SAAO.avgProduction || "",
+      // Stage-wise Crop Management
+      plantingDate: SAAO.plantingDate || "",
+      seedlingAge: SAAO.seedlingAge || "",
+      transplantationDate: SAAO.transplantationDate || "",
+      wateringStages: SAAO.wateringStages || "",
+      harvestDate: SAAO.harvestDate || "",
+      pestDiseases: SAAO.pestDiseases || "",
+      weedManagement: SAAO.weedManagement || "",
+      role: "farmer",
+      eduOther: SAAO.eduOther || "",
+    });
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-100">
 
@@ -351,6 +426,8 @@ const FarmerRegistration = () => {
                 <option value={10}>Show 10</option>
                 <option value={25}>Show 25</option>
                 <option value={50}>Show 50</option>
+                <option value={100}>Show 100</option>
+                <option value={500}>Show 500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
@@ -408,7 +485,7 @@ const FarmerRegistration = () => {
                           {col.name === "Division" && farmer.division}
                           {col.name === "Region" && farmer.region}
                           {col.name === "Coordinates" && farmer.coordinates}
-                          {col.name === "Hotspot" && farmer.hotspot}
+                          {col.name === "Hotspot" && farmer.hotspot && farmer.hotspot.join(", ")}
                           {col.name === "Farm Size" && farmer.farmSize}
                           {col.name === "Land Type" && farmer.landType}
                           {col.name === "Cultivation Season" && farmer.cultivationSeason}
@@ -419,16 +496,15 @@ const FarmerRegistration = () => {
                           {col.name === "Irrigation Practices" && farmer.irrigationPractices}
                           {col.name === "Fertilizer Usage" && farmer.fertilizerUsage}
                           {col.name === "Soil Type" && farmer.soilType}
-                          {/* {col.name === "Avg Production" && farmer.avgProduction} */}
-                          {/* {col.name === "Planting Date" && new Date(farmer.plantingDate).toLocaleDateString()}
-                          {col.name === "Seedling Age" && farmer.seedlingAge}
-                          {col.name === "Transplantation Date" && new Date(farmer.transplantationDate).toLocaleDateString()}
-                          {col.name === "Watering Stages" && farmer.wateringStages}
-                          {col.name === "Harvest Date" && new Date(farmer.harvestDate).toLocaleDateString()}
-                          {col.name === "Pest Diseases" && farmer.pestDiseases}
-                          {col.name === "Weed Management" && farmer.weedManagement} */}
                           {col.name === "Action" && (
-                            <i className="fas fa-ellipsis-h text-gray-500"></i>
+                            <div className="flex space-x-2">
+                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(farmer)}>
+                                <FaEdit />
+                              </button>
+                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(farmer.id)}>
+                                <FaTrash />
+                              </button>
+                            </div>
                           )}
                         </td>
                       ))}

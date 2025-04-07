@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { MdGpsFixed } from "react-icons/md";
 import axios from "axios";
 
@@ -15,7 +15,8 @@ const AdminRegistration = () => {
   const [selectedHotspots, setSelectedHotspots] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [divisions, setDivisions] = useState([]);
-
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
   useEffect(() => {
     fetchDivisions();
   }, []);
@@ -88,19 +89,7 @@ const AdminRegistration = () => {
     division: "",
     region: "",
     coordinates: "",
-    hotspot:selectedHotspots,
-    // Rice Crop Details
-    // farmSize: "",
-    // landType: "",
-    // cultivationSeason: "",
-    // majorCrops: "",
-    // croppingPattern: "",
-    // riceVarieties: "",
-    // plantingMethod: "",
-    // irrigationPractices: "",
-    // fertilizerUsage: "",
-    // soilType: "",
-    // avgProduction: "",
+    hotspot: selectedHotspots,
     role: "Admin",
   });
   const handleUseMyLocation = () => {
@@ -156,18 +145,7 @@ const AdminRegistration = () => {
     { name: "Region", visible: true },
     { name: "Coordinates", visible: true },
     { name: "Hotspot", visible: true },
-    // // Rice Crop Details
-    // { name: "Farm Size", visible: true },
-    // { name: "Land Type", visible: true },
-    // { name: "Cultivation Season", visible: true },
-    // { name: "Major Crops", visible: true },
-    // { name: "Cropping Pattern", visible: true },
-    // { name: "Rice Varieties", visible: true },
-    // { name: "Planting Method", visible: true },
-    // { name: "Irrigation Practices", visible: true },
-    // { name: "Fertilizer Usage", visible: true },
-    // { name: "Soil Type", visible: true },
-    // { name: "Avg Production", visible: true },
+    { name: "Action", visible: true },
   ];
 
 
@@ -207,20 +185,43 @@ const AdminRegistration = () => {
   };
   const registerAdmin = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
-        method: "POST",
+      const method = isEdit ? "PUT" : "POST";
+      const url = isEdit
+        ? `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`
+        : "https://iinms.brri.gov.bd/api/farmers/farmers";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
+
       if (response.ok) {
         const data = await response.json();
         setIsAdminModalOpen(false);
-        console.log("Admin registered successfully:", data);
-        fetchAdmins();
+        setIsEdit(false); // reset edit mode
+        console.log("SAAO saved successfully:", data);
+        fetchAdmins(); // Refresh the list
       } else {
-        throw new Error("Failed to register Admin");
+        throw new Error("Failed to save SAAO");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const handleDeleteSAAO = async (id) => {
+    try {
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        console.log("SAAO deleted successfully");
+        fetchAdmins(); // Refresh the list
+      } else {
+        throw new Error("Failed to delete SAAO");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -238,15 +239,47 @@ const AdminRegistration = () => {
     const selectedValue = e.target.value;
     // Check if the value is already selected
     if (!selectedHotspots.includes(selectedValue)) {
-      setSelectedHotspots([...selectedHotspots, selectedValue]);
+      const updatedHotspots = [...selectedHotspots, selectedValue];
+      setSelectedHotspots(updatedHotspots);
+      setFormData({
+        ...formData,
+        hotspot: updatedHotspots, // Update the formData with the new hotspots list
+      });
     }
-  };
+  }
 
   const handleDelete = (valueToDelete) => {
     // Remove selected value
     const updatedHotspot = selectedHotspots.filter((value) => value !== valueToDelete);
     setSelectedHotspots(updatedHotspot);
   };
+
+  const handleEdit = (SAAO) => {
+    setIsEdit(true);
+    setIsAdminModalOpen(true);
+    setSelectedHotspots(SAAO.hotspot || []);
+    setSelectedId(SAAO.id);
+
+    setFormData({
+      name: SAAO.name || "",
+      fatherName: SAAO.fatherName || "",
+      gender: SAAO.gender || "",
+      mobileNumber: SAAO.mobileNumber || "",
+      whatsappNumber: SAAO.whatsappNumber || "",
+      imoNumber: SAAO.imoNumber || "",
+      messengerId: SAAO.messengerId || "",
+      email: SAAO.email || "",
+      alternateContact: SAAO.alternateContact || "",
+      nationalId: SAAO.nationalId || "",
+      district: SAAO.district || "",
+      division: SAAO.division || "",
+      region: SAAO.region || "",
+      coordinates: SAAO.coordinates || "",
+      hotspot: SAAO.hotspot || [],
+      role: "Admin",
+    });
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-100">
 
@@ -285,6 +318,8 @@ const AdminRegistration = () => {
                 <option value={10}>Show 10</option>
                 <option value={25}>Show 25</option>
                 <option value={50}>Show 50</option>
+                <option value={100}>Show 100</option>
+                <option value={500}>Show 500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
@@ -314,7 +349,7 @@ const AdminRegistration = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredAdmins.slice(0, rowsPerPage).map((Admin , index) => (
+                {filteredAdmins.slice(0, rowsPerPage).map((Admin, index) => (
                   <tr key={Admin.id}>
                     {columns
                       .filter((col) => col.visible)
@@ -338,9 +373,16 @@ const AdminRegistration = () => {
                           {col.name === "Division" && Admin.division}
                           {col.name === "Region" && Admin.region}
                           {col.name === "Coordinates" && Admin.coordinates}
-                          {col.name === "Hotspot" && Admin.hotspot}
+                          {col.name === "Hotspot" && Admin.hotspot && Admin.hotspot.join(", ")}
                           {col.name === "Action" && (
-                            <i className="fas fa-ellipsis-h text-gray-500"></i>
+                            <div className="flex space-x-2">
+                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(Admin)}>
+                                <FaEdit />
+                              </button>
+                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(Admin.id)}>
+                                <FaTrash />
+                              </button>
+                            </div>
                           )}
                         </td>
                       ))}

@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
-import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle } from "react-icons/fa";
-import { IoIosAddCircle } from "react-icons/io";
+import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle, FaPumpSoap, FaSeedling, FaCloud, FaLeaf, FaTint, FaGasPump } from "react-icons/fa";
+import { IoIosAddCircle, IoMdSwitch } from "react-icons/io";
 import logo from "../../assets/brri.png";
 import useLogout from "../../Hook/useLogout";
 import { AuthContext } from "../context/AuthProvider";
@@ -55,57 +55,42 @@ const Sidebar = () => {
             <li><Link to="/farmer-registration" className="hover:text-green-700">Farmer</Link></li>
           </ul>
         </div>
-       
         <div>
           <Link to="/water-lavel">
             <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/water-lavel") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-              <FaCloudSun className="mr-3" /> Water Level
+              <FaTint className="mr-3" /> Water Level
             </button>
           </Link>
         </div>
         <div>
           <Link to="">
             <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/iiii") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-              <FaCloudSun className="mr-3" />Nutrient Status
+              <FaLeaf className="mr-3" /> Nutrient Status
             </button>
           </Link>
         </div>
         <div>
           <Link to="/weather-forecast">
             <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/weather-forecast") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-              <FaCloudSun className="mr-3" /> Weather Forecast
+              <FaCloud className="mr-3" /> Weather Forecast
             </button>
           </Link>
         </div>
         <div>
           <Link to="/crop-water">
-            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/about") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-              <FaWater className="mr-3" /> Crop-Water Balance
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/crop-water") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <FaSeedling className="mr-3" /> Crop-Water Balance
             </button>
           </Link>
         </div>
-        {/* <div>
-          <button
-            className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/crop-water") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
-            onClick={() => toggleMenu("crop-water")}
-          >
-            <span className="flex items-center"> Crop-Water Balance</span>
-            <IoIosAddCircle />
-          </button>
-          <ul className={`mt-2 ${openMenus["crop-water"] ? "block" : "hidden"} pl-4 space-y-1`}>
-            <li><Link to="/potentiometer" className="hover:text-green-700">Potentiometer</Link></li>
-            <li><Link to="/laser" className="hover:text-green-700">Laser</Link></li>
-            <li><Link to="/ultra-sound" className="hover:text-green-700">Ultra Sound</Link></li>
-          </ul>
-        </div> */}
-
         <div>
           <Link to="/pump-control">
             <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/pump-control") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-              <FaWater className="mr-3" /> Pump Control
+              <IoMdSwitch  className="mr-3 " /> Pump Control
             </button>
           </Link>
         </div>
+
         <div>
           <button
             className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/feedback") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}

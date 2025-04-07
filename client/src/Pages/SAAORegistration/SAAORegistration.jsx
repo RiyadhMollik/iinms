@@ -419,7 +419,7 @@ const SAAORegistration = () => {
                           {col.name === "Division" && SAAO.division}
                           {col.name === "Region" && SAAO.region}
                           {col.name === "Coordinates" && SAAO.coordinates}
-                          {col.name === "Hotspot" && SAAO.hotspot}
+                          {col.name === "Hotspot" && SAAO.hotspot && SAAO.hotspot.join(", ")}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
                               <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(SAAO)}>

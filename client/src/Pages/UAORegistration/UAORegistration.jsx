@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { MdGpsFixed } from "react-icons/md";
 import axios from "axios";
 const UAORegistration = () => {
@@ -15,7 +15,8 @@ const UAORegistration = () => {
   const [districts, setDistricts] = useState([]);
   const [divisions, setDivisions] = useState([]);
   const [upazilas, setUpazilas] = useState([]);
-
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
   useEffect(() => {
     fetchUpazilas();
   }, []);
@@ -118,26 +119,6 @@ const UAORegistration = () => {
     region: "",
     coordinates: "",
     hotspot: selectedHotspots,
-    // Rice Crop Details
-    // farmSize: "",
-    // landType: "",
-    // cultivationSeason: "",
-    // majorCrops: "",
-    // croppingPattern: "",
-    // riceVarieties: "",
-    // plantingMethod: "",
-    // irrigationPractices: "",
-    // fertilizerUsage: "",
-    // soilType: "",
-    // avgProduction: "",
-    // // Stage-wise Crop Management
-    // plantingDate: "",
-    // seedlingAge: "",
-    // transplantationDate: "",
-    // wateringStages: "",
-    // harvestDate: "",
-    // pestDiseases: "",
-    // weedManagement: "",
     role: "UAO",
   });
   const fetchUAOs = async () => {
@@ -177,26 +158,6 @@ const UAORegistration = () => {
     { name: "Region", visible: true },
     { name: "Coordinates", visible: true },
     { name: "Hotspot", visible: true },
-    // Rice Crop Details
-    // { name: "Farm Size", visible: true },
-    // { name: "Land Type", visible: true },
-    // { name: "Cultivation Season", visible: true },
-    // { name: "Major Crops", visible: true },
-    // { name: "Cropping Pattern", visible: true },
-    // { name: "Rice Varieties", visible: true },
-    // { name: "Planting Method", visible: true },
-    // { name: "Irrigation Practices", visible: true },
-    // { name: "Fertilizer Usage", visible: true },
-    // { name: "Soil Type", visible: true },
-    // { name: "Avg Production", visible: true },
-    // // Stage-wise Crop Management
-    // { name: "Planting Date", visible: true },
-    // { name: "Seedling Age", visible: true },
-    // { name: "Transplantation Date", visible: true },
-    // { name: "Watering Stages", visible: true },
-    // { name: "Harvest Date", visible: true },
-    // { name: "Pest Diseases", visible: true },
-    // { name: "Weed Management", visible: true },
     { name: "Action", visible: true },
   ];
 
@@ -237,20 +198,43 @@ const UAORegistration = () => {
   };
   const registerUAO = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
-        method: "POST",
+      const method = isEdit ? "PUT" : "POST";
+      const url = isEdit
+        ? `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`
+        : "https://iinms.brri.gov.bd/api/farmers/farmers";
+
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
+
       if (response.ok) {
         const data = await response.json();
         setIsUAOModalOpen(false);
-        console.log("UAO registered successfully:", data);
-        fetchUAOs();
+        setIsEdit(false); // reset edit mode
+        console.log("SAAO saved successfully:", data);
+        fetchUAOs(); // Refresh the list
       } else {
-        throw new Error("Failed to register UAO");
+        throw new Error("Failed to save SAAO");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const handleDeleteSAAO = async (id) => {
+    try {
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        console.log("SAAO deleted successfully");
+        fetchUAOs(); // Refresh the list
+      } else {
+        throw new Error("Failed to delete SAAO");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -268,15 +252,47 @@ const UAORegistration = () => {
     const selectedValue = e.target.value;
     // Check if the value is already selected
     if (!selectedHotspots.includes(selectedValue)) {
-      setSelectedHotspots([...selectedHotspots, selectedValue]);
+      const updatedHotspots = [...selectedHotspots, selectedValue];
+      setSelectedHotspots(updatedHotspots);
+      setFormData({
+        ...formData,
+        hotspot: updatedHotspots, // Update the formData with the new hotspots list
+      });
     }
-  };
+  }
 
   const handleDelete = (valueToDelete) => {
     // Remove selected value
     const updatedHotspot = selectedHotspots.filter((value) => value !== valueToDelete);
     setSelectedHotspots(updatedHotspot);
   };
+  const handleEdit = (SAAO) => {
+    setIsEdit(true);
+    setIsUAOModalOpen(true);
+    setSelectedHotspots(SAAO.hotspot || []);
+    setSelectedId(SAAO.id);
+
+    setFormData({
+      name: SAAO.name || "",
+      fatherName: SAAO.fatherName || "",
+      gender: SAAO.gender || "",
+      mobileNumber: SAAO.mobileNumber || "",
+      whatsappNumber: SAAO.whatsappNumber || "",
+      imoNumber: SAAO.imoNumber || "",
+      messengerId: SAAO.messengerId || "",
+      email: SAAO.email || "",
+      alternateContact: SAAO.alternateContact || "",
+      nationalId: SAAO.nationalId || "",
+      upazila: SAAO.upazila || "",
+      district: SAAO.district || "",
+      division: SAAO.division || "",
+      region: SAAO.region || "",
+      coordinates: SAAO.coordinates || "",
+      hotspot: SAAO.hotspot || [],
+      role: "UAO",
+    });
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-100">
 
@@ -344,7 +360,7 @@ const UAORegistration = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredUAOs.slice(0, rowsPerPage).map((UAO , index) => (
+                {filteredUAOs.slice(0, rowsPerPage).map((UAO, index) => (
                   <tr key={UAO.id}>
                     {columns
                       .filter((col) => col.visible)
@@ -370,27 +386,16 @@ const UAORegistration = () => {
                           {col.name === "Division" && UAO.division}
                           {col.name === "Region" && UAO.region}
                           {col.name === "Coordinates" && UAO.coordinates}
-                          {col.name === "Hotspot" && UAO.hotspot}
-                          {/* {col.name === "Farm Size" && UAO.farmSize}
-                          {col.name === "Land Type" && UAO.landType}
-                          {col.name === "Cultivation Season" && UAO.cultivationSeason}
-                          {col.name === "Major Crops" && UAO.majorCrops}
-                          {col.name === "Cropping Pattern" && UAO.croppingPattern}
-                          {col.name === "Rice Varieties" && UAO.riceVarieties}
-                          {col.name === "Planting Method" && UAO.plantingMethod}
-                          {col.name === "Irrigation Practices" && UAO.irrigationPractices}
-                          {col.name === "Fertilizer Usage" && UAO.fertilizerUsage}
-                          {col.name === "Soil Type" && UAO.soilType}
-                          {col.name === "Avg Production" && UAO.avgProduction}
-                          {col.name === "Planting Date" && new Date(UAO.plantingDate).toLocaleDateString()}
-                          {col.name === "Seedling Age" && UAO.seedlingAge}
-                          {col.name === "Transplantation Date" && new Date(UAO.transplantationDate).toLocaleDateString()}
-                          {col.name === "Watering Stages" && UAO.wateringStages}
-                          {col.name === "Harvest Date" && new Date(UAO.harvestDate).toLocaleDateString()}
-                          {col.name === "Pest Diseases" && UAO.pestDiseases}
-                          {col.name === "Weed Management" && UAO.weedManagement} */}
+                          {col.name === "Hotspot" && UAO.hotspot && UAO.hotspot.join(", ")}
                           {col.name === "Action" && (
-                            <i className="fas fa-ellipsis-h text-gray-500"></i>
+                            <div className="flex space-x-2">
+                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(UAO)}>
+                                <FaEdit />
+                              </button>
+                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(UAO.id)}>
+                                <FaTrash />
+                              </button>
+                            </div>
                           )}
                         </td>
                       ))}
