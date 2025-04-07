@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { MdGpsFixed } from "react-icons/md";
 
@@ -13,7 +13,8 @@ const ADRegistration = () => {
   const [regions, setRegions] = useState([]);
   const [hotspot, setHotspot] = useState([]);
   const [selectedHotspots, setSelectedHotspots] = useState([]);
-
+  const [isEdit , setIsEdit] = useState(false);
+  const [selectedId , setSelectedId] = useState(null);
   const handleUseMyLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -138,6 +139,8 @@ const ADRegistration = () => {
     // { name: "Fertilizer Usage", visible: true },
     // { name: "Soil Type", visible: true },
     // { name: "Avg Production", visible: true },
+    { name: "Action", visible: true },
+
   ];
 
 
@@ -256,6 +259,8 @@ const ADRegistration = () => {
                 <option value={10}>Show 10</option>
                 <option value={25}>Show 25</option>
                 <option value={50}>Show 50</option>
+                <option value={100}>Show 100</option>
+                <option value={500}>Show 500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
@@ -285,14 +290,14 @@ const ADRegistration = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredADs.slice(0, rowsPerPage).map(AD => (
+                {filteredADs.slice(0, rowsPerPage).map((AD , index) => (
                   <tr key={AD.id}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col) => (
                         <td key={col.name} className="border px-4 py-2">
                           {/* Render AD data dynamically based on column names */}
-                          {col.name === "ID" && AD.id}
+                          {col.name === "ID" && index + 1}
                           {col.name === "AD Name" && AD.name}
                           {col.name === "Father Name" && AD.fatherName}
                           {col.name === "Gender" && AD.gender}
@@ -308,7 +313,14 @@ const ADRegistration = () => {
                           {col.name === "Coordinates" && AD.coordinates}
                           {col.name === "Hotspot" && AD.hotspot}
                           {col.name === "Action" && (
-                            <i className="fas fa-ellipsis-h text-gray-500"></i>
+                            <div className="flex space-x-2">
+                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(SAAO)}>
+                                <FaEdit />
+                              </button>
+                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(SAAO.id)}>
+                                <FaTrash />
+                              </button>
+                            </div>
                           )}
                         </td>
                       ))}

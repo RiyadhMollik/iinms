@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { MdGpsFixed } from "react-icons/md";
 import axios from "axios";
 const SAAORegistration = () => {
@@ -17,6 +17,8 @@ const SAAORegistration = () => {
   const [upazilas, setUpazilas] = useState([]);
   const [unions, setUnions] = useState([]);
   const [block, setBlock] = useState([]);
+  const [isEdit , setIsEdit] = useState(false);
+  const [selectedId , setSelectedId] = useState(null);
   const fetchBlocks = async () => {
     try {
       const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks");
@@ -142,26 +144,6 @@ const SAAORegistration = () => {
     region: "",
     coordinates: "",
     hotspot: selectedHotspots,
-    // Rice Crop Details
-    // farmSize: "",
-    // landType: "",
-    // cultivationSeason: "",
-    // majorCrops: "",
-    // croppingPattern: "",
-    // riceVarieties: "",
-    // plantingMethod: "",
-    // irrigationPractices: "",
-    // fertilizerUsage: "",
-    // soilType: "",
-    // avgProduction: "",
-    // // Stage-wise Crop Management
-    // plantingDate: "",
-    // seedlingAge: "",
-    // transplantationDate: "",
-    // wateringStages: "",
-    // harvestDate: "",
-    // pestDiseases: "",
-    // weedManagement: "",
     role: "saao",
   });
   const fetchSAAOs = async () => {
@@ -169,6 +151,7 @@ const SAAORegistration = () => {
       const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/saao");
       if (response.ok) {
         const data = await response.json();
+        console.log(data);
         setSAAOList(data);
       } else {
         throw new Error("Failed to fetch SAAOs");
@@ -203,27 +186,7 @@ const SAAORegistration = () => {
     { name: "Region", visible: true },
     { name: "Coordinates", visible: true },
     { name: "Hotspot", visible: true },
-    // Rice Crop Details
-    // { name: "Farm Size", visible: true },
-    // { name: "Land Type", visible: true },
-    // { name: "Cultivation Season", visible: true },
-    // { name: "Major Crops", visible: true },
-    // { name: "Cropping Pattern", visible: true },
-    // { name: "Rice Varieties", visible: true },
-    // { name: "Planting Method", visible: true },
-    // { name: "Irrigation Practices", visible: true },
-    // { name: "Fertilizer Usage", visible: true },
-    // { name: "Soil Type", visible: true },
-    // { name: "Avg Production", visible: true },
-    // // Stage-wise Crop Management
-    // { name: "Planting Date", visible: true },
-    // { name: "Seedling Age", visible: true },
-    // { name: "Transplantation Date", visible: true },
-    // { name: "Watering Stages", visible: true },
-    // { name: "Harvest Date", visible: true },
-    // { name: "Pest Diseases", visible: true },
-    // { name: "Weed Management", visible: true },
-    // { name: "Action", visible: true },
+    { name: "Action", visible: true },
   ];
 
 
@@ -263,20 +226,43 @@ const SAAORegistration = () => {
   };
   const registerSAAO = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers", {
-        method: "POST",
+      const method = isEdit ? "PUT" : "POST";
+      const url = isEdit
+        ? `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`
+        : "https://iinms.brri.gov.bd/api/farmers/farmers";
+  
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
+  
       if (response.ok) {
         const data = await response.json();
         setIsSAAOModalOpen(false);
-        console.log("SAAO registered successfully:", data);
-        fetchSAAOs();
+        setIsEdit(false); // reset edit mode
+        console.log("SAAO saved successfully:", data);
+        fetchSAAOs(); // Refresh the list
       } else {
-        throw new Error("Failed to register SAAO");
+        throw new Error("Failed to save SAAO");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+  const handleDeleteSAAO = async (id) => {
+    try {
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/${id}`, {
+        method: "DELETE",
+      });
+  
+      if (response.ok) {
+        console.log("SAAO deleted successfully");
+        fetchSAAOs(); // Refresh the list
+      } else {
+        throw new Error("Failed to delete SAAO");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -290,6 +276,8 @@ const SAAORegistration = () => {
       SAAO.email.toLowerCase().includes(searchText.toLowerCase())
     );
   });
+
+  
   const handleSelect = (e) => {
     const selectedValue = e.target.value;
     // Check if the value is already selected
@@ -307,6 +295,36 @@ const SAAORegistration = () => {
     const updatedHotspot = selectedHotspots.filter((value) => value !== valueToDelete);
     setSelectedHotspots(updatedHotspot);
   };
+
+  const handleEdit = (SAAO) => {
+    setIsEdit(true);
+    setIsSAAOModalOpen(true);
+  
+    setFormData({
+      name: SAAO.name || "",
+      fatherName: SAAO.fatherName || "",
+      gender: SAAO.gender || "",
+      mobileNumber: SAAO.mobileNumber || "",
+      whatsappNumber: SAAO.whatsappNumber || "",
+      imoNumber: SAAO.imoNumber || "",
+      messengerId: SAAO.messengerId || "",
+      email: SAAO.email || "",
+      alternateContact: SAAO.alternateContact || "",
+      nationalId: SAAO.nationalId || "",
+      block: SAAO.block || "",
+      union: SAAO.union || "",
+      upazila: SAAO.upazila || "",
+      district: SAAO.district || "",
+      division: SAAO.division || "",
+      region: SAAO.region || "",
+      coordinates: SAAO.coordinates || "",
+      hotspot: SAAO.hotspot || [],
+      role: SAAO.role || "saao", // defaulting to "saao"
+    });
+    setSelectedHotspots(SAAO.hotspot || []);
+    setSelectedId(SAAO.id);
+  };
+  
   return (
     <div className="min-h-screen w-full bg-gray-100">
 
@@ -345,6 +363,8 @@ const SAAORegistration = () => {
                 <option value={10}>Show 10</option>
                 <option value={25}>Show 25</option>
                 <option value={50}>Show 50</option>
+                <option value={100}>Show 100</option>
+                <option value={500}>Show 500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
@@ -374,14 +394,13 @@ const SAAORegistration = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredSAAOs.slice(0, rowsPerPage).map(SAAO => (
+                {filteredSAAOs.slice(0, rowsPerPage).map((SAAO, rowIndex) => (
                   <tr key={SAAO.id}>
                     {columns
                       .filter((col) => col.visible)
-                      .map((col) => (
+                      .map((col , index) => (
                         <td key={col.name} className="border px-4 py-2">
-                          {/* Render SAAO data dynamically based on column names */}
-                          {col.name === "ID" && SAAO.id}
+                          {col.name === "ID" ? rowIndex + 1 : SAAO[col.name]}
                           {col.name === "SAAO Name" && SAAO.name}
                           {col.name === "Father Name" && SAAO.fatherName}
                           {col.name === "Gender" && SAAO.gender}
@@ -401,26 +420,15 @@ const SAAORegistration = () => {
                           {col.name === "Region" && SAAO.region}
                           {col.name === "Coordinates" && SAAO.coordinates}
                           {col.name === "Hotspot" && SAAO.hotspot}
-                          {/* {col.name === "Farm Size" && SAAO.farmSize}
-                          {col.name === "Land Type" && SAAO.landType}
-                          {col.name === "Cultivation Season" && SAAO.cultivationSeason}
-                          {col.name === "Major Crops" && SAAO.majorCrops}
-                          {col.name === "Cropping Pattern" && SAAO.croppingPattern}
-                          {col.name === "Rice Varieties" && SAAO.riceVarieties}
-                          {col.name === "Planting Method" && SAAO.plantingMethod}
-                          {col.name === "Irrigation Practices" && SAAO.irrigationPractices}
-                          {col.name === "Fertilizer Usage" && SAAO.fertilizerUsage}
-                          {col.name === "Soil Type" && SAAO.soilType}
-                          {col.name === "Avg Production" && SAAO.avgProduction}
-                          {col.name === "Planting Date" && new Date(SAAO.plantingDate).toLocaleDateString()}
-                          {col.name === "Seedling Age" && SAAO.seedlingAge}
-                          {col.name === "Transplantation Date" && new Date(SAAO.transplantationDate).toLocaleDateString()}
-                          {col.name === "Watering Stages" && SAAO.wateringStages}
-                          {col.name === "Harvest Date" && new Date(SAAO.harvestDate).toLocaleDateString()}
-                          {col.name === "Pest Diseases" && SAAO.pestDiseases}
-                          {col.name === "Weed Management" && SAAO.weedManagement} */}
                           {col.name === "Action" && (
-                            <i className="fas fa-ellipsis-h text-gray-500"></i>
+                            <div className="flex space-x-2">
+                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(SAAO)}>
+                                <FaEdit />
+                              </button>
+                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(SAAO.id)}>
+                                <FaTrash />
+                              </button>
+                            </div>
                           )}
                         </td>
                       ))}
@@ -694,159 +702,6 @@ const SAAORegistration = () => {
                     ))}
                   </select>
                 </div>
-
-
-                {/* Step 3: Rice Crop Details */}
-                {/* <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
-                  <input
-                    type="text"
-                    name="farmSize"
-                    placeholder="Farm Size (in acres/hectares)"
-                    className="border w-full p-2 rounded"
-                    value={formData.farmSize}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="landType"
-                    placeholder="Land Type"
-                    className="border w-full p-2 rounded"
-                    value={formData.landType}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="cultivationSeason"
-                    placeholder="Season of Cultivation"
-                    className="border w-full p-2 rounded"
-                    value={formData.cultivationSeason}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="majorCrops"
-                    placeholder="Major Crops"
-                    className="border w-full p-2 rounded"
-                    value={formData.majorCrops}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="croppingPattern"
-                    placeholder="Cropping Pattern"
-                    className="border w-full p-2 rounded"
-                    value={formData.croppingPattern}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="riceVarieties"
-                    placeholder="Rice Varieties"
-                    className="border w-full p-2 rounded"
-                    value={formData.riceVarieties}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="plantingMethod"
-                    placeholder="Planting Method"
-                    className="border w-full p-2 rounded"
-                    value={formData.plantingMethod}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="irrigationPractices"
-                    placeholder="Irrigation Practices"
-                    className="border w-full p-2 rounded"
-                    value={formData.irrigationPractices}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="fertilizerUsage"
-                    placeholder="Fertilizer Usage"
-                    className="border w-full p-2 rounded"
-                    value={formData.fertilizerUsage}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="soilType"
-                    placeholder="Soil Type"
-                    className="border w-full p-2 rounded"
-                    value={formData.soilType}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="avgProduction"
-                    placeholder="Average Production (e.g., per season/year)"
-                    className="border w-full p-2 rounded"
-                    value={formData.avgProduction}
-                    onChange={handleChange}
-                  />
-                </div> */}
-                {/* Step 4: Crop Management */}
-                {/* <div className={`space-y-4 ${currentStep === 4 ? "" : "hidden"}`}>
-                  <input
-                    type="date"
-                    name="plantingDate"
-                    placeholder="Planned Planting/Sowing Date"
-                    className="border w-full p-2 rounded"
-                    value={formData.plantingDate}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="seedlingAge"
-                    placeholder="Seedling Age (in days)"
-                    className="border w-full p-2 rounded"
-                    value={formData.seedlingAge}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="date"
-                    name="transplantationDate"
-                    placeholder="Planned Transplantation Date"
-                    className="border w-full p-2 rounded"
-                    value={formData.transplantationDate}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="wateringStages"
-                    placeholder="Key Watering Stages"
-                    className="border w-full p-2 rounded"
-                    value={formData.wateringStages}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="date"
-                    name="harvestDate"
-                    placeholder="Planned Harvest Date"
-                    className="border w-full p-2 rounded"
-                    value={formData.harvestDate}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="pestDiseases"
-                    placeholder="Pest and Disease Management"
-                    className="border w-full p-2 rounded"
-                    value={formData.pestDiseases}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="weedManagement"
-                    placeholder="Weed Management Practices"
-                    className="border w-full p-2 rounded"
-                    value={formData.weedManagement}
-                    onChange={handleChange}
-                  />
-                </div> */}
-
               </form>
 
               {/* Navigation Buttons */}

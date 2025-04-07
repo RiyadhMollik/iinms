@@ -314,14 +314,14 @@ const AdminRegistration = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredAdmins.slice(0, rowsPerPage).map(Admin => (
+                {filteredAdmins.slice(0, rowsPerPage).map((Admin , index) => (
                   <tr key={Admin.id}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col) => (
                         <td key={col.name} className="border px-4 py-2">
                           {/* Render Admin data dynamically based on column names */}
-                          {col.name === "ID" && Admin.id}
+                          {col.name === "ID" && index + 1}
                           {col.name === "Admin Name" && Admin.name}
                           {col.name === "Father Name" && Admin.fatherName}
                           {col.name === "Gender" && Admin.gender}

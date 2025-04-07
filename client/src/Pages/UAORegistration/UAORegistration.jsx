@@ -344,14 +344,14 @@ const UAORegistration = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredUAOs.slice(0, rowsPerPage).map(UAO => (
+                {filteredUAOs.slice(0, rowsPerPage).map((UAO , index) => (
                   <tr key={UAO.id}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col) => (
                         <td key={col.name} className="border px-4 py-2">
                           {/* Render UAO data dynamically based on column names */}
-                          {col.name === "ID" && UAO.id}
+                          {col.name === "ID" && index + 1}
                           {col.name === "UAO Name" && UAO.name}
                           {col.name === "Father Name" && UAO.fatherName}
                           {col.name === "Gender" && UAO.gender}
