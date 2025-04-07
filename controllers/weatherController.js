@@ -85,10 +85,10 @@ const getWeatherDataByMetric = async (req, res, metric) => {
 
         const today = new Date().toISOString().split('T')[0]; // Get the current date (YYYY-MM-DD)
 
-        // Check if data for today is already cached and is not expired
-        if (cache[today] && (Date.now() - cache[today].timestamp < CACHE_EXPIRATION_TIME)) {
-            console.log('Returning cached data for:', today);
-            return res.json(cache[today].data);
+        // Check if data for today and the requested metric is already cached and is not expired
+        if (cache[today] && cache[today][metric] && (Date.now() - cache[today][metric].timestamp < CACHE_EXPIRATION_TIME)) {
+            console.log(`Returning cached data for ${metric}:`, today);
+            return res.json(cache[today][metric].data);
         }
 
         const filePath = getLatestFilePath();
@@ -143,8 +143,12 @@ const getWeatherDataByMetric = async (req, res, metric) => {
             [metric]: weatherSummary
         };
 
-        // Cache the result for today with timestamp
-        cache[today] = {
+        // Cache the result for today and metric
+        if (!cache[today]) {
+            cache[today] = {};  // Initialize the cache for today if not already initialized
+        }
+
+        cache[today][metric] = {
             data: result,
             timestamp: Date.now()  // Store timestamp of cache creation
         };
@@ -161,4 +165,3 @@ export const getRainfall = async (req, res) => getWeatherDataByMetric(req, res, 
 export const getTemperature = async (req, res) => getWeatherDataByMetric(req, res, "temperature");
 export const getHumidity = async (req, res) => getWeatherDataByMetric(req, res, "humidity");
 export const getSoilMoisture = async (req, res) => getWeatherDataByMetric(req, res, "soil_moisture");
-export const getWindSpeed = async (req, res) => getWeatherDataByMetric(req, res, "wind_speed");
