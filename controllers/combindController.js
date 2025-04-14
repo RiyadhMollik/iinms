@@ -104,85 +104,230 @@ export const getRegionsByCSA = async (req, res) => {
 // Get unique Divisions based on Region
 export const getDivisionsByRegion = async (req, res) => {
   try {
-    const { hotspot, region } = req.query;
+    let { hotspot, region } = req.query;
 
+    // Handle comma-separated or array inputs for 'hotspot'
+    if (typeof hotspot === "string") {
+      hotspot = hotspot.split(",").map((s) => s.trim());
+    } else if (!Array.isArray(hotspot)) {
+      hotspot = [];
+    }
+
+    // Region is always a single value (string), so no need to split
+    if (typeof region !== "string") {
+      region = "";  // Default to an empty string if region is not a string
+    }
+
+    // Build the where clause
+    const whereClause = {
+      ...(hotspot.length ? { hotspot: { [Op.in]: hotspot } } : {}),
+      ...(region ? { region } : {}),
+    };
+
+    // Fetch divisions based on 'hotspot' and 'region'
     const divisions = await Block.findAll({
       attributes: ["division"],
-      where: { hotspot,  region },
+      where: whereClause,
       group: ["division"],
     });
 
+    // Respond with the list of divisions
     res.json(divisions.map((item) => item.division));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+
 // Get unique Districts based on Division
 export const getDistrictsByDivision = async (req, res) => {
   try {
-    const { hotspot,  region, division } = req.query;
+    let { hotspot, region, division } = req.query;
 
+    // Handle comma-separated or array inputs for 'hotspot'
+    if (typeof hotspot === "string") {
+      hotspot = hotspot.split(",").map((s) => s.trim());
+    } else if (!Array.isArray(hotspot)) {
+      hotspot = [];
+    }
+
+    // Region and division are always single values (strings)
+    if (typeof region !== "string") {
+      region = "";  // Default to an empty string if region is not a string
+    }
+    if (typeof division !== "string") {
+      division = "";  // Default to an empty string if division is not a string
+    }
+
+    // Build the where clause
+    const whereClause = {
+      ...(hotspot.length ? { hotspot: { [Op.in]: hotspot } } : {}),
+      ...(region ? { region } : {}),
+      ...(division ? { division } : {}),
+    };
+
+    // Fetch districts based on 'hotspot', 'region', and 'division'
     const districts = await Block.findAll({
       attributes: ["district"],
-      where: { hotspot,  region, division },
+      where: whereClause,
       group: ["district"],
     });
 
+    // Respond with the list of districts
     res.json(districts.map((item) => item.district));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+
 // Get unique Upazilas based on District
 export const getUpazilasByDistrict = async (req, res) => {
   try {
-    const { hotspot,  region, division, district } = req.query;
+    let { hotspot, region, division, district } = req.query;
 
+    // Handle comma-separated or array inputs for 'hotspot'
+    if (typeof hotspot === "string") {
+      hotspot = hotspot.split(",").map((s) => s.trim());
+    } else if (!Array.isArray(hotspot)) {
+      hotspot = [];
+    }
+
+    // Region, division, and district are always single values (strings)
+    if (typeof region !== "string") {
+      region = "";  // Default to an empty string if region is not a string
+    }
+    if (typeof division !== "string") {
+      division = "";  // Default to an empty string if division is not a string
+    }
+    if (typeof district !== "string") {
+      district = "";  // Default to an empty string if district is not a string
+    }
+
+    // Build the where clause
+    const whereClause = {
+      ...(hotspot.length ? { hotspot: { [Op.in]: hotspot } } : {}),
+      ...(region ? { region } : {}),
+      ...(division ? { division } : {}),
+      ...(district ? { district } : {}),
+    };
+
+    // Fetch upazilas based on 'hotspot', 'region', 'division', and 'district'
     const upazilas = await Block.findAll({
       attributes: ["upazila"],
-      where: { hotspot,  region, division, district },
+      where: whereClause,
       group: ["upazila"],
     });
 
+    // Respond with the list of upazilas
     res.json(upazilas.map((item) => item.upazila));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+
 // Get unique Unions based on Upazila
 export const getUnionsByUpazila = async (req, res) => {
   try {
-    const { hotspot,  region, division, district, upazila } = req.query;
+    let { hotspot, region, division, district, upazila } = req.query;
 
+    // Handle comma-separated or array inputs for 'hotspot'
+    if (typeof hotspot === "string") {
+      hotspot = hotspot.split(",").map((s) => s.trim());
+    } else if (!Array.isArray(hotspot)) {
+      hotspot = [];
+    }
+
+    // Region, division, district, and upazila are always single values (strings)
+    if (typeof region !== "string") {
+      region = "";  // Default to an empty string if region is not a string
+    }
+    if (typeof division !== "string") {
+      division = "";  // Default to an empty string if division is not a string
+    }
+    if (typeof district !== "string") {
+      district = "";  // Default to an empty string if district is not a string
+    }
+    if (typeof upazila !== "string") {
+      upazila = "";  // Default to an empty string if upazila is not a string
+    }
+
+    // Build the where clause
+    const whereClause = {
+      ...(hotspot.length ? { hotspot: { [Op.in]: hotspot } } : {}),
+      ...(region ? { region } : {}),
+      ...(division ? { division } : {}),
+      ...(district ? { district } : {}),
+      ...(upazila ? { upazila } : {}),
+    };
+
+    // Fetch unions based on 'hotspot', 'region', 'division', 'district', and 'upazila'
     const unions = await Block.findAll({
       attributes: ["union"],
-      where: { hotspot,  region, division, district, upazila },
+      where: whereClause,
       group: ["union"],
     });
 
+    // Respond with the list of unions
     res.json(unions.map((item) => item.union));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+
 // Get unique Blocks based on Union
 export const getBlocksByUnion = async (req, res) => {
   try {
-    const { hotspot,  region, division, district, upazila, union } = req.query;
+    let { hotspot, region, division, district, upazila, union } = req.query;
 
+    // Handle comma-separated or array inputs for 'hotspot'
+    if (typeof hotspot === "string") {
+      hotspot = hotspot.split(",").map((s) => s.trim());
+    } else if (!Array.isArray(hotspot)) {
+      hotspot = [];
+    }
+
+    // Ensure all other parameters are single values (strings)
+    if (typeof region !== "string") {
+      region = "";  // Default to an empty string if region is not a string
+    }
+    if (typeof division !== "string") {
+      division = "";  // Default to an empty string if division is not a string
+    }
+    if (typeof district !== "string") {
+      district = "";  // Default to an empty string if district is not a string
+    }
+    if (typeof upazila !== "string") {
+      upazila = "";  // Default to an empty string if upazila is not a string
+    }
+    if (typeof union !== "string") {
+      union = "";  // Default to an empty string if union is not a string
+    }
+
+    // Build the where clause
+    const whereClause = {
+      ...(hotspot.length ? { hotspot: { [Op.in]: hotspot } } : {}),
+      ...(region ? { region } : {}),
+      ...(division ? { division } : {}),
+      ...(district ? { district } : {}),
+      ...(upazila ? { upazila } : {}),
+      ...(union ? { union } : {}),
+    };
+
+    // Fetch blocks based on the provided parameters
     const blocks = await Block.findAll({
       attributes: ["block"],
-      where: { hotspot,  region, division, district, upazila, union },
+      where: whereClause,
       group: ["block"],
     });
 
+    // Respond with the list of blocks
     res.json(blocks.map((item) => item.block));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
   
