@@ -6,6 +6,7 @@ import Region from "../models/Region.js";
 import Upazila from "../models/Upazila.js";
 import Union from "../models/Union.js";
 import Block from "../models/block.js";
+import { Op } from 'sequelize';
 
 export const getAllData = async (req, res) => {
     try {
@@ -69,10 +70,18 @@ export const getCSAByHotspot = async (req, res) => {
 // Get unique Regions based on Hotspot and CSA
 export const getRegionsByCSA = async (req, res) => {
   try {
-    const { hotspot} = req.query;
+    let { hotspot } = req.query;
+
+    // Convert string to array if only one value is passed
+    if (typeof hotspot === 'string') {
+      hotspot = [hotspot];
+    }
+
     const regions = await Block.findAll({
       attributes: ["region"],
-      where: { hotspot },
+      where: {
+        hotspot: hotspot ? { [Op.in]: hotspot } : undefined,
+      },
       group: ["region"],
     });
 

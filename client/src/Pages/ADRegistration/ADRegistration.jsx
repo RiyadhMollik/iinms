@@ -488,6 +488,35 @@ const ADRegistration = () => {
                 </div>
                 {/* Step 2: Location Information */}
                 <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {selectedHotspots.map((hotspotName) => (
+                      <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
+                        <span>{hotspotName}</span>
+                        <button
+                          type="button"
+                          className="ml-2 text-red-500"
+                          onClick={() => handleDelete(hotspotName)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <select
+                    name="hotspot"
+                    className="border w-full p-2 rounded"
+                    value="" // No value here as it's not multiple
+                    onChange={handleSelect}
+                    required
+                  >
+                    <option value="">Select Hotspot</option>
+                    {hotspot?.map((hotspot) => (
+                      <option key={hotspot.id} value={hotspot.name}>
+                        {hotspot.name}
+                      </option>
+                    ))}
+                  </select>
                   <select
                     name="region"
                     className="border w-full p-2 rounded"
@@ -519,35 +548,7 @@ const ADRegistration = () => {
                       <MdGpsFixed className="text-blue-500" />
                     </button>
                   </div>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {selectedHotspots.map((hotspotName) => (
-                      <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
-                        <span>{hotspotName}</span>
-                        <button
-                          type="button"
-                          className="ml-2 text-red-500"
-                          onClick={() => handleDelete(hotspotName)}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
 
-                  <select
-                    name="hotspot"
-                    className="border w-full p-2 rounded"
-                    value="" // No value here as it's not multiple
-                    onChange={handleSelect}
-                    required
-                  >
-                    <option value="">Select Hotspot</option>
-                    {hotspot?.map((hotspot) => (
-                      <option key={hotspot.id} value={hotspot.name}>
-                        {hotspot.name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               </form>
 
