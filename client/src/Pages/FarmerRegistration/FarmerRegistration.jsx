@@ -37,7 +37,7 @@ const FarmerRegistration = () => {
     region: "",
     coordinates: "",
     hotspot: selectedHotspots,
-    role: "UAO",
+    role: "farmer",
   });
   useEffect(() => {
     if (!formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
@@ -461,6 +461,7 @@ const FarmerRegistration = () => {
                 <option value={50}>Show 50</option>
                 <option value={100}>Show 100</option>
                 <option value={500}>Show 500</option>
+                <option value={1000}>Show 1000</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
@@ -490,14 +491,14 @@ const FarmerRegistration = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredFarmers.slice(0, rowsPerPage).map(farmer => (
+                {filteredFarmers.slice(0, rowsPerPage).map((farmer , index) => (
                   <tr key={farmer.id}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col) => (
                         <td key={col.name} className="border px-4 py-2">
                           {/* Render farmer data dynamically based on column names */}
-                          {col.name === "ID" && farmer.id}
+                          {col.name === "ID" && index + 1}
                           {col.name === "Farmer Name" && farmer.name}
                           {col.name === "Father Name" && farmer.fatherName}
                           {col.name === "Gender" && farmer.gender}

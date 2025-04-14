@@ -37,7 +37,7 @@ const SAAORegistration = () => {
     region: "",
     coordinates: "",
     hotspot: selectedHotspots,
-    role: "UAO",
+    role: "saao",
   });
   useEffect(() => {
     if (!formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls

@@ -375,6 +375,9 @@ const UAORegistration = () => {
                 <option value={10}>Show 10</option>
                 <option value={25}>Show 25</option>
                 <option value={50}>Show 50</option>
+                <option value={100}>Show 100</option>
+                <option value={500}>Show 500</option>
+                <option value={1000}>Show 1000</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
