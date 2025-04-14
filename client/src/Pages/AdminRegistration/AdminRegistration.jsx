@@ -17,62 +17,9 @@ const AdminRegistration = () => {
   const [divisions, setDivisions] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  useEffect(() => {
-    fetchDivisions();
-  }, []);
-
-  const fetchDivisions = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/division/divisions'); // Adjust API endpoint as needed
-      setDivisions(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching divisions:", error);
-    }
-  };
-  useEffect(() => {
-    fetchDistricts();
-  }, []);
-
-  const fetchDistricts = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
-      setDistricts(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching districts:", error);
-    }
-  };
-  useEffect(() => {
-    fetchRegions();
-  }, []);
-
-  const fetchRegions = async () => {
-    try {
-      const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
-      console.log(response);
-
-      setRegions(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching regions:", error);
-    }
-  };
-  // Base API URL
-  const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
-
-  // Fetch all hotspots
-  const fetchRoles = async () => {
-    try {
-      const response = await fetch(API_URL);
-      const data = await response.json();
-      setHotspot(data.reverse());
-    } catch (error) {
-      console.error("Error fetching hotspots:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchRoles();
-  }, []);
-
+  // const [selectedRegion, setSelectedRegion] = useState(null);
+  // const [selectedDivision, setSelectedDivision] = useState(null);
+  // const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     fatherName: "",
@@ -92,6 +39,96 @@ const AdminRegistration = () => {
     hotspot: selectedHotspots,
     role: "Admin",
   });
+
+
+  useEffect(() => {
+    if (!formData.region || !selectedHotspots) return; // Prevent unnecessary API calls 
+
+    const fetchDivision = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/divisions?region=${formData.region}&hotspot=${selectedHotspots}`
+        );
+        console.log(response);
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch division data");
+        }
+        const data = await response.json();
+        console.log(data);
+        
+        setDivisions(data);
+      } catch (error) {
+        console.error("Error fetching division data:", error);
+      }
+    };
+
+    fetchDivision();
+  }, [formData.region, selectedHotspots]);
+
+   useEffect(() => {
+     if (!formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
+ 
+     const fetchDistrict = async () => {
+       try {
+         const response = await fetch(
+           `https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
+         );
+         if (!response.ok) {
+           throw new Error("Failed to fetch district data");
+         }
+         const data = await response.json();
+         setDistricts(data);
+       } catch (error) {
+         console.error("Error fetching district data:", error);
+       }
+     };
+ 
+     fetchDistrict();
+   }, [formData.division, formData.region, selectedHotspots]);
+  useEffect(() => {
+    if (!selectedHotspots) return; // Prevent unnecessary API calls
+
+    const fetchRegion = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/regions?hotspot=${selectedHotspots}`
+        );
+        console.log(response);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch region data");
+        }
+        const data = await response.json();
+        console.log(data);
+
+        setRegions(data);
+      } catch (error) {
+        console.error("Error fetching region data:", error);
+      }
+    };
+
+    fetchRegion();
+  }, [selectedHotspots]);
+  // Base API URL
+  const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
+
+  // Fetch all hotspots
+  const fetchRoles = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setHotspot(data.reverse());
+    } catch (error) {
+      console.error("Error fetching hotspots:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
+
   const handleUseMyLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -524,66 +561,6 @@ const AdminRegistration = () => {
                 </div>
                 {/* Step 2: Location Information */}
                 <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>
-                  <select
-                    name="district"
-                    className="border w-full p-2 rounded"
-                    value={formData.district}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select District</option>
-                    {districts?.map((district) => (
-                      <option key={district.id} value={district.name}>
-                        {district.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      name="coordinates"
-                      placeholder="Coordinates (e.g., Latitude, Longitude)"
-                      className="border w-full p-2 rounded"
-                      value={formData.coordinates}
-                      onChange={handleChange}
-                    />
-                    <button
-                      type="button"
-                      className="text-blue-500 text-white  rounded"
-                      onClick={handleUseMyLocation}
-                    >
-                      <MdGpsFixed className="text-blue-500" />
-                    </button>
-                  </div>
-                  <select
-                    name="division"
-                    className="border w-full p-2 rounded"
-                    value={formData.division}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Division</option>
-                    {divisions?.map((division) => (
-                      <option key={division.id} value={division.name}>
-                        {division.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    name="region"
-                    className="border w-full p-2 rounded"
-                    value={formData.region}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Region</option>
-                    {regions?.map((hotspot) => (
-                      <option key={hotspot.id} value={hotspot.name}>
-                        {hotspot.name}
-                      </option>
-                    ))}
-                  </select>
-
                   <div className="flex flex-wrap gap-2 mb-2">
                     {selectedHotspots.map((hotspotName) => (
                       <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
@@ -613,6 +590,65 @@ const AdminRegistration = () => {
                       </option>
                     ))}
                   </select>
+                  <select
+                    name="region"
+                    className="border w-full p-2 rounded"
+                    value={formData.region}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Region</option>
+                    {regions?.map((hotspot) => (
+                      <option key={hotspot} value={hotspot}>
+                        {hotspot}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="division"
+                    className="border w-full p-2 rounded"
+                    value={formData.division}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Division</option>
+                    {divisions?.map((division) => (
+                      <option key={division} value={division}>
+                        {division}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="district"
+                    className="border w-full p-2 rounded"
+                    value={formData.district}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select District</option>
+                    {districts?.map((district) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      name="coordinates"
+                      placeholder="Coordinates (e.g., Latitude, Longitude)"
+                      className="border w-full p-2 rounded"
+                      value={formData.coordinates}
+                      onChange={handleChange}
+                    />
+                    <button
+                      type="button"
+                      className="text-blue-500 text-white  rounded"
+                      onClick={handleUseMyLocation}
+                    >
+                      <MdGpsFixed className="text-blue-500" />
+                    </button>
+                  </div>
 
                 </div>
               </form>

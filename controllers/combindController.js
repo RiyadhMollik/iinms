@@ -72,20 +72,29 @@ export const getRegionsByCSA = async (req, res) => {
   try {
     let { hotspot } = req.query;
 
-    // Convert string to array if only one value is passed
-    if (typeof hotspot === 'string') {
+    // Normalize hotspot into an array of strings
+    if (typeof hotspot === "string") {
       hotspot = [hotspot];
+    } else if (!Array.isArray(hotspot)) {
+      hotspot = [];
     }
+
+    const whereClause = hotspot.length
+      ? { hotspot: { [Op.in]: hotspot } }
+      : {};
 
     const regions = await Block.findAll({
       attributes: ["region"],
-      where: {
-        hotspot: hotspot ? { [Op.in]: hotspot } : undefined,
-      },
+      where: whereClause,
       group: ["region"],
     });
 
-    res.json(regions.map((item) => item.region));
+    const result = regions
+      .map((item) => item.region)
+      .filter(Boolean) // removes null, undefined, empty
+      .sort((a, b) => a.localeCompare(b));
+
+    res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

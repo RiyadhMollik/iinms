@@ -33,19 +33,29 @@ const ADRegistration = () => {
     }
   };
   useEffect(() => {
-    fetchRegions();
-  }, []);
+    if (!selectedHotspots) return; // Prevent unnecessary API calls
 
-  const fetchRegions = async () => {
-    try {
-      const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
-      console.log(response);
+    const fetchRegion = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/regions?hotspot=${selectedHotspots}`
+        );
+        console.log(response);
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch region data");
+        }
+        const data = await response.json();
+        console.log(data);
+        
+        setRegions(data);
+      } catch (error) {
+        console.error("Error fetching region data:", error);
+      }
+    };
 
-      setRegions(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching regions:", error);
-    }
-  };
+    fetchRegion();
+  }, [selectedHotspots]);
   // Base API URL
   const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
 
@@ -526,8 +536,8 @@ const ADRegistration = () => {
                   >
                     <option value="">Select Region</option>
                     {regions?.map((hotspot) => (
-                      <option key={hotspot.id} value={hotspot.name}>
-                        {hotspot.name}
+                      <option key={hotspot} value={hotspot}>
+                        {hotspot}
                       </option>
                     ))}
                   </select>

@@ -17,79 +17,157 @@ const SAAORegistration = () => {
   const [upazilas, setUpazilas] = useState([]);
   const [unions, setUnions] = useState([]);
   const [block, setBlock] = useState([]);
-  const [isEdit , setIsEdit] = useState(false);
-  const [selectedId , setSelectedId] = useState(null);
-  const fetchBlocks = async () => {
-    try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks");
-      const data = await response.json();
-      setBlock(data.reverse());
-    } catch (error) {
-      console.error("Error fetching blocks:", error);
-    }
-  };
+  const [isEdit, setIsEdit] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    fatherName: "",
+    gender: "",
+    mobileNumber: "",
+    whatsappNumber: "",
+    imoNumber: "",
+    messengerId: "",
+    email: "",
+    alternateContact: "",
+    nationalId: "",
+    // Location Information
+    upazila: "",
+    district: "",
+    division: "",
+    region: "",
+    coordinates: "",
+    hotspot: selectedHotspots,
+    role: "UAO",
+  });
   useEffect(() => {
-    fetchBlocks();
-    fetchUnions();
-  }, []);
-  const fetchUnions = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/unions');
-      setUnions(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching unions:", error);
-    }
-  };
+    if (!formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
+
+    const fetchUnion = async () => {
+      try {
+        const response = await fetch(`https://iinms.brri.gov.bd/api/data/unions?upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch union data");
+        }
+        const data = await response.json();
+        setUnions(data.sort((a, b) => a.localeCompare(b)));
+      } catch (error) {
+        console.error("Error fetching union data:", error);
+      }
+    };
+
+    fetchUnion();
+  }, [formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
   useEffect(() => {
-    fetchUpazilas();
-  }, []);
+    if (!formData.union || !formData.upazila || !formData.district  || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
 
-  const fetchUpazilas = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/upazila/upazilas'); // Adjust API endpoint as needed
-      setUpazilas(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching upazilas:", error);
-    }
-  };
+    const fetchBlock = async () => {
+      try {
+        const response = await fetch(`https://iinms.brri.gov.bd/api/data/blocks?union=${formData.union}&upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch block data");
+        }
+        const data = await response.json();
+        setBlock(data.sort((a, b) => a.localeCompare(b)));
+      } catch (error) {
+        console.error("Error fetching block data:", error);
+      }
+    };
+
+    fetchBlock();
+  }, [formData.union,formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
+
   useEffect(() => {
-    fetchDivisions();
-  }, []);
+    if (!formData.district || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
 
-  const fetchDivisions = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/division/divisions'); // Adjust API endpoint as needed
-      setDivisions(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching divisions:", error);
-    }
-  };
+    const fetchUpazila = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch upazila data");
+        }
+        const data = await response.json();
+        setUpazilas(data.sort((a, b) => a.localeCompare(b)));
+      } catch (error) {
+        console.error("Error fetching upazila data:", error);
+      }
+    };
+
+    fetchUpazila();
+  }, [formData.district, formData.division, formData.region, selectedHotspots]);
+
   useEffect(() => {
-    fetchDistricts();
-  }, []);
+    if (!formData.region || !selectedHotspots) return; // Prevent unnecessary API calls 
 
-  const fetchDistricts = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
-      setDistricts(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching districts:", error);
-    }
-  };
+    const fetchDivision = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/divisions?region=${formData.region}&hotspot=${selectedHotspots}`
+        );
+        console.log(response);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch division data");
+        }
+        const data = await response.json();
+        console.log(data);
+
+        setDivisions(
+          data.sort((a, b) => a.localeCompare(b))
+        );
+      } catch (error) {
+        console.error("Error fetching division data:", error);
+      }
+    };
+
+    fetchDivision();
+  }, [formData.region, selectedHotspots]);
+
   useEffect(() => {
-    fetchRegions();
-  }, []);
+    if (!formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
 
-  const fetchRegions = async () => {
-    try {
-      const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
-      console.log(response);
+    const fetchDistrict = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch district data");
+        }
+        const data = await response.json();
+        setDistricts(data.sort((a, b) => a.localeCompare(b)));
+      } catch (error) {
+        console.error("Error fetching district data:", error);
+      }
+    };
 
-      setRegions(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching regions:", error);
-    }
-  };
+    fetchDistrict();
+  }, [formData.division, formData.region, selectedHotspots]);
+  useEffect(() => {
+    if (!selectedHotspots) return; // Prevent unnecessary API calls
+
+    const fetchRegion = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/regions?hotspot=${selectedHotspots}`
+        );
+        console.log(response);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch region data");
+        }
+        const data = await response.json();
+        console.log(data);
+
+        setRegions(data.sort((a, b) => a.localeCompare(b)));
+      } catch (error) {
+        console.error("Error fetching region data:", error);
+      }
+    };
+
+    fetchRegion();
+  }, [selectedHotspots]);
   // Base API URL
   const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
 
@@ -124,28 +202,6 @@ const SAAORegistration = () => {
       alert("Geolocation is not supported by your browser.");
     }
   };
-  const [formData, setFormData] = useState({
-    name: "",
-    fatherName: "",
-    gender: "",
-    mobileNumber: "",
-    whatsappNumber: "",
-    imoNumber: "",
-    messengerId: "",
-    email: "",
-    alternateContact: "",
-    nationalId: "",
-    // Location Information
-    block: "",
-    union: "",
-    upazila: "",
-    district: "",
-    division: "",
-    region: "",
-    coordinates: "",
-    hotspot: selectedHotspots,
-    role: "saao",
-  });
   const fetchSAAOs = async () => {
     try {
       const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/saao");
@@ -230,7 +286,7 @@ const SAAORegistration = () => {
       const url = isEdit
         ? `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`
         : "https://iinms.brri.gov.bd/api/farmers/farmers";
-  
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -238,7 +294,7 @@ const SAAORegistration = () => {
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setIsSAAOModalOpen(false);
@@ -257,7 +313,7 @@ const SAAORegistration = () => {
       const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/${id}`, {
         method: "DELETE",
       });
-  
+
       if (response.ok) {
         console.log("SAAO deleted successfully");
         fetchSAAOs(); // Refresh the list
@@ -277,7 +333,7 @@ const SAAORegistration = () => {
     );
   });
 
-  
+
   const handleSelect = (e) => {
     const selectedValue = e.target.value;
     // Check if the value is already selected
@@ -299,7 +355,7 @@ const SAAORegistration = () => {
   const handleEdit = (SAAO) => {
     setIsEdit(true);
     setIsSAAOModalOpen(true);
-  
+
     setFormData({
       name: SAAO.name || "",
       fatherName: SAAO.fatherName || "",
@@ -324,7 +380,7 @@ const SAAORegistration = () => {
     setSelectedHotspots(SAAO.hotspot || []);
     setSelectedId(SAAO.id);
   };
-  
+
   return (
     <div className="min-h-screen w-full bg-gray-100">
 
@@ -398,7 +454,7 @@ const SAAORegistration = () => {
                   <tr key={SAAO.id}>
                     {columns
                       .filter((col) => col.visible)
-                      .map((col , index) => (
+                      .map((col, index) => (
                         <td key={col.name} className="border px-4 py-2">
                           {col.name === "ID" ? rowIndex + 1 : SAAO[col.name]}
                           {col.name === "SAAO Name" && SAAO.name}
@@ -569,6 +625,105 @@ const SAAORegistration = () => {
                 </div>
                 {/* Step 2: Location Information */}
                 <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {selectedHotspots.map((hotspotName) => (
+                      <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
+                        <span>{hotspotName}</span>
+                        <button
+                          type="button"
+                          className="ml-2 text-red-500"
+                          onClick={() => handleDelete(hotspotName)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <select
+                    name="hotspot"
+                    className="border w-full p-2 rounded"
+                    value=""
+                    onChange={handleSelect}
+                    required
+                  >
+                    <option value="">Select Hotspot</option>
+                    {hotspot?.map((hotspot) => (
+                      <option key={hotspot.id} value={hotspot.name}>
+                        {hotspot.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="region"
+                    className="border w-full p-2 rounded"
+                    value={formData.region}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Region</option>
+                    {regions?.map((hotspot) => (
+                      <option key={hotspot} value={hotspot}>
+                        {hotspot}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="division"
+                    className="border w-full p-2 rounded"
+                    value={formData.division}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Division</option>
+                    {divisions?.map((division) => (
+                      <option key={division} value={division}>
+                        {division}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="district"
+                    className="border w-full p-2 rounded"
+                    value={formData.district}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select District</option>
+                    {districts?.map((district) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="upazila"
+                    className="border w-full p-2 rounded"
+                    value={formData.upazila}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Upazila</option>
+                    {upazilas?.map((upazila) => (
+                      <option key={upazila} value={upazila}>
+                        {upazila}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="union"
+                    className="border w-full p-2 rounded"
+                    value={formData.union}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Union</option>
+                    {unions?.map((union) => (
+                      <option key={union} value={union}>
+                        {union}
+                      </option>
+                    ))}
+                  </select>
                   <select
                     name="block"
                     className="border w-full p-2 rounded"
@@ -578,8 +733,8 @@ const SAAORegistration = () => {
                   >
                     <option value="">Select Block</option>
                     {block?.map((block) => (
-                      <option key={block.id} value={block.block}>
-                        {block.block}
+                      <option key={block} value={block}>
+                        {block}
                       </option>
                     ))}
                   </select>
@@ -600,107 +755,6 @@ const SAAORegistration = () => {
                       <MdGpsFixed className="text-blue-500" />
                     </button>
                   </div>
-                  <select
-                    name="union"
-                    className="border w-full p-2 rounded"
-                    value={formData.union}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Union</option>
-                    {unions?.map((union) => (
-                      <option key={union.id} value={union.name}>
-                        {union.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    name="upazila"
-                    className="border w-full p-2 rounded"
-                    value={formData.upazila}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Upazila</option>
-                    {upazilas?.map((upazila) => (
-                      <option key={upazila.id} value={upazila.name}>
-                        {upazila.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
-                    name="district"
-                    className="border w-full p-2 rounded"
-                    value={formData.district}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select District</option>
-                    {districts?.map((district) => (
-                      <option key={district.id} value={district.name}>
-                        {district.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    name="division"
-                    className="border w-full p-2 rounded"
-                    value={formData.division}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Division</option>
-                    {divisions?.map((division) => (
-                      <option key={division.id} value={division.name}>
-                        {division.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    name="region"
-                    className="border w-full p-2 rounded"
-                    value={formData.region}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Region</option>
-                    {regions?.map((hotspot) => (
-                      <option key={hotspot.id} value={hotspot.name}>
-                        {hotspot.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {selectedHotspots.map((hotspotName) => (
-                      <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
-                        <span>{hotspotName}</span>
-                        <button
-                          type="button"
-                          className="ml-2 text-red-500"
-                          onClick={() => handleDelete(hotspotName)}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <select
-                    name="hotspot"
-                    className="border w-full p-2 rounded"
-                    value="" // No value here as it's not multiple
-                    onChange={handleSelect}
-                    required
-                  >
-                    <option value="">Select Hotspot</option>
-
-                    {hotspot?.map((hotspot) => (
-                      <option key={hotspot.id} value={hotspot.name}>
-                        {hotspot.name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               </form>
 

@@ -17,56 +17,119 @@ const UAORegistration = () => {
   const [upazilas, setUpazilas] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    fatherName: "",
+    gender: "",
+    mobileNumber: "",
+    whatsappNumber: "",
+    imoNumber: "",
+    messengerId: "",
+    email: "",
+    alternateContact: "",
+    nationalId: "",
+    // Location Information
+    upazila: "",
+    district: "",
+    division: "",
+    region: "",
+    coordinates: "",
+    hotspot: selectedHotspots,
+    role: "UAO",
+  });
+
   useEffect(() => {
-    fetchUpazilas();
-  }, []);
+    if (!formData.district || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
 
-  const fetchUpazilas = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/upazila/upazilas'); // Adjust API endpoint as needed
-      setUpazilas(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching upazilas:", error);
-    }
-  };
+    const fetchUpazila = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch upazila data");
+        }
+        const data = await response.json();
+        setUpazilas(data.sort((a, b) => a.localeCompare(b)));
+      } catch (error) {
+        console.error("Error fetching upazila data:", error);
+      }
+    };
+
+    fetchUpazila();
+  }, [formData.district, formData.division, formData.region, selectedHotspots]);
+
   useEffect(() => {
-    fetchDivisions();
-  }, []);
+    if (!formData.region || !selectedHotspots) return; // Prevent unnecessary API calls 
 
-  const fetchDivisions = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/division/divisions'); // Adjust API endpoint as needed
-      setDivisions(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching divisions:", error);
-    }
-  };
+    const fetchDivision = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/divisions?region=${formData.region}&hotspot=${selectedHotspots}`
+        );
+        console.log(response);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch division data");
+        }
+        const data = await response.json();
+        console.log(data);
+
+        setDivisions(
+          data.sort((a, b) => a.localeCompare(b))
+        );        
+      } catch (error) {
+        console.error("Error fetching division data:", error);
+      }
+    };
+
+    fetchDivision();
+  }, [formData.region, selectedHotspots]);
+
   useEffect(() => {
-    fetchDistricts();
-  }, []);
+    if (!formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
 
-  const fetchDistricts = async () => {
-    try {
-      const response = await axios.get('https://iinms.brri.gov.bd/api/district/districts'); // Adjust API endpoint as needed
-      setDistricts(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching districts:", error);
-    }
-  };
+    const fetchDistrict = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch district data");
+        }
+        const data = await response.json();
+        setDistricts(data.sort((a, b) => a.localeCompare(b)));
+      } catch (error) {
+        console.error("Error fetching district data:", error);
+      }
+    };
+
+    fetchDistrict();
+  }, [formData.division, formData.region, selectedHotspots]);
   useEffect(() => {
-    fetchRegions();
-  }, []);
+    if (!selectedHotspots) return; // Prevent unnecessary API calls
 
-  const fetchRegions = async () => {
-    try {
-      const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
-      console.log(response);
+    const fetchRegion = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/regions?hotspot=${selectedHotspots}`
+        );
+        console.log(response);
 
-      setRegions(response.data.reverse());
-    } catch (error) {
-      console.error("Error fetching regions:", error);
-    }
-  };
+        if (!response.ok) {
+          throw new Error("Failed to fetch region data");
+        }
+        const data = await response.json();
+        console.log(data);
+
+        setRegions(data.sort((a, b) => a.localeCompare(b)));
+      } catch (error) {
+        console.error("Error fetching region data:", error);
+      }
+    };
+
+    fetchRegion();
+  }, [selectedHotspots]);
   // Base API URL
   const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
 
@@ -101,26 +164,7 @@ const UAORegistration = () => {
       alert("Geolocation is not supported by your browser.");
     }
   };
-  const [formData, setFormData] = useState({
-    name: "",
-    fatherName: "",
-    gender: "",
-    mobileNumber: "",
-    whatsappNumber: "",
-    imoNumber: "",
-    messengerId: "",
-    email: "",
-    alternateContact: "",
-    nationalId: "",
-    // Location Information
-    upazila: "",
-    district: "",
-    division: "",
-    region: "",
-    coordinates: "",
-    hotspot: selectedHotspots,
-    role: "UAO",
-  });
+
   const fetchUAOs = async () => {
     try {
       const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/UAO");
@@ -537,6 +581,77 @@ const UAORegistration = () => {
                 </div>
                 {/* Step 2: Location Information */}
                 <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {selectedHotspots.map((hotspotName) => (
+                      <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
+                        <span>{hotspotName}</span>
+                        <button
+                          type="button"
+                          className="ml-2 text-red-500"
+                          onClick={() => handleDelete(hotspotName)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <select
+                    name="hotspot"
+                    className="border w-full p-2 rounded"
+                    value=""
+                    onChange={handleSelect}
+                    required
+                  >
+                    <option value="">Select Hotspot</option>
+                    {hotspot?.map((hotspot) => (
+                      <option key={hotspot.id} value={hotspot.name}>
+                        {hotspot.name}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="region"
+                    className="border w-full p-2 rounded"
+                    value={formData.region}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Region</option>
+                    {regions?.map((hotspot) => (
+                      <option key={hotspot} value={hotspot}>
+                        {hotspot}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="division"
+                    className="border w-full p-2 rounded"
+                    value={formData.division}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Division</option>
+                    {divisions?.map((division) => (
+                      <option key={division} value={division}>
+                        {division}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    name="district"
+                    className="border w-full p-2 rounded"
+                    value={formData.district}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select District</option>
+                    {districts?.map((district) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    ))}
+                  </select>
                   <select
                     name="upazila"
                     className="border w-full p-2 rounded"
@@ -546,8 +661,8 @@ const UAORegistration = () => {
                   >
                     <option value="">Select Upazila</option>
                     {upazilas?.map((upazila) => (
-                      <option key={upazila.id} value={upazila.name}>
-                        {upazila.name}
+                      <option key={upazila} value={upazila}>
+                        {upazila}
                       </option>
                     ))}
                   </select>
@@ -568,233 +683,7 @@ const UAORegistration = () => {
                       <MdGpsFixed className="text-blue-500" />
                     </button>
                   </div>
-                  <select
-                    name="district"
-                    className="border w-full p-2 rounded"
-                    value={formData.district}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select District</option>
-                    {districts?.map((district) => (
-                      <option key={district.id} value={district.name}>
-                        {district.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    name="division"
-                    className="border w-full p-2 rounded"
-                    value={formData.division}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Division</option>
-                    {divisions?.map((division) => (
-                      <option key={division.id} value={division.name}>
-                        {division.name}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    name="region"
-                    className="border w-full p-2 rounded"
-                    value={formData.region}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Region</option>
-                    {regions?.map((hotspot) => (
-                      <option key={hotspot.id} value={hotspot.name}>
-                        {hotspot.name}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {selectedHotspots.map((hotspotName) => (
-                      <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
-                        <span>{hotspotName}</span>
-                        <button
-                          type="button"
-                          className="ml-2 text-red-500"
-                          onClick={() => handleDelete(hotspotName)}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <select
-                    name="hotspot"
-                    className="border w-full p-2 rounded"
-                    value="" // No value here as it's not multiple
-                    onChange={handleSelect}
-                    required
-                  >
-                    <option value="">Select Hotspot</option>
-                    {hotspot?.map((hotspot) => (
-                      <option key={hotspot.id} value={hotspot.name}>
-                        {hotspot.name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
-
-
-                {/* Step 3: Rice Crop Details */}
-                {/* <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
-                  <input
-                    type="text"
-                    name="farmSize"
-                    placeholder="Farm Size (in acres/hectares)"
-                    className="border w-full p-2 rounded"
-                    value={formData.farmSize}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="landType"
-                    placeholder="Land Type"
-                    className="border w-full p-2 rounded"
-                    value={formData.landType}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="cultivationSeason"
-                    placeholder="Season of Cultivation"
-                    className="border w-full p-2 rounded"
-                    value={formData.cultivationSeason}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="majorCrops"
-                    placeholder="Major Crops"
-                    className="border w-full p-2 rounded"
-                    value={formData.majorCrops}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="croppingPattern"
-                    placeholder="Cropping Pattern"
-                    className="border w-full p-2 rounded"
-                    value={formData.croppingPattern}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="riceVarieties"
-                    placeholder="Rice Varieties"
-                    className="border w-full p-2 rounded"
-                    value={formData.riceVarieties}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="plantingMethod"
-                    placeholder="Planting Method"
-                    className="border w-full p-2 rounded"
-                    value={formData.plantingMethod}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="irrigationPractices"
-                    placeholder="Irrigation Practices"
-                    className="border w-full p-2 rounded"
-                    value={formData.irrigationPractices}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="fertilizerUsage"
-                    placeholder="Fertilizer Usage"
-                    className="border w-full p-2 rounded"
-                    value={formData.fertilizerUsage}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="soilType"
-                    placeholder="Soil Type"
-                    className="border w-full p-2 rounded"
-                    value={formData.soilType}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="avgProduction"
-                    placeholder="Average Production (e.g., per season/year)"
-                    className="border w-full p-2 rounded"
-                    value={formData.avgProduction}
-                    onChange={handleChange}
-                  />
-                </div> */}
-
-
-                {/* Step 4: Crop Management */}
-                {/* <div className={`space-y-4 ${currentStep === 4 ? "" : "hidden"}`}>
-                  <input
-                    type="date"
-                    name="plantingDate"
-                    placeholder="Planned Planting/Sowing Date"
-                    className="border w-full p-2 rounded"
-                    value={formData.plantingDate}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="seedlingAge"
-                    placeholder="Seedling Age (in days)"
-                    className="border w-full p-2 rounded"
-                    value={formData.seedlingAge}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="date"
-                    name="transplantationDate"
-                    placeholder="Planned Transplantation Date"
-                    className="border w-full p-2 rounded"
-                    value={formData.transplantationDate}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="wateringStages"
-                    placeholder="Key Watering Stages"
-                    className="border w-full p-2 rounded"
-                    value={formData.wateringStages}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="date"
-                    name="harvestDate"
-                    placeholder="Planned Harvest Date"
-                    className="border w-full p-2 rounded"
-                    value={formData.harvestDate}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="pestDiseases"
-                    placeholder="Pest and Disease Management"
-                    className="border w-full p-2 rounded"
-                    value={formData.pestDiseases}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="weedManagement"
-                    placeholder="Weed Management Practices"
-                    className="border w-full p-2 rounded"
-                    value={formData.weedManagement}
-                    onChange={handleChange}
-                  />
-                </div> */}
-
               </form>
 
               {/* Navigation Buttons */}
