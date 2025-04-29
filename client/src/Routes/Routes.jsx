@@ -37,6 +37,7 @@ import PumpControl from "../Pages/PumpControl/PumpControl";
 import CIS from "../Pages/CIS/CIS";
 import CISTable from "../Pages/CIS/CISTable";
 import MLModel from "../Pages/MLModel/MLModel";
+import Protentiometer1 from "../Pages/Protentiometer/ProtentiometerTest1";
 
 export const router = createBrowserRouter([
   {
@@ -121,7 +122,7 @@ export const router = createBrowserRouter([
       },  
       {
         path: "/water-lavel-test",
-        element: <ProtentiometerTest/> , 
+        element: <Protentiometer1/> , 
       },  
       {
         path: "/water-potentiometer",
