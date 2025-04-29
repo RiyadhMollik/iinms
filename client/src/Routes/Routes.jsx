@@ -120,6 +120,10 @@ export const router = createBrowserRouter([
         element: <Protentiometer/> , 
       },  
       {
+        path: "/water-lavel-test",
+        element: <ProtentiometerTest/> , 
+      },  
+      {
         path: "/water-potentiometer",
         element: <WaterPotentiometer/> , 
       },  
