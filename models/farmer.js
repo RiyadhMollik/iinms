@@ -174,6 +174,14 @@ const Farmer = sequelize.define("Farmer", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  saaoId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: Farmer,
+      key: "id",
+    },
+    allowNull: false,
+  },
 });
 
 export default Farmer;

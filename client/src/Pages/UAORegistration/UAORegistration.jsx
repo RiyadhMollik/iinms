@@ -170,7 +170,7 @@ const UAORegistration = () => {
       const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/UAO");
       if (response.ok) {
         const data = await response.json();
-        setUAOList(data);
+        setUAOList(data.data);
       } else {
         throw new Error("Failed to fetch UAOs");
       }

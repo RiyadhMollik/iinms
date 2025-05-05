@@ -208,7 +208,7 @@ const SAAORegistration = () => {
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        setSAAOList(data);
+        setSAAOList(data.data);
       } else {
         throw new Error("Failed to fetch SAAOs");
       }

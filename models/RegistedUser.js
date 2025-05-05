@@ -1,6 +1,7 @@
 // models/RegistedUser.js
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
+import User from "./user.js";
 
 const RegistedUser = sequelize.define("RegistedUser", {
   name: {
@@ -91,7 +92,7 @@ const RegistedUser = sequelize.define("RegistedUser", {
   hotspot: {
     type: DataTypes.JSON,
     allowNull: true,
-  },  
+  },
   csa: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -174,6 +175,16 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  saaoId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: "id",
+    },
+    allowNull: true,
+  },
 });
+
+RegistedUser.belongsTo(User, { foreignKey: "saaoId" }); 
 
 export default RegistedUser;

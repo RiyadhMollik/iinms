@@ -96,7 +96,7 @@ const ADRegistration = () => {
       const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/AD");
       if (response.ok) {
         const data = await response.json();
-        setADList(data);
+        setADList(data.data);
       } else {
         throw new Error("Failed to fetch ADs");
       }

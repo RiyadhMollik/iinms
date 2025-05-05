@@ -151,7 +151,7 @@ const AdminRegistration = () => {
       const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/Admin");
       if (response.ok) {
         const data = await response.json();
-        setAdminList(data);
+        setAdminList(data.data);
       } else {
         throw new Error("Failed to fetch Admins");
       }
