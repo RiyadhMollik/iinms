@@ -90,10 +90,13 @@ const RainfallChart = () => {
 const SoilMoisture = () => {
   const [temperatureData, setTemperatureData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [startDateTime, setStartDateTime] = useState('');
+  const [endDateTime, setEndDateTime] = useState('');
+
   useEffect(() => {
     const fetchTemperatureData = async () => {
       try {
-        const response = await fetch("https://iinms.brri.gov.bd/api/stats/soil-moisture");
+        const response = await fetch(`https://iinms.brri.gov.bd/api/stats/soil-moisture?startTime=${startDateTime}&endTime=${endDateTime}`);
         const data = await response.json();
         console.log(data);
         setSelectedDate(data.average)
@@ -117,47 +120,76 @@ const SoilMoisture = () => {
   }, []);
 
   return (
-    <div className="min-h-96 md:h-96 lg:h-96 flex flex-col md:flex-row lg:flex-row gap-5 md:gap-0 lg:gap-0">
-      <div className="w-full h-64 md:h-auto">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={temperatureData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="SoilMoisture"
-              stroke="#bcad98"
-              strokeWidth={2}
-              fill="#bcad98"
-            />
-          </LineChart>
-        </ResponsiveContainer>
+    <div>
+      <div className="flex flex-col md:flex-row gap-4 mb-4 ml-10">
+        <div>
+          <label className="block mb-1 font-medium">Start Date & Time</label>
+          <input
+            type="datetime-local"
+            value={startDateTime}
+            onChange={(e) => setStartDateTime(e.target.value)}
+            className="border px-3 py-2 rounded w-full"
+          />
+        </div>
+        <div>
+          <label className="block mb-1 font-medium">End Date & Time</label>
+          <input
+            type="datetime-local"
+            value={endDateTime}
+            onChange={(e) => setEndDateTime(e.target.value)}
+            className="border px-3 py-2 rounded w-full"
+          />
+        </div>
+        <button
+          // onClick={fetchSoilMoistureData}
+          className="self-end bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Filter
+        </button>
       </div>
+      <div className="min-h-96 md:h-96 lg:h-96 flex flex-col md:flex-row lg:flex-row gap-5 md:gap-0 lg:gap-0">
+        <h1>{startDateTime} {endDateTime}</h1>
+        <div className="w-full h-64 md:h-auto">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={temperatureData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="SoilMoisture"
+                stroke="#bcad98"
+                strokeWidth={2}
+                fill="#bcad98"
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
 
-      <div className="w-full md:w-1/3 lg:w-1/3">
-        <div className="overflow-x-auto border border-gray-300 rounded-lg max-h-[365px] custom-scrollbar">
-          <table className="min-w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="px-4 py-2 border-b font-montserrat font-extralight">Date</th>
-                <th className="px-4 py-2 border-b font-montserrat font-extralight">Avg</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(selectedDate ?? []).map((data, index) => (
-                <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                  <td className="px-4 py-2 border-b font-montserrat font-extralight">{data.date}</td>
-                  <td className="px-4 py-2 border-b font-montserrat font-extralight">
-                    {data.min_soil_moisture !== undefined && data.max_soil_moisture !== undefined
-                      ? ((data.min_soil_moisture + data.max_soil_moisture) / 2).toFixed(2)
-                      : "N/A"}
-                  </td>
+        <div className="w-full md:w-1/3 lg:w-1/3">
+          <div className="overflow-x-auto border border-gray-300 rounded-lg max-h-[365px] custom-scrollbar">
+            <table className="min-w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2 border-b font-montserrat font-extralight">Date</th>
+                  <th className="px-4 py-2 border-b font-montserrat font-extralight">Avg</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {(selectedDate ?? []).map((data, index) => (
+                  <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <td className="px-4 py-2 border-b font-montserrat font-extralight">{data.date}</td>
+                    <td className="px-4 py-2 border-b font-montserrat font-extralight">
+                      {data.min_soil_moisture !== undefined && data.max_soil_moisture !== undefined
+                        ? ((data.min_soil_moisture + data.max_soil_moisture) / 2).toFixed(2)
+                        : "N/A"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -249,7 +281,7 @@ function Protentiometer() {
       <div className="space-y-8">
         <div className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg font-montserrat font-extralight mb-4">Soil Moisture (%)</h2>
-          <div className="md:p-14 lg:p-14">
+          <div className="">
             <SoilMoisture />
           </div>
         </div>

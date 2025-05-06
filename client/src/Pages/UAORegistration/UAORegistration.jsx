@@ -87,7 +87,7 @@ const UAORegistration = () => {
   }, [formData.region, selectedHotspots]);
 
   useEffect(() => {
-    if (!formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
+    if (!formData.division || !formData.region || !selectedHotspots) return; 
 
     const fetchDistrict = async () => {
       try {
@@ -103,11 +103,10 @@ const UAORegistration = () => {
         console.error("Error fetching district data:", error);
       }
     };
-
     fetchDistrict();
   }, [formData.division, formData.region, selectedHotspots]);
   useEffect(() => {
-    if (!selectedHotspots) return; // Prevent unnecessary API calls
+    if (!selectedHotspots) return;
 
     const fetchRegion = async () => {
       try {
