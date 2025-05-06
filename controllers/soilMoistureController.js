@@ -23,21 +23,24 @@ export const getSoilMoistureStats = async (req, res) => {
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
         `;
+
         const start = startTime ? new Date(startTime) : null;
         const end = endTime ? new Date(endTime) : null;
-        
+
         if (start && end) {
             query = `
             SELECT 
                 \`timestamp\`,
                 soil_moisture
             FROM \`1100012410150002\`
-            ${startTime && endTime ? `WHERE \`timestamp\` BETWEEN ? AND ?` : ''}
+            WHERE \`timestamp\` BETWEEN ? AND ?
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
-        `;
+            `;
         }
-        const [last20Results] = await db.query(query);
+
+        // Execute the query with parameters to prevent SQL injection
+        const [last20Results] = await db.query(query, start && end ? [start, end] : []);
         const [avgResult] = await db.query(queryLast20);
 
         res.json({
@@ -50,6 +53,7 @@ export const getSoilMoistureStats = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
 export const getSoilMoistureStatsTest = async (req, res) => {
     try {
         const queryLast20 = `
