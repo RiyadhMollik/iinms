@@ -1,6 +1,7 @@
 import db from "../config/db.js";
 
 export const getWaterLevelStats = async (req, res) => {
+    const { startTime, endTime } = req.query;
     try {
         const queryLast20 = `
             SELECT 
@@ -13,7 +14,7 @@ export const getWaterLevelStats = async (req, res) => {
             LIMIT 10;
         `;
 
-        const query = `
+        let query = `
             SELECT 
                 \`timestamp\`,
                 water_level
@@ -21,8 +22,26 @@ export const getWaterLevelStats = async (req, res) => {
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
         `;
+        // Convert local time to UTC
+        const start = startTime ? new Date(startTime).toISOString() : null;  // UTC time
+        const end = endTime ? new Date(endTime).toISOString() : null;        // UTC time
 
-        const [last20Results] = await db.query(query);
+        console.log("Start Date (UTC):", start);
+        console.log("End Date (UTC):", end);
+        
+        if (start && end) {
+            query = `
+                SELECT 
+                    \`timestamp\`,
+                    water_level
+                FROM \`1100012410150002\`
+                WHERE \`timestamp\` BETWEEN ? AND ?
+                ORDER BY \`timestamp\` DESC
+                LIMIT 20;
+            `;
+        }
+
+        const [last20Results] = await db.query(query, { replacements: [start, end] });
         const [avgResult] = await db.query(queryLast20);
 
         res.json({

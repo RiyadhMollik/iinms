@@ -1,6 +1,7 @@
 import db from "../config/db.js";
 
 export const getTemperatureStats = async (req, res) => {
+    const { startTime, endTime } = req.query;
     try {
         const queryLast20 = `
             SELECT 
@@ -21,8 +22,25 @@ export const getTemperatureStats = async (req, res) => {
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
         `;
-
-        const [last20Results] = await db.query(query);
+         // Convert local time to UTC
+         const start = startTime ? new Date(startTime).toISOString() : null;  // UTC time
+         const end = endTime ? new Date(endTime).toISOString() : null;        // UTC time
+ 
+         console.log("Start Date (UTC):", start);
+         console.log("End Date (UTC):", end);
+         
+        if (start && end) {
+            query = `
+                SELECT 
+                    \`timestamp\`,
+                    temperature
+                FROM \`1100012410150002\`
+                WHERE \`timestamp\` BETWEEN ? AND ?
+                ORDER BY \`timestamp\` DESC
+                LIMIT 20;
+            `;
+        }
+        const [last20Results] = await db.query(query, { replacements: [start, end] });
         const [avgResult] = await db.query(queryLast20);
 
         res.json({
