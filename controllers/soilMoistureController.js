@@ -23,7 +23,9 @@ export const getSoilMoistureStats = async (req, res) => {
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
         `;
-
+        const start = startTime ? new Date(startTime) : null;
+        const end = endTime ? new Date(endTime) : null;
+        
         if (start && end) {
             query = `
             SELECT 
@@ -33,7 +35,7 @@ export const getSoilMoistureStats = async (req, res) => {
             ${startTime && endTime ? `WHERE \`timestamp\` BETWEEN ? AND ?` : ''}
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
-        `;  
+        `;
         }
         const [last20Results] = await db.query(query);
         const [avgResult] = await db.query(queryLast20);
