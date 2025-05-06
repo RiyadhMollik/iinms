@@ -93,28 +93,30 @@ const SoilMoisture = () => {
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
 
-  useEffect(() => {
-    const fetchTemperatureData = async () => {
-      try {
-        const response = await fetch(`https://iinms.brri.gov.bd/api/stats/soil-moisture?startTime=${startDateTime}&endTime=${endDateTime}`);
-        const data = await response.json();
-        console.log(data);
-        setSelectedDate(data.average)
-        if (Array.isArray(data.last20)) {
-          const formattedData = data.last20.map(({ timestamp, soil_moisture }) => ({
-            date: new Date(timestamp).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            SoilMoisture: soil_moisture,
-          }));
 
-          setTemperatureData(formattedData.reverse());
-        }
-      } catch (error) {
-        console.error("Error fetching temperature data:", error);
+  const fetchTemperatureData = async () => {
+    try {
+      const response = await fetch(`https://iinms.brri.gov.bd/api/stats/soil-moisture?startTime=${startDateTime}&endTime=${endDateTime}`);
+      const data = await response.json();
+      console.log(data);
+      setSelectedDate(data.average)
+      if (Array.isArray(data.last20)) {
+        const formattedData = data.last20.map(({ timestamp, soil_moisture }) => ({
+          date: new Date(timestamp).toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          SoilMoisture: soil_moisture,
+        }));
+
+        setTemperatureData(formattedData.reverse());
       }
-    };
+    } catch (error) {
+      console.error("Error fetching temperature data:", error);
+    }
+  };
+  useEffect(() => {
+
 
     fetchTemperatureData();
   }, []);
@@ -141,14 +143,13 @@ const SoilMoisture = () => {
           />
         </div>
         <button
-          // onClick={fetchSoilMoistureData}
+          onClick={fetchTemperatureData}
           className="self-end bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
           Filter
         </button>
       </div>
       <div className="min-h-96 md:h-96 lg:h-96 flex flex-col md:flex-row lg:flex-row gap-5 md:gap-0 lg:gap-0">
-        <h1>{startDateTime} {endDateTime}</h1>
         <div className="w-full h-64 md:h-auto">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={temperatureData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
