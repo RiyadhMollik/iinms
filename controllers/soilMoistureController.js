@@ -39,8 +39,15 @@ export const getSoilMoistureStats = async (req, res) => {
             `;
         }
 
-        // Execute the query with parameters to prevent SQL injection
-        const [last20Results] = await db.query(query, start && end ? [start, end] : []);
+        // Check if start and end are valid date objects
+        console.log("Start Date:", start);
+        console.log("End Date:", end);
+
+        // Pass parameters only if both start and end are defined
+        const parameters = (start && end) ? [start, end] : [];
+
+        // Execute the query with parameters
+        const [last20Results] = await db.query(query, { replacements: parameters });
         const [avgResult] = await db.query(queryLast20);
 
         res.json({
@@ -53,7 +60,6 @@ export const getSoilMoistureStats = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
-
 
 export const getSoilMoistureStatsTest = async (req, res) => {
     try {
