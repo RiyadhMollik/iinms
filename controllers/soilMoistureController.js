@@ -24,8 +24,12 @@ export const getSoilMoistureStats = async (req, res) => {
             LIMIT 20;
         `;
 
-        const start = startTime ? new Date(startTime) : null;
-        const end = endTime ? new Date(endTime) : null;
+        // Convert local time to UTC
+        const start = startTime ? new Date(startTime).toISOString() : null;  // UTC time
+        const end = endTime ? new Date(endTime).toISOString() : null;        // UTC time
+
+        console.log("Start Date (UTC):", start);
+        console.log("End Date (UTC):", end);
 
         if (start && end) {
             query = `
@@ -39,15 +43,8 @@ export const getSoilMoistureStats = async (req, res) => {
             `;
         }
 
-        // Check if start and end are valid date objects
-        console.log("Start Date:", start);
-        console.log("End Date:", end);
-
-        // Pass parameters only if both start and end are defined
-        const parameters = (start && end) ? [start, end] : [];
-
         // Execute the query with parameters
-        const [last20Results] = await db.query(query, { replacements: parameters });
+        const [last20Results] = await db.query(query, { replacements: [start, end] });
         const [avgResult] = await db.query(queryLast20);
 
         res.json({
@@ -60,6 +57,7 @@ export const getSoilMoistureStats = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
 
 export const getSoilMoistureStatsTest = async (req, res) => {
     try {
