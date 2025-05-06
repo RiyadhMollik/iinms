@@ -29,13 +29,13 @@ export const getSoilMoistureStats = async (req, res) => {
 
         if (start && end) {
             query = `
-            SELECT 
-                \`timestamp\`,
-                soil_moisture
-            FROM \`1100012410150002\`
-            WHERE \`timestamp\` BETWEEN ? AND ?
-            ORDER BY \`timestamp\` DESC
-            LIMIT 20;
+                SELECT 
+                    \`timestamp\`,
+                    soil_moisture
+                FROM \`1100012410150002\`
+                WHERE \`timestamp\` BETWEEN ? AND ?
+                ORDER BY \`timestamp\` DESC
+                LIMIT 20;
             `;
         }
 
@@ -53,6 +53,7 @@ export const getSoilMoistureStats = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
 
 export const getSoilMoistureStatsTest = async (req, res) => {
     try {
