@@ -63,7 +63,7 @@ const RainfallChart = () => {
           />
         </div>
         <button
-          onClick={fetchTemperatureData}
+          // onClick={fetchTemperatureData}
           className="self-end bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
         >
           Filter

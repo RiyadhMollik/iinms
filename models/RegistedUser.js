@@ -1,7 +1,5 @@
-// models/RegistedUser.js
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
-import User from "./user.js";
 
 const RegistedUser = sequelize.define("RegistedUser", {
   name: {
@@ -19,6 +17,7 @@ const RegistedUser = sequelize.define("RegistedUser", {
   mobileNumber: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   whatsappNumber: {
     type: DataTypes.STRING,
@@ -52,7 +51,6 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  // Location Information
   village: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -97,7 +95,6 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  // Rice Crop Details
   farmSize: {
     type: DataTypes.STRING,
     allowNull: true,
@@ -175,16 +172,23 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  majorInsects: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  majorDiseases: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  saaoName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   saaoId: {
     type: DataTypes.INTEGER,
-    references: {
-      model: User,
-      key: "id",
-    },
     allowNull: true,
   },
 });
 
-RegistedUser.belongsTo(User, { foreignKey: "saaoId" }); 
 
 export default RegistedUser;

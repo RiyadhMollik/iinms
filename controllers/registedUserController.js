@@ -1,6 +1,6 @@
 // controllers/farmerController.js
 import Farmer from "../models/RegistedUser.js";
-
+import sequelize from "../config/db.js";
 // Create a new farmer
 export const createFarmer = async (req, res) => {
   
@@ -65,17 +65,71 @@ export const deleteFarmer = async (req, res) => {
   }
 };
 
-// Get farmers by role
+
 export const getFarmersByRole = async (req, res) => {
-    try {
-      const { role } = req.params;
-      const farmers = await Farmer.findAll({ where: { role } });
-      if (farmers.length === 0) {
-        return res.status(404).json({ message: "No farmers found with this role" });
-      }
-      res.status(200).json(farmers);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+  try {
+    const { role } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
+    const parsedLimit = parseInt(limit, 10);
+    
+    const farmers = await Farmer.findAll({
+      where: { role },
+      limit: parsedLimit,
+      offset: offset,
+    });
+
+    if (farmers.length === 0) {
+      return res.status(404).json({ message: "No farmers found with this role" });
     }
-  };
+    const totalFarmers = await Farmer.count({ where: { role } });
+    const totalPages = Math.ceil(totalFarmers / parsedLimit);
+    res.status(200).json({
+      data: farmers,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalFarmers,
+        limit: parsedLimit,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
   
+export const getStatsBySaaoId = async (req, res) => {
+  try {
+    const { saaoId } = req.params;
+
+    // Check if saaoId is provided
+    if (!saaoId) {
+      return res.status(400).json({ error: 'saaoId is required' });
+    }
+
+    // Query the database to get the total count of entries per day for the given saaoId
+    const stats = await Farmer.findAll({
+      where: {
+        saaoId: saaoId,
+      },
+      attributes: [
+        [sequelize.fn('DATE', sequelize.col('createdAt')), 'date'], // Extract date from createdAt
+        [sequelize.fn('COUNT', sequelize.col('id')), 'totalEntries'], // Count the number of records
+      ],
+      group: [sequelize.fn('DATE', sequelize.col('createdAt'))], // Group by the date part of createdAt
+      order: [[sequelize.fn('DATE', sequelize.col('createdAt')), 'ASC']], // Order by date ascending
+    });
+
+    // If no records found, return an empty array
+    if (!stats.length) {
+      return res.status(404).json({ message: 'No data found for the provided saaoId.' });
+    }
+
+    // Return the stats in the response
+    return res.status(200).json(stats);
+  } catch (error) {
+    console.error('Error fetching stats:', error);
+    return res.status(500).json({ error: 'An error occurred while fetching stats.' });
+  }
+};

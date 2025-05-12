@@ -1,6 +1,7 @@
+// models/User.js
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
-import Farmer from "./RegistedUser.js";
+import RegistedUser from "./RegistedUser.js"; // Import RegistedUser at the top
 
 const User = sequelize.define("User", {
   id: {
@@ -28,7 +29,7 @@ const User = sequelize.define("User", {
   farmerId: {
     type: DataTypes.INTEGER,
     references: {
-      model: Farmer,
+      model: RegistedUser, 
       key: "id",
     },
     allowNull: false,
@@ -36,7 +37,7 @@ const User = sequelize.define("User", {
 });
 
 // Associations
-User.belongsTo(Farmer, { foreignKey: "farmerId" });
-Farmer.hasMany(User, { foreignKey: "farmerId" });
+User.belongsTo(RegistedUser, { foreignKey: "farmerId" });
+RegistedUser.hasMany(User, { foreignKey: "farmerId" });
 
 export default User;

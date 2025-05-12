@@ -6,7 +6,8 @@ import {
   getFarmerById,
   updateFarmer,
   deleteFarmer,
-  getFarmersByRole
+  getFarmersByRole,
+  getStatsBySaaoId
 } from "../controllers/registedUserController.js";
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get("/farmers/:id", getFarmerById);
 router.put("/farmers/:id", updateFarmer);
 router.delete("/farmers/:id", deleteFarmer);
 router.get('/farmers/role/:role', getFarmersByRole); // New route
+router.get('/farmers/stats/:saaoId', getStatsBySaaoId); // New route
 
 export default router;
