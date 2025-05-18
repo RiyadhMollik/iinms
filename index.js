@@ -3,6 +3,7 @@ import express from 'express';
 import path from "path";
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import fs from 'fs';
 import userRoutes from './routes/userRoutes.js';
 import sequelize from './config/db.js';
 import roleRoutes from "./routes/roleRoutes.js";
