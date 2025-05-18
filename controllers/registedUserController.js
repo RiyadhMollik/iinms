@@ -76,8 +76,8 @@ export const getFarmersByRole = async (req, res) => {
     const offset = (page - 1) * limit;
     const parsedLimit = parseInt(limit, 10);
     const whereClause = { role };
-    if (saaoId !== null) {
-      whereClause.saaoId = saaoId; // or parseInt(saaoId, 10) if you want strict typing
+    if (saaoId && saaoId !== "null") {
+      whereClause.saaoId = parseInt(saaoId, 10); // make sure it's a number
     }
     console.log(whereClause , 'whereClause');
     
