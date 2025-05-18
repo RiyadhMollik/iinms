@@ -34,6 +34,10 @@ const User = sequelize.define("User", {
     },
     allowNull: false,
   },
+  roleId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 });
 
 // Associations

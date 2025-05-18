@@ -4,11 +4,11 @@ import Farmer from "../models/RegistedUser.js";
 
 // Create a new user
 export const createUser = async (req, res) => {
-  const { name, role, mobileNumber, password, farmerId } = req.body;
+  const { name, role, mobileNumber, password, farmerId , roleId } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, role, mobileNumber, password: hashedPassword, farmerId });
+    const user = await User.create({ name, role, mobileNumber, password: hashedPassword, farmerId , roleId });
     res.status(201).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -49,7 +49,7 @@ export const getUsers = async (req, res) => {
 // Update a user
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, role, mobileNumber, password, farmerId } = req.body;
+  const { name, role, mobileNumber, password, farmerId , roleId } = req.body;
 
   try {
     const user = await User.findByPk(id);
@@ -59,7 +59,7 @@ export const updateUser = async (req, res) => {
 
     const hashedPassword = password ? await bcrypt.hash(password, 10) : user.password;
 
-    await user.update({ name, role, mobileNumber, password: hashedPassword, farmerId });
+    await user.update({ name, role, mobileNumber, password: hashedPassword, farmerId , roleId });
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
