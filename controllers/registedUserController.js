@@ -79,7 +79,8 @@ export const getFarmersByRole = async (req, res) => {
     if (saaoId) {
       whereClause.saaoId = saaoId; // or parseInt(saaoId, 10) if you want strict typing
     }
-
+    console.log(whereClause);
+    
     const farmers = await Farmer.findAll({
       where: whereClause,
       limit: parsedLimit,
