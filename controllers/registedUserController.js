@@ -68,13 +68,13 @@ export const deleteFarmer = async (req, res) => {
 
 export const getFarmersByRole = async (req, res) => {
   try {
-    const { saaoId, page = 1, limit = 10 } = req.query;
+    const { saaoId } = req.query;
     const { role } = req.params;
-
+    const { page = 1, limit = 10 } = req.query;
+    console.log(saaoId , role);
+    
     const offset = (page - 1) * limit;
     const parsedLimit = parseInt(limit, 10);
-
-    // Build dynamic where clause
     const whereClause = { role };
     if (saaoId) {
       whereClause.saaoId = saaoId; // or parseInt(saaoId, 10) if you want strict typing
@@ -89,10 +89,8 @@ export const getFarmersByRole = async (req, res) => {
     if (farmers.length === 0) {
       return res.status(404).json({ message: "No farmers found with this role" });
     }
-
     const totalFarmers = await Farmer.count({ where: whereClause });
     const totalPages = Math.ceil(totalFarmers / parsedLimit);
-
     res.status(200).json({
       data: farmers,
       pagination: {
@@ -106,7 +104,6 @@ export const getFarmersByRole = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 
 export const getStatsBySaaoId = async (req, res) => {
