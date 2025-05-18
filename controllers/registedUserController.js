@@ -88,7 +88,15 @@ export const getFarmersByRole = async (req, res) => {
     });
 
     if (farmers.length === 0) {
-      return res.status(404).json({ message: "No farmers found with this role" });
+      return res.status(404).json({
+      data: farmers,
+      pagination: {
+        currentPage: 0,
+        totalPages : 0,
+        totalFarmers:0,
+        limit: parsedLimit,
+      },
+    });
     }
     const totalFarmers = await Farmer.count({ where: whereClause });
     const totalPages = Math.ceil(totalFarmers / parsedLimit);
