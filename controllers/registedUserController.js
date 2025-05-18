@@ -3,7 +3,7 @@ import Farmer from "../models/RegistedUser.js";
 import sequelize from "../config/db.js";
 // Create a new farmer
 export const createFarmer = async (req, res) => {
-  
+
   console.log(req.body);
   try {
     const farmer = await Farmer.create(req.body);
@@ -68,13 +68,20 @@ export const deleteFarmer = async (req, res) => {
 
 export const getFarmersByRole = async (req, res) => {
   try {
+    const { saaoId, page = 1, limit = 10 } = req.query;
     const { role } = req.params;
-    const { page = 1, limit = 10 } = req.query;
+
     const offset = (page - 1) * limit;
     const parsedLimit = parseInt(limit, 10);
-    
+
+    // Build dynamic where clause
+    const whereClause = { role };
+    if (saaoId) {
+      whereClause.saaoId = saaoId; // or parseInt(saaoId, 10) if you want strict typing
+    }
+
     const farmers = await Farmer.findAll({
-      where: { role },
+      where: whereClause,
       limit: parsedLimit,
       offset: offset,
     });
@@ -82,8 +89,10 @@ export const getFarmersByRole = async (req, res) => {
     if (farmers.length === 0) {
       return res.status(404).json({ message: "No farmers found with this role" });
     }
-    const totalFarmers = await Farmer.count({ where: { role } });
+
+    const totalFarmers = await Farmer.count({ where: whereClause });
     const totalPages = Math.ceil(totalFarmers / parsedLimit);
+
     res.status(200).json({
       data: farmers,
       pagination: {
@@ -98,7 +107,8 @@ export const getFarmersByRole = async (req, res) => {
   }
 };
 
-  
+
+
 export const getStatsBySaaoId = async (req, res) => {
   try {
     const { saaoId } = req.params;
