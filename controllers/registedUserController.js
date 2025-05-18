@@ -89,7 +89,7 @@ export const getFarmersByRole = async (req, res) => {
 
     if (farmers.length === 0) {
       return res.status(404).json({
-      data: farmers,
+      data: [],
       pagination: {
         currentPage: 0,
         totalPages : 0,
