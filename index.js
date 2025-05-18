@@ -100,6 +100,36 @@ app.post("/pump/auto-off", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Hello to online API");
 });
+const publicPath = path.join(__dirname, 'public');
+if (!fs.existsSync(publicPath)) {
+  fs.mkdirSync(publicPath);
+}
+
+const csvFilePath = path.join(publicPath, 'numbers.csv');
+
+// Write CSV header if the file does not exist
+if (!fs.existsSync(csvFilePath)) {
+  fs.writeFileSync(csvFilePath, 'mobile,phone\n');
+}
+
+// API endpoint
+app.post('/api/save-number', (req, res) => {
+  const { mobile, phone } = req.body;
+
+  if (!mobile || !phone) {
+    return res.status(400).json({ message: 'Mobile and phone are required' });
+  }
+
+  const line = `${mobile},${phone}\n`;
+
+  fs.appendFile(csvFilePath, line, (err) => {
+    if (err) {
+      console.error('Error writing to CSV:', err);
+      return res.status(500).json({ message: 'Failed to save data' });
+    }
+    res.status(200).json({ message: 'Data saved successfully' });
+  });
+});
 app.listen(PORT, () => {
   sequelize.sync()
   console.log(`Server Running on port ${PORT}`);
