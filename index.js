@@ -107,14 +107,35 @@ if (!fs.existsSync(publicPath)) {
 }
 
 const csvFilePath = path.join(publicPath, 'numbers.csv');
+const csvFilePath2 = path.join(publicPath, 'nochance.csv');
 
 // Write CSV header if the file does not exist
 if (!fs.existsSync(csvFilePath)) {
   fs.writeFileSync(csvFilePath, 'mobile,phone\n');
 }
+if (!fs.existsSync(csvFilePath2)) {
+  fs.writeFileSync(csvFilePath2, 'mobile,phone\n');
+}
 
 // API endpoint
 app.post('/api/save-number', (req, res) => {
+  const { mobile, phone } = req.body;
+
+  if (!mobile || !phone) {
+    return res.status(400).json({ message: 'Mobile and phone are required' });
+  }
+
+  const line = `${mobile},${phone}\n`;
+
+  fs.appendFile(csvFilePath, line, (err) => {
+    if (err) {
+      console.error('Error writing to CSV:', err);
+      return res.status(500).json({ message: 'Failed to save data' });
+    }
+    res.status(200).json({ message: 'Data saved successfully' });
+  });
+});
+app.post('/api/save-number-nochance', (req, res) => {
   const { mobile, phone } = req.body;
 
   if (!mobile || !phone) {
