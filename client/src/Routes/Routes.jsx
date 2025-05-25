@@ -38,6 +38,7 @@ import CIS from "../Pages/CIS/CIS";
 import CISTable from "../Pages/CIS/CISTable";
 import MLModel from "../Pages/MLModel/MLModel";
 import Protentiometer1 from "../Pages/Protentiometer/ProtentiometerTest1";
+import AddDevice from "../Pages/AddDevice/AddDevice";
 
 export const router = createBrowserRouter([
   {
@@ -147,6 +148,10 @@ export const router = createBrowserRouter([
       {
         path: "/ultra-sound",
         element: <UltraSound/> , 
+      },  
+      {
+        path: "/add-device",
+        element: <AddDevice/> , 
       },  
       {
         path: "/about",

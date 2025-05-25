@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
-import { MdGpsFixed } from "react-icons/md";
-import axios from "axios";
+import { ChevronsUpDown } from "lucide-react";
+import { AuthContext } from "../../Components/context/AuthProvider";
+import { useContext } from "react";
 const SAAORegistration = () => {
+  const { rolePermission } = useContext(AuthContext);
   const [isSAAOModalOpen, setIsSAAOModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
@@ -19,6 +21,18 @@ const SAAORegistration = () => {
   const [block, setBlock] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [irrigationPracticesOthers, setIrrigationPracticesOthers] = useState("");
+  const [otherSoilType, setOtherSoilType] = useState("");
+  const [page, setPage] = useState(1);
+  const [selectedMajorCrop, setSelectedMajorCrop] = useState([]);
+  const [isOtherMajorCropOpen, setIsOtherMajorCropOpen] = useState(false);
+  const [selectedMajorCropOthers, setSelectedMajorCropOthers] = useState("");
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalFarmers: 0,
+    limit: 10,
+  });
   const [formData, setFormData] = useState({
     name: "",
     fatherName: "",
@@ -29,14 +43,20 @@ const SAAORegistration = () => {
     messengerId: "",
     email: "",
     alternateContact: "",
-    nationalId: "",
+    // nationalId: "",
     // Location Information
     upazila: "",
     district: "",
     division: "",
     region: "",
     coordinates: "",
+    landType: "",
     hotspot: selectedHotspots,
+    majorCrops: selectedMajorCrop.join(", "),
+    irrigationPractices: "",
+    plantingMethods: "",
+    croppingPattern: "",
+    riceVarieties: "",
     role: "saao",
   });
   useEffect(() => {
@@ -58,7 +78,7 @@ const SAAORegistration = () => {
     fetchUnion();
   }, [formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
   useEffect(() => {
-    if (!formData.union || !formData.upazila || !formData.district  || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
+    if (!formData.union || !formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
 
     const fetchBlock = async () => {
       try {
@@ -74,7 +94,7 @@ const SAAORegistration = () => {
     };
 
     fetchBlock();
-  }, [formData.union,formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
+  }, [formData.union, formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
 
   useEffect(() => {
     if (!formData.district || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
@@ -204,11 +224,17 @@ const SAAORegistration = () => {
   };
   const fetchSAAOs = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/saao");
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/saao?page=${page}&limit=${rowsPerPage}`);
       if (response.ok) {
         const data = await response.json();
         console.log(data);
         setSAAOList(data.data);
+        setPagination({
+          currentPage: data.pagination.currentPage,
+          totalPages: data.pagination.totalPages,
+          totalFarmers: data.pagination.totalFarmers,
+          limit: data.pagination.limit,
+        });
       } else {
         throw new Error("Failed to fetch SAAOs");
       }
@@ -219,7 +245,7 @@ const SAAORegistration = () => {
 
   useEffect(() => {
     fetchSAAOs();
-  }, []);
+  }, [page, rowsPerPage]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
@@ -232,7 +258,7 @@ const SAAORegistration = () => {
     { name: "Messenger ID", visible: true },
     { name: "Email", visible: true },
     { name: "Alternate Contact", visible: true },
-    { name: "National ID", visible: true },
+    // { name: "National ID", visible: true },
     // Location Information
     { name: "Block", visible: true },
     { name: "Union", visible: true },
@@ -240,7 +266,7 @@ const SAAORegistration = () => {
     { name: "District", visible: true },
     { name: "Division", visible: true },
     { name: "Region", visible: true },
-    { name: "Coordinates", visible: true },
+    // { name: "Coordinates", visible: true },
     { name: "Hotspot", visible: true },
     { name: "Action", visible: true },
   ];
@@ -281,6 +307,15 @@ const SAAORegistration = () => {
     setIsSAAOModalOpen(false);
   };
   const registerSAAO = async () => {
+
+    if (formData.soilType === "others") {
+      formData.soilType = otherSoilType;
+    }
+    if (formData.irrigationPractices === "others") {
+      formData.irrigationPractices = irrigationPracticesOthers;
+    }
+    console.log("Form Data: ", formData);
+
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit
@@ -355,7 +390,8 @@ const SAAORegistration = () => {
   const handleEdit = (SAAO) => {
     setIsEdit(true);
     setIsSAAOModalOpen(true);
-
+    console.log(SAAO);
+    
     setFormData({
       name: SAAO.name || "",
       fatherName: SAAO.fatherName || "",
@@ -374,12 +410,46 @@ const SAAORegistration = () => {
       division: SAAO.division || "",
       region: SAAO.region || "",
       coordinates: SAAO.coordinates || "",
+      majorCrops: SAAO.majorCrops || "",
+      plantingMethod: SAAO.plantingMethod || "",
+      irrigationPractices: SAAO.irrigationPractices || "",
+      croppingPattern: SAAO.croppingPattern || "",
+      riceVarieties: SAAO.riceVarieties || "",
+      soilType: SAAO.soilType || "",
+      landType: SAAO.landType || "",
       hotspot: SAAO.hotspot || [],
       role: SAAO.role || "saao", // defaulting to "saao"
     });
     setSelectedHotspots(SAAO.hotspot || []);
     setSelectedId(SAAO.id);
   };
+
+  const handleSelectCrop = (e) => {
+    const selectedValue = e.target.value;
+    if (selectedValue === "others") {
+      setIsOtherMajorCropOpen(true);
+      return;
+    }
+    // Check if the value is already selected
+    if (!selectedMajorCrop.includes(selectedValue)) {
+      const updatedSelectedMajorCrop = [...selectedMajorCrop, selectedValue];
+      setSelectedMajorCrop(updatedSelectedMajorCrop);
+      setFormData({
+        ...formData,
+        majorCrops: updatedSelectedMajorCrop.join(', '), // Convert array to string (comma-separated)
+      });
+    }
+  }
+  const handleDeleteCrop = (valueToDelete) => {
+    // Remove selected value
+    const updatedSelectedMajorCrop = selectedMajorCrop.filter((value) => value !== valueToDelete);
+    setSelectedMajorCrop(updatedSelectedMajorCrop);
+  };
+  const handleAddCrop = () => {
+    setSelectedMajorCrop([...selectedMajorCrop, selectedMajorCropOthers]);
+    setIsOtherMajorCropOpen(false);
+    setSelectedMajorCropOthers("");
+  }
 
   return (
     <div className="min-h-screen w-full bg-gray-100">
@@ -420,10 +490,8 @@ const SAAORegistration = () => {
                 <option value={25}>Show 25</option>
                 <option value={50}>Show 50</option>
                 <option value={100}>Show 100</option>
-                <option value={500}>Show 500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
-              <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">CSV</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">PDF</button>
               <button
@@ -436,27 +504,40 @@ const SAAORegistration = () => {
           </div>
 
           {/* Table */}
-          <div className="max-w-[150vh]  overflow-x-scroll">
-            <table className="table-auto w-full mt-4 border rounded ">
-              <thead>
-                <tr className="bg-gray-200">
+          <div className="max-w-[150vh]  overflow-x-scroll overflow-auto max-h-[500px] custom-scrollbar">
+            <table className="table-fixed w-full mt-4 border rounded">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-gray-50 text-sm border-b">
                   {columns
                     .filter((col) => col.visible)
-                    .map((col) => (
-                      <th key={col.name} className="border px-4 py-2">
-                        {col.name}
+                    .map((col, index) => (
+                      <th
+                        key={col.name}
+                        className={`border px-4 py-2 ${index === 0 ? "sticky left-0 bg-gray-50" : ""}`}
+                        style={{ width: "150px" }} // Apply fixed width to each header
+                      >
+                        <p className="flex items-center justify-between">
+                          {col.name} <ChevronsUpDown size={14} />
+                        </p>
                       </th>
                     ))}
                 </tr>
               </thead>
+
               <tbody>
                 {filteredSAAOs.slice(0, rowsPerPage).map((SAAO, rowIndex) => (
-                  <tr key={SAAO.id}>
+                  <tr key={SAAO.id} className="text-sm" style={{ height: "50px" }}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col, index) => (
-                        <td key={col.name} className="border px-4 py-2">
-                          {col.name === "ID" ? rowIndex + 1 : SAAO[col.name]}
+                        <td
+                          key={col.name}
+                          className={`border px-4 py-2 ${index === 0 ? "sticky left-0" : ""} ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"} ${index === 3 ? 'capitalize' : ''}`}
+                          style={{ width: "150px" }} // Apply fixed width to each column in body
+                        >
+                          {col.name === "ID" && (
+                            pagination?.currentPage === 1 ? rowIndex + 1 : (pagination?.currentPage - 1) * rowsPerPage + rowIndex + 1
+                          )}
                           {col.name === "SAAO Name" && SAAO.name}
                           {col.name === "Father Name" && SAAO.fatherName}
                           {col.name === "Gender" && SAAO.gender}
@@ -466,7 +547,7 @@ const SAAORegistration = () => {
                           {col.name === "Messenger ID" && SAAO.messengerId}
                           {col.name === "Email" && SAAO.email}
                           {col.name === "Alternate Contact" && SAAO.alternateContact}
-                          {col.name === "National ID" && SAAO.nationalId}
+                          {/* {col.name === "National ID" && SAAO.nationalId} */}
                           {col.name === "Agriculture Card" && SAAO.agrilCard}
                           {col.name === "Block" && SAAO.block}
                           {col.name === "Union" && SAAO.union}
@@ -474,16 +555,20 @@ const SAAORegistration = () => {
                           {col.name === "District" && SAAO.district}
                           {col.name === "Division" && SAAO.division}
                           {col.name === "Region" && SAAO.region}
-                          {col.name === "Coordinates" && SAAO.coordinates}
-                          {col.name === "Hotspot" && SAAO.hotspot && SAAO.hotspot.join(", ")}
+                          {/* {col.name === "Coordinates" && SAAO.coordinates} */}
+                          {col.name === "Hotspot" && SAAO.hotspot && SAAO?.hotspot}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(SAAO)}>
-                                <FaEdit />
-                              </button>
-                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(SAAO.id)}>
-                                <FaTrash />
-                              </button>
+                              
+                                <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(SAAO)}>
+                                 <FaEdit />
+                                </button>
+                              
+                           
+                                <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(SAAO.id)}>
+                                  <FaTrash />
+                                </button>
+                            
                             </div>
                           )}
                         </td>
@@ -492,42 +577,80 @@ const SAAORegistration = () => {
                 ))}
               </tbody>
             </table>
+
+
+          </div>
+          <div className=" flex justify-between items-center w-full mt-5 md:hidden lg:hidden">
+            <label className="mr-2 w-1/2">Jump to page:</label>
+            <input
+              type="number"
+              value={page}
+              onChange={(e) => setPage(parseInt(e.target.value))}
+              className="px-2 py-1 border rounded border-gray-300 w-1/2"
+            />
+          </div>
+          <div className="mt-4 flex justify-between items-center text-sm">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={pagination.currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Previous
+            </button>
+            <span>
+              Page
+              {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <div className="hidden md:block lg:block text-sm">
+              <label className="mr-2">Jump to page:</label>
+              <input
+                type="number"
+                value={page}
+                onChange={(e) => setPage(parseInt(e.target.value))}
+                className="px-2 py-1 border rounded border-gray-300"
+              />
+            </div>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={pagination.currentPage === pagination.totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Next
+            </button>
           </div>
         </div>
 
         {/* Column Modal */}
         {isColumnModalOpen && (
-          <div className="fixed inset-0  z-[999] bg-black bg-opacity-50 flex items-center justify-end">
-            <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3 lg:w-1/3">
-              <h3 className="text-lg font-semibold mb-4">Select Columns</h3>
+          <div
+            className="fixed inset-0 z-[9999] bg-black bg-opacity-50 flex items-center justify-end"
+            onClick={toggleColumnModal} // This will close the modal when clicking outside
+          >
+            <div
+              className="bg-white rounded shadow-lg w-full md:w-1/4 lg:w-1/5 py-1"
+              onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside the modal content
+            >
               <ul className="space-y-2 max-h-[50vh] overflow-y-scroll">
                 {columns.map((col) => (
-                  <li key={col.name} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox"
-                      checked={col.visible}
-                      onChange={() => handleColumnToggle(col.name)}
-                    />
+                  <li
+                    key={col.name}
+                    className={`flex items-center cursor-pointer px-3 space-x-2 ${col.visible ? "bg-gray-200 p-1 px-3" : ""}`}
+                    onClick={() => handleColumnToggle(col.name)}
+                  >
                     <span>{col.name}</span>
                   </li>
                 ))}
               </ul>
-              <button
-                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                onClick={toggleColumnModal}
-              >
-                Close
-              </button>
             </div>
           </div>
         )}
+
 
         {/* SAAO Modal */}
         {isSAAOModalOpen && (
           <div className=" fixed inset-0 z-[999999] bg-black bg-opacity-50 flex items-center justify-center">
             <div className="relative max-h-[90vh] overflow-y-scroll  bg-white p-6 rounded-lg shadow-lg w-full  md:w-2/3 lg:w-2/3">
-              <h3 className="text-lg font-semibold mb-4">SAAO Registration</h3>
+              <h3 className="text-lg font-bold mb-4 text-center">SAAO Registration</h3>
               <button
                 className="absolute top-2 right-5 text-xl text-gray-500 hover:text-gray-800"
                 onClick={closeModal}
@@ -609,17 +732,9 @@ const SAAORegistration = () => {
                   <input
                     type="text"
                     name="alternateContact"
-                    placeholder="Alternate Contact"
+                    placeholder="Official Contact"
                     className="border w-full p-2 rounded"
                     value={formData.alternateContact}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="nationalId"
-                    placeholder="National ID"
-                    className="border w-full p-2 rounded"
-                    value={formData.nationalId}
                     onChange={handleChange}
                   />
                 </div>
@@ -738,7 +853,7 @@ const SAAORegistration = () => {
                       </option>
                     ))}
                   </select>
-                  <div className="flex gap-2">
+                  {/* <div className="flex gap-2">
                     <input
                       type="text"
                       name="coordinates"
@@ -754,8 +869,150 @@ const SAAORegistration = () => {
                     >
                       <MdGpsFixed className="text-blue-500" />
                     </button>
-                  </div>
+                  </div> */}
                 </div>
+                <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
+                  <h1 className="text-xl">Farming Information</h1>
+                  <select
+                    name="landType"
+                    className="border w-full p-2 rounded"
+                    value={formData.landType}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select Land Type</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                  </select>
+                  {
+                    selectedMajorCrop.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 ">
+                        {selectedMajorCrop.map((selectedcrop) => (
+                          <div key={selectedcrop} className="flex items-center bg-gray-200 p-1 rounded">
+                            <span>{selectedcrop}</span>
+                            <button
+                              type="button"
+                              className="ml-2 text-red-500"
+                              onClick={() => handleDeleteCrop(selectedcrop)}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null
+                  }
+                  <select
+                    name="majorCrops"
+                    className="border w-full p-2 rounded"
+                    value={formData.majorCrops}
+                    onChange={handleSelectCrop}
+                  >
+                    <option value="">Select Major Crops</option>
+                    <option value="rice">Rice</option>
+                    <option value="wheat">Wheat</option>
+                    <option value="maize">Maize</option>
+                    <option value="vegetables">Vegetables</option>
+                    <option value="others">Others</option>
+                  </select>
+                  {
+                    isOtherMajorCropOpen ? (
+                      <div>
+                        <label className="block mt-4" htmlFor="">Other Diseases</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            name="otherDiseases"
+                            placeholder=""
+                            className="border w-full p-2 rounded"
+                            value={selectedMajorCropOthers}
+                            onChange={(e) => setSelectedMajorCropOthers(e.target.value)}
+                          />
+                          <button className="btn-sm w-[30%] bg-gray-500 text-white font-bold py-2 px-4 rounded" onClick={handleAddCrop}>Add Diseases</button>
+                        </div>
+                      </div>
+
+                    ) : null
+                  }
+                  <select
+                    name="plantingMethod"
+                    className="border w-full p-2 rounded"
+                    value={formData.plantingMethod}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Planting Method</option>
+                    <option value="directSeeding">Direct Seeding</option>
+                    <option value="transplanting">Transplanting</option>
+                  </select>
+                  <select
+                    name="irrigationPractices"
+                    className="border w-full p-2 rounded"
+                    value={formData.irrigationPractices}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Major Irrigation Practices</option>
+                    <option value="AWD">AWD</option>
+                    <option value="continuousFlooding">Continuous Flooding</option>
+                    <option value="others">Others</option>
+                  </select>
+                  {
+                    formData.irrigationPractices === "others" && (
+                      <input
+                        type="text"
+                        name="irrigationPractices"
+                        placeholder=" Other Major Irrigation Practices"
+                        className="border w-full p-2 rounded"
+                        value={irrigationPracticesOthers}
+                        onChange={(e) => setIrrigationPracticesOthers(e.target.value)}
+                      />
+                    )
+                  }
+                  <select
+                    name="soilType"
+                    className="border w-full p-2 rounded"
+                    value={formData.soilType}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Soil Type</option>
+                    <option value="clay">Clay</option>
+                    <option value="clayLoam">Clay Loam</option>
+                    <option value="sandy">Sandy</option>
+                    <option value="silt">Silt</option>
+                    <option value="sandyLoam">Sandy Loam</option>
+                    <option value="others">Others</option>
+                  </select>
+                  {
+                    formData.soilType === "others" && (
+                      <input
+                        type="text"
+                        name="soilType"
+                        placeholder="Other Soil Type"
+                        className="border w-full p-2 rounded"
+                        value={otherSoilType}
+                        onChange={(e) => setOtherSoilType(e.target.value)}
+                      />
+                    )
+                  }
+                  <input
+                    type="text"
+                    name="croppingPattern"
+                    placeholder="Cropping Pattern"
+                    className="border w-full p-2 rounded"
+                    value={formData.croppingPattern}
+                    onChange={handleChange}
+                  />
+                  <input
+                    type="text"
+                    name="riceVarieties"
+                    placeholder="Rice Varieties"
+                    className="border w-full p-2 rounded"
+                    value={formData.riceVarieties}
+                    onChange={handleChange}
+                  />
+
+                </div>
+
               </form>
 
               {/* Navigation Buttons */}
@@ -768,7 +1025,7 @@ const SAAORegistration = () => {
                 >
                   Previous
                 </button>
-                {currentStep === 2 ?
+                {currentStep === 3 ?
                   <button
                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                     onClick={registerSAAO}

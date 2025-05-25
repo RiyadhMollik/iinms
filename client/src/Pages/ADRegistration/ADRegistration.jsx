@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { MdGpsFixed } from "react-icons/md";
+import { AuthContext } from "../../Components/context/AuthProvider";
+import { useContext } from "react";
 
 const ADRegistration = () => {
+
+   const { rolePermission } = useContext(AuthContext);
   const [isADModalOpen, setIsADModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
@@ -15,6 +19,13 @@ const ADRegistration = () => {
   const [selectedHotspots, setSelectedHotspots] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalFarmers: 0,
+    limit: 10,
+  });
   const handleUseMyLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -41,13 +52,13 @@ const ADRegistration = () => {
           `https://iinms.brri.gov.bd/api/data/regions?hotspot=${selectedHotspots}`
         );
         console.log(response);
-        
+
         if (!response.ok) {
           throw new Error("Failed to fetch region data");
         }
         const data = await response.json();
         console.log(data);
-        
+
         setRegions(data);
       } catch (error) {
         console.error("Error fetching region data:", error);
@@ -93,10 +104,16 @@ const ADRegistration = () => {
   });
   const fetchADs = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/AD");
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/Ad?page=${page}&limit=${rowsPerPage}`);
       if (response.ok) {
         const data = await response.json();
         setADList(data.data);
+        setPagination({
+          currentPage: data.pagination.currentPage,
+          totalPages: data.pagination.totalPages,
+          totalFarmers: data.pagination.totalFarmers,
+          limit: data.pagination.limit,
+        });
       } else {
         throw new Error("Failed to fetch ADs");
       }
@@ -107,7 +124,7 @@ const ADRegistration = () => {
 
   useEffect(() => {
     fetchADs();
-  }, []);
+  }, [page, rowsPerPage]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
@@ -298,6 +315,10 @@ const ADRegistration = () => {
                 <option value={50}>Show 50</option>
                 <option value={100}>Show 100</option>
                 <option value={500}>Show 500</option>
+                <option value={1000}>Show 1000</option>
+                <option value={1500}>Show 1500</option>
+                <option value={2000}>Show 2000</option>
+                <option value={2500}>Show 2500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
@@ -351,12 +372,13 @@ const ADRegistration = () => {
                           {col.name === "Hotspot" && AD.hotspot && AD.hotspot.join(", ")}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(AD)}>
+                             
+                                <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(AD)}>
                                 <FaEdit />
-                              </button>
-                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(AD.id)}>
-                                <FaTrash />
-                              </button>
+                                </button>
+                                <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(AD.id)}>
+                                  <FaTrash />
+                                </button>
                             </div>
                           )}
                         </td>
@@ -365,6 +387,26 @@ const ADRegistration = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="mt-4 flex justify-between items-center">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={pagination.currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Previous
+            </button>
+            <span>
+              Page
+              {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={pagination.currentPage === pagination.totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Next
+            </button>
           </div>
         </div>
 
@@ -482,7 +524,7 @@ const ADRegistration = () => {
                   <input
                     type="text"
                     name="alternateContact"
-                    placeholder="Alternate Contact"
+                    placeholder="Official Contact"
                     className="border w-full p-2 rounded"
                     value={formData.alternateContact}
                     onChange={handleChange}

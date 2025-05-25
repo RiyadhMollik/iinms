@@ -134,6 +134,7 @@ const Sidebar = () => {
             <li><Link className="hover:text-green-700" to="/hotspot">Add Hotspot</Link></li>
             <li><Link className="hover:text-green-700" to="/weather-parameter"> Add Weather Parameter</Link></li>
             <li><Link className="hover:text-green-700" to="/user">Add User</Link></li>
+            <li><Link className="hover:text-green-700" to="/add-device">Add Device</Link></li>
           </ul>
         </div>
 
