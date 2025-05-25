@@ -10,14 +10,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import TemperatureTable from "../../Components/TemperatureTable/TemperatureTable";
-const RainfallChart = () => {
+const RainfallChart = ({selectedDevice}) => {
   const [temperatureData, setTemperatureData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
   const fetchTemperatureData = async () => {
     try {
-      const response = await fetch(`https://iinms.brri.gov.bd/api/stats/temperature?startTime=${startDateTime}&endTime=${endDateTime}`);
+      const response = await fetch(`https://iinms.brri.gov.bd/api/stats/temperature?startTime=${startDateTime}&endTime=${endDateTime}&device=${selectedDevice}`);
       const data = await response.json();
       setSelectedDate(data.average)
       if (Array.isArray(data.last20)) {
@@ -40,7 +40,7 @@ const RainfallChart = () => {
 
 
     fetchTemperatureData();
-  }, []);
+  }, [selectedDevice, startDateTime, endDateTime]);
   return (
     <div>
       <div className="flex flex-col md:flex-row gap-4 mb-4 ml-10">
@@ -118,7 +118,7 @@ const RainfallChart = () => {
     </div>
   );
 };
-const SoilMoisture = () => {
+const SoilMoisture = ({selectedDevice}) => {
   const [temperatureData, setTemperatureData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [startDateTime, setStartDateTime] = useState('');
@@ -127,7 +127,7 @@ const SoilMoisture = () => {
 
   const fetchTemperatureData = async () => {
     try {
-      const response = await fetch(`https://iinms.brri.gov.bd/api/stats/soil-moisture?startTime=${startDateTime}&endTime=${endDateTime}`);
+      const response = await fetch(`https://iinms.brri.gov.bd/api/stats/soil-moisture?startTime=${startDateTime}&endTime=${endDateTime}&device=${selectedDevice}`);
       const data = await response.json();
       console.log(data);
       setSelectedDate(data.average)
@@ -150,7 +150,7 @@ const SoilMoisture = () => {
 
 
     fetchTemperatureData();
-  }, []);
+  }, [selectedDevice, startDateTime, endDateTime]);
 
   return (
     <div>
@@ -228,14 +228,14 @@ const SoilMoisture = () => {
 
   );
 };
-const WaterLevel = () => {
+const WaterLevel = ({selectedDevice}) => {
   const [waterLevelData, setWaterLevelData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
   const fetchWaterLevelData = async () => {
     try {
-      const response = await fetch(`https://iinms.brri.gov.bd/api/stats/water-level?startTime=${startDateTime}&endTime=${endDateTime}`);
+      const response = await fetch(`https://iinms.brri.gov.bd/api/stats/water-level?startTime=${startDateTime}&endTime=${endDateTime}&device=${selectedDevice}`);
       const data = await response.json();
       console.log(data);
       setSelectedDate(data.average)
@@ -259,7 +259,7 @@ const WaterLevel = () => {
 
 
     fetchWaterLevelData();
-  }, []);
+  }, [selectedDevice , startDateTime, endDateTime]);
 
   return (
     <div>
@@ -340,25 +340,47 @@ const WaterLevel = () => {
 };
 
 function Protentiometer() {
+  const [devices, setDevices] = useState([]);
+  const [selectedDevice, setSelectedDevice] = useState(null);
+  const USERS_API_URL = "https://iinms.brri.gov.bd/api/devices";
+  const fetchDevices = async () => {
+    try {
+      const response = await fetch(USERS_API_URL);
+      const data = await response.json();
+      setDevices(data);
+      setSelectedDevice(data[0].deviceId);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+  useEffect(() => {
+    fetchDevices();
+  }, []);
   return (
     <div className="max-w-[1200px] mx-auto">
       <div className="space-y-8">
+        <select onChange={(e) => setSelectedDevice(e.target.value)} className="border p-2 w-full mb-4">
+          <option>Select A  Device</option>
+          {devices.map((device) => (
+            <option key={device.id} value={device.deviceId}>Device ID: {device.deviceId}</option>
+          ))}
+        </select>
         <div className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg font-montserrat font-extralight mb-4">Soil Moisture (%)</h2>
           <div className="">
-            <SoilMoisture />
+            <SoilMoisture selectedDevice={selectedDevice} />
           </div>
         </div>
         <div className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg mb-4 font-montserrat font-extralight">Water Level (cm)</h2>
           <div className="">
-            <WaterLevel />
+            <WaterLevel selectedDevice={selectedDevice}/>
           </div>
         </div>
         <div className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg  mb-4 font-montserrat font-extralight">Soil Temperature (oC)</h2>
           <div className="">
-            <RainfallChart />
+            <RainfallChart selectedDevice={selectedDevice}/>
           </div>
         </div>
       </div>

@@ -79,7 +79,7 @@ const AddDevice = () => {
           body: JSON.stringify(payload),
         });
       }
-      fetchUsers(); // Refresh users list
+      fetchDevices(); 
       closeModal();
     } catch (error) {
       console.error("Error saving user:", error);
@@ -89,7 +89,7 @@ const AddDevice = () => {
   const handleDelete = async (id) => {
     try {
       await fetch(`${USERS_API_URL}/${id}`, { method: "DELETE" });
-      fetchUsers(); // Refresh users list
+      fetchDevices(); // Refresh users list
     } catch (error) {
       console.error("Error deleting user:", error);
     }

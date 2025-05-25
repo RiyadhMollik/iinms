@@ -2,14 +2,14 @@ import db from "../config/db.js";
 
 export const getSoilMoistureStats = async (req, res) => {
     try {
-        const { startTime, endTime } = req.query;
+        const { startTime, endTime ,device } = req.query;
 
         const queryLast20 = `
             SELECT 
                 dataInputdate AS date,
                 MIN(soil_moisture) AS min_soil_moisture,
                 MAX(soil_moisture) AS max_soil_moisture
-            FROM \`1100012410150002\`
+            FROM \`${device}\`
             GROUP BY dataInputdate
             ORDER BY dataInputdate DESC
             LIMIT 10;
@@ -19,7 +19,7 @@ export const getSoilMoistureStats = async (req, res) => {
             SELECT 
                 \`timestamp\`,
                 soil_moisture
-            FROM \`1100012410150002\`
+            FROM \`${device}\`
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
         `;
@@ -36,7 +36,7 @@ export const getSoilMoistureStats = async (req, res) => {
                 SELECT 
                     \`timestamp\`,
                     soil_moisture
-                FROM \`1100012410150002\`
+                FROM \`${device}\`
                 WHERE \`timestamp\` BETWEEN ? AND ?
                 ORDER BY \`timestamp\` DESC
                 LIMIT 20;

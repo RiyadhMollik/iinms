@@ -1,14 +1,14 @@
 import db from "../config/db.js";
 
 export const getWaterLevelStats = async (req, res) => {
-    const { startTime, endTime } = req.query;
+    const { startTime, endTime ,device } = req.query;
     try {
         const queryLast20 = `
             SELECT 
                 dataInputdate AS date,
                 MIN(water_level) AS min_water_level,
                 MAX(water_level) AS max_water_level
-            FROM \`1100012410150002\`
+            FROM \`${device}\`
             GROUP BY dataInputdate
             ORDER BY dataInputdate DESC
             LIMIT 10;
@@ -18,7 +18,7 @@ export const getWaterLevelStats = async (req, res) => {
             SELECT 
                 \`timestamp\`,
                 water_level
-            FROM \`1100012410150002\`
+            FROM \`${device}\`
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
         `;
@@ -34,7 +34,7 @@ export const getWaterLevelStats = async (req, res) => {
                 SELECT 
                     \`timestamp\`,
                     water_level
-                FROM \`1100012410150002\`
+                FROM \`${device}\`
                 WHERE \`timestamp\` BETWEEN ? AND ?
                 ORDER BY \`timestamp\` DESC
                 LIMIT 20;

@@ -1,14 +1,14 @@
 import db from "../config/db.js";
 
 export const getTemperatureStats = async (req, res) => {
-    const { startTime, endTime } = req.query;
+    const { startTime, endTime ,device } = req.query;
     try {
         const queryLast20 = `
             SELECT 
                 dataInputdate AS date,
                 MIN(temperature) AS min_temperature,
                 MAX(temperature) AS max_temperature
-            FROM \`1100012410150002\`
+            FROM \`${device}\`
             GROUP BY dataInputdate
             ORDER BY dataInputdate DESC
             LIMIT 10;
@@ -18,7 +18,7 @@ export const getTemperatureStats = async (req, res) => {
             SELECT 
                 \`timestamp\`,
                 temperature
-            FROM \`1100012410150002\`
+            FROM \`${device}\`
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
         `;
@@ -34,7 +34,7 @@ export const getTemperatureStats = async (req, res) => {
                 SELECT 
                     \`timestamp\`,
                     temperature
-                FROM \`1100012410150002\`
+                FROM \`${device}\`
                 WHERE \`timestamp\` BETWEEN ? AND ?
                 ORDER BY \`timestamp\` DESC
                 LIMIT 20;
