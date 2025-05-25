@@ -2,47 +2,29 @@ import { useEffect, useState, useRef } from "react";
 import { BiPen } from "react-icons/bi";
 
 const AddDevice = () => {
-  const [users, setUsers] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const [devices, setDevices] = useState([]);
   const [farmers, setFarmers] = useState([]);
   const [filteredFarmers, setFilteredFarmers] = useState([]);
-  const [filteredRoles, setFilteredRoles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
-  const [currentUser, setCurrentUser] = useState({ id: null, name: "", role: "", password: "", mobileNumber: "" });
+  const [currentUser, setCurrentUser] = useState({ id: null, name: "", deviceId: "", });
   const [selectedFarmer, setSelectedFarmer] = useState(null);
   const [searchFarmer, setSearchFarmer] = useState("");
-  const [searchRole, setSearchRole] = useState("");
   const [showFarmerDropdown, setShowFarmerDropdown] = useState(false);
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
 
-  const USERS_API_URL = "https://iinms.brri.gov.bd/api/users";
-  const ROLES_API_URL = "https://iinms.brri.gov.bd/api/roles";
+  const USERS_API_URL = "https://iinms.brri.gov.bd/api/devices";
   const FARMERS_API_URL = "https://iinms.brri.gov.bd/api/farmers/farmers";
 
   const farmerInputRef = useRef();
-  const roleInputRef = useRef();
 
   // Fetch all users
-  const fetchUsers = async () => {
+  const fetchDevices = async () => {
     try {
       const response = await fetch(USERS_API_URL);
       const data = await response.json();
-      setUsers(data);
+      setDevices(data);
     } catch (error) {
       console.error("Error fetching users:", error);
-    }
-  };
-
-  // Fetch roles
-  const fetchRoles = async () => {
-    try {
-      const response = await fetch(ROLES_API_URL);
-      const data = await response.json();
-      setRoles(data);
-      setFilteredRoles(data);
-    } catch (error) {
-      console.error("Error fetching roles:", error);
     }
   };
 
@@ -59,12 +41,11 @@ const AddDevice = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
-    fetchRoles();
+    fetchDevices();
     fetchFarmers();
   }, []);
 
-  const openModal = (type, user = { id: null, name: "", role: "", password: "", mobileNumber: "" }) => {
+  const openModal = (type, user = { id: null, name: "", deviceId: "" }) => {
     setModalType(type);
     setCurrentUser(user);
     setIsModalOpen(true);
@@ -72,17 +53,15 @@ const AddDevice = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setCurrentUser({ id: null, name: "", role: "", password: "", mobileNumber: "" });
+    setCurrentUser({ id: null, name: "", deviceId: "", });
     setSelectedFarmer(null);
   };
 
   const handleSave = async () => {
-    const { id, name, role, password } = currentUser;
+    const { id, name,deviceId } = currentUser;
     const payload = {
       name,
-      role,
-      password,
-      mobileNumber:selectedFarmer?.mobileNumber ,
+      deviceId,
       farmerId: selectedFarmer?.id || null,
     };
 
@@ -129,17 +108,6 @@ const AddDevice = () => {
     }
   }, [searchFarmer, farmers]);
 
-  // Filter roles based on search input
-  useEffect(() => {
-    if (searchRole) {
-      setFilteredRoles(
-        roles.filter((role) => role.name.toLowerCase().includes(searchRole.toLowerCase()))
-      );
-    } else {
-      setFilteredRoles(roles); // Show all roles if no search input
-    }
-  }, [searchRole, roles]);
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -148,9 +116,6 @@ const AddDevice = () => {
         !farmerInputRef.current.contains(event.target)
       ) {
         setShowFarmerDropdown(false);
-      }
-      if (roleInputRef.current && !roleInputRef.current.contains(event.target)) {
-        setShowRoleDropdown(false);
       }
     };
 
@@ -173,17 +138,15 @@ const AddDevice = () => {
         <thead className="bg-gray-100">
           <tr>
             <th className="text-left px-4 py-2 border border-gray-300">Name</th>
-            <th className="text-left px-4 py-2 border border-gray-300">Mobile Number</th>
-            <th className="text-left px-4 py-2 border border-gray-300">Role</th>
+            <th className="text-left px-4 py-2 border border-gray-300">Device ID</th>
             <th className="text-left px-4 py-2 border border-gray-300">Action</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {devices.map((user) => (
             <tr key={user.id} className="bg-gray-50">
               <td className="px-4 py-2 border border-gray-300">{user.name}</td>
-              <td className="px-4 py-2 border border-gray-300">{user.mobileNumber}</td>
-              <td className="px-4 py-2 border border-gray-300">{user.role}</td>
+              <td className="px-4 py-2 border border-gray-300">{user.deviceId}</td>
               <td className="px-4 py-2 border border-gray-300">
                 <button
                   className="text-blue-500 hover:text-blue-700"
@@ -250,11 +213,11 @@ const AddDevice = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Device ID</label>
               <input
-                type="password"
+                type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded"
-                placeholder="Enter password"
-                value={currentUser.password}
-                onChange={(e) => setCurrentUser({ ...currentUser, password: e.target.value })}
+                placeholder="Enter deviceId"
+                value={currentUser.deviceId}
+                onChange={(e) => setCurrentUser({ ...currentUser, deviceId: e.target.value })}
               />
             </div>
 
