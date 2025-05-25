@@ -180,6 +180,14 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  insects: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  diseases:{
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   saaoName: {
     type: DataTypes.STRING,
     allowNull: true,
