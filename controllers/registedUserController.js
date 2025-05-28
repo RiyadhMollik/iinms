@@ -168,9 +168,9 @@ export const getUserStats = async (req, res) => {
     last7Days.setDate(today.getDate() - 7);
 
     // Count registrations
-    const totalRegistration = await RegistedUser.count();
+    const totalRegistration = await Farmer.count();
 
-    const newRegistration = await RegistedUser.count({
+    const newRegistration = await Farmer.count({
       where: {
         createdAt: {
           [Op.gte]: last7Days,
@@ -178,11 +178,11 @@ export const getUserStats = async (req, res) => {
       },
     });
 
-    const totalSAAO = await RegistedUser.count({
+    const totalSAAO = await Farmer.count({
       where: { role: "SAAO" },
     });
 
-    const activeSAAO = await RegistedUser.count({
+    const activeSAAO = await Farmer.count({
       where: {
         role: "saao",
         mobileNumber: { [Op.ne]: null },
@@ -190,15 +190,15 @@ export const getUserStats = async (req, res) => {
       },
     });
 
-    const totalFarmer = await RegistedUser.count({
+    const totalFarmer = await Farmer.count({
       where: { role: "farmer" },
     });
 
-    const totalUAO = await RegistedUser.count({
+    const totalUAO = await Farmer.count({
       where: { role: "UAO" },
     });
 
-    const totalDD = await RegistedUser.count({
+    const totalDD = await Farmer.count({
       where: { role: "Admin" },
     });
 
