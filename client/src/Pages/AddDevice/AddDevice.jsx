@@ -127,12 +127,12 @@ const AddDevice = () => {
 
   return (
     <div className="w-[166vh] mx-auto p-4 bg-[#f9fafb]">
-      <h1 className="text-2xl font-semibold mb-4">User List</h1>
+      <h1 className="text-2xl font-semibold mb-4">Device List</h1>
       <button
         className="mb-4 px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-600"
         onClick={() => openModal("add")}
       >
-        Add User
+        Add Device
       </button>
       <table className="w-full border border-gray-300">
         <thead className="bg-gray-100">

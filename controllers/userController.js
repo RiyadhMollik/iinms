@@ -98,3 +98,30 @@ export const getUserById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+// Update only user password
+export const updateUserPassword = async (req, res) => {
+  const { id } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  try {
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Validate old password
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Old password is incorrect" });
+    }
+
+    // Hash new password and update
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await user.update({ password: hashedPassword });
+
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
