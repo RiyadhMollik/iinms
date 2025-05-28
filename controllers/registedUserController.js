@@ -184,10 +184,12 @@ export const getUserStats = async (req, res) => {
 
     const activeSAAO = await Farmer.count({
       where: {
-        role: "saao",
-        mobileNumber: { [Op.ne]: null },
-        saaoId: { [Op.ne]: null },
+        saaoId: {
+          [Op.ne]: null,
+        },
       },
+      distinct: true,
+      col: 'saaoId',
     });
 
     const totalFarmer = await Farmer.count({
@@ -210,7 +212,7 @@ export const getUserStats = async (req, res) => {
       totalFarmer,
       totalUAO,
       totalDD,
-      totalFeedback: 0, 
+      totalFeedback: 0,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
