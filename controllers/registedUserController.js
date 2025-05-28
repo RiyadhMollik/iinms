@@ -85,9 +85,9 @@ export const getFarmersByRole = async (req, res) => {
 
     if (search) {
       whereClause[Op.or] = [
-        { name: { [Op.iLike]: `%${search}%` } },
+        { name: { [Op.like]: `%${search}%` } },
         { mobileNumber: { [Op.like]: `%${search}%` } },
-        { block: { [Op.iLike]: `%${search}%` } }, // ← now block is also searchable
+        { block: { [Op.like]: `%${search}%` } },
       ];
     }
 
@@ -125,7 +125,6 @@ export const getFarmersByRole = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 export const getStatsBySaaoId = async (req, res) => {
   try {
