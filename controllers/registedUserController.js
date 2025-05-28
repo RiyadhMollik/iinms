@@ -1,6 +1,8 @@
 // controllers/farmerController.js
 import Farmer from "../models/RegistedUser.js";
 import sequelize from "../config/db.js";
+import { Op } from "sequelize";
+
 // Create a new farmer
 export const createFarmer = async (req, res) => {
 
@@ -68,19 +70,27 @@ export const deleteFarmer = async (req, res) => {
 
 export const getFarmersByRole = async (req, res) => {
   try {
-    const { saaoId } = req.query;
+    const { saaoId, search } = req.query;
     const { role } = req.params;
     const { page = 1, limit = 10 } = req.query;
-    console.log(saaoId , role);
-    
+
     const offset = (page - 1) * limit;
     const parsedLimit = parseInt(limit, 10);
+
     const whereClause = { role };
+
     if (saaoId && saaoId !== "null") {
-      whereClause.saaoId = parseInt(saaoId, 10); // make sure it's a number
+      whereClause.saaoId = parseInt(saaoId, 10);
     }
-    console.log(whereClause , 'whereClause');
-    
+
+    if (search) {
+      whereClause[Op.or] = [
+        { name: { [Op.iLike]: `%${search}%` } },
+        { mobileNumber: { [Op.like]: `%${search}%` } },
+        { block: { [Op.iLike]: `%${search}%` } }, // ← now block is also searchable
+      ];
+    }
+
     const farmers = await Farmer.findAll({
       where: whereClause,
       limit: parsedLimit,
@@ -89,21 +99,23 @@ export const getFarmersByRole = async (req, res) => {
 
     if (farmers.length === 0) {
       return res.status(200).json({
-      data: [],
-      pagination: {
-        currentPage: 0,
-        totalPages : 0,
-        totalFarmers:0,
-        limit: parsedLimit,
-      },
-    });
+        data: [],
+        pagination: {
+          currentPage: 0,
+          totalPages: 0,
+          totalFarmers: 0,
+          limit: parsedLimit,
+        },
+      });
     }
+
     const totalFarmers = await Farmer.count({ where: whereClause });
     const totalPages = Math.ceil(totalFarmers / parsedLimit);
+
     res.status(200).json({
       data: farmers,
       pagination: {
-        currentPage: page,
+        currentPage: parseInt(page),
         totalPages,
         totalFarmers,
         limit: parsedLimit,
