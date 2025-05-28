@@ -160,3 +160,59 @@ export const getStatsBySaaoId = async (req, res) => {
     return res.status(500).json({ error: 'An error occurred while fetching stats.' });
   }
 };
+
+export const getUserStats = async (req, res) => {
+  try {
+    const today = new Date();
+    const last7Days = new Date();
+    last7Days.setDate(today.getDate() - 7);
+
+    // Count registrations
+    const totalRegistration = await RegistedUser.count();
+
+    const newRegistration = await RegistedUser.count({
+      where: {
+        createdAt: {
+          [Op.gte]: last7Days,
+        },
+      },
+    });
+
+    const totalSAAO = await RegistedUser.count({
+      where: { role: "SAAO" },
+    });
+
+    const activeSAAO = await RegistedUser.count({
+      where: {
+        role: "saao",
+        mobileNumber: { [Op.ne]: null },
+        saaoId: { [Op.ne]: null },
+      },
+    });
+
+    const totalFarmer = await RegistedUser.count({
+      where: { role: "farmer" },
+    });
+
+    const totalUAO = await RegistedUser.count({
+      where: { role: "UAO" },
+    });
+
+    const totalDD = await RegistedUser.count({
+      where: { role: "Admin" },
+    });
+
+    res.status(200).json({
+      totalRegistration,
+      newRegistration,
+      totalSAAO,
+      activeSAAO,
+      totalFarmer,
+      totalUAO,
+      totalDD,
+      totalFeedback: 0, 
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
