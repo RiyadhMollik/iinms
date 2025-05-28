@@ -20,6 +20,6 @@ router.put("/farmers/:id", updateFarmer);
 router.delete("/farmers/:id", deleteFarmer);
 router.get('/farmers/role/:role', getFarmersByRole); // New route
 router.get('/farmers/stats/:saaoId', getStatsBySaaoId); // New route
-router.get('/farmers/user-stats', getUserStats); // New route
+router.get('/user-stats', getUserStats); // New route
 
 export default router;
