@@ -88,6 +88,9 @@ export const getFarmersByRole = async (req, res) => {
         { name: { [Op.like]: `%${search}%` } },
         { mobileNumber: { [Op.like]: `%${search}%` } },
         { block: { [Op.like]: `%${search}%` } },
+        { village: { [Op.like]: `%${search}%` } },
+        { district: { [Op.like]: `%${search}%` } },
+        { upazila: { [Op.like]: `%${search}%` } },
       ];
     }
 
