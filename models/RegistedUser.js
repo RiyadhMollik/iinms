@@ -201,6 +201,10 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.DATE,
     allowNull: true,
   },
+  progressiveFarmer: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true,
+  },
 
 });
 
