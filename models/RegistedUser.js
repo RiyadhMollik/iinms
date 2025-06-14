@@ -188,6 +188,20 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
+  age: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW,
+  },
+  dateOfBirth: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+
 });
 
 

@@ -10,6 +10,7 @@ const Union = sequelize.define('Union', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true
     },
 }, {
     tableName: 'unions',
