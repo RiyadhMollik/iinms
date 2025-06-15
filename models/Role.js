@@ -41,6 +41,9 @@ Role.afterCreate(async (role) => {
     "Scientist List",
     "Scientist Edit",
     "Scientist Delete",
+    "Diseases List",
+    "Diseases Edit",
+    "Diseases Delete",
     "Report",
     "Feedback",
     "Send Feedback",
@@ -53,7 +56,8 @@ Role.afterCreate(async (role) => {
     "Add Region",
     "Add Hotspot",
     "Add User",
-    "Change Password"
+    "Change Password",
+    "Profile",
   ];
 
   await Promise.all(

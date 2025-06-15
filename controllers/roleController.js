@@ -105,6 +105,83 @@ export const updatePermissions = async (req, res) => {
 };
 
 
+const defaultPermissions = [
+  "Roles",
+  "Permissions",
+  "Farmer List",
+  "Farmer Edit",
+  "Farmer Delete",
+  "SAAO List",
+  "SAAO Edit",
+  "SAAO Delete",
+  "UAO List",
+  "UAO Edit",
+  "UAO Delete",
+  "DD List",
+  "DD Edit",
+  "DD Delete",
+  "AD List",
+  "AD Edit",
+  "AD Delete",
+  "Journalist List",
+  "Journalist Edit",
+  "Journalist Delete",
+  "Scientist List",
+  "Scientist Edit",
+  "Scientist Delete",
+  "Diseases List",
+  "Diseases Edit",
+  "Diseases Delete",
+  "Report",
+  "Feedback",
+  "Send Feedback",
+  "Feedback Table",
+  "Add Block",
+  "Add Union",
+  "Add Upazela",
+  "Add District",
+  "Add Division",
+  "Add Region",
+  "Add Hotspot",
+  "Add User",
+  "Change Password",
+  "Profile",
+];
+
+export const syncAllRolePermissions = async (req, res) => {
+  try {
+    const roles = await Role.findAll();
+
+    for (const role of roles) {
+      const existingPermissions = await Permission.findAll({
+        where: { roleId: role.id },
+      });
+
+      const existingPermissionNames = existingPermissions.map(
+        (p) => p.permission
+      );
+
+      const missingPermissions = defaultPermissions.filter(
+        (perm) => !existingPermissionNames.includes(perm)
+      );
+
+      await Promise.all(
+        missingPermissions.map((permissionName) =>
+          Permission.create({
+            roleId: role.id,
+            permission: permissionName,
+            isGranted: false,
+          })
+        )
+      );
+    }
+
+    res.status(200).json({ message: "All roles updated with missing permissions." });
+  } catch (error) {
+    console.error("Error syncing role permissions:", error);
+    res.status(500).json({ error: "Failed to sync role permissions." });
+  }
+};
 
 
 

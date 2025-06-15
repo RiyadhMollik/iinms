@@ -5,7 +5,8 @@ import {
   updateRole,
   deleteRole,
   getPermissionsByRole,
-  updatePermissions
+  updatePermissions ,
+  syncAllRolePermissions
 } from "../controllers/roleController.js";
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.put("/:id", updateRole); // Update an existing role
 router.delete("/:id", deleteRole); // Delete a role
 router.get("/roles/:roleId/permissions", getPermissionsByRole);
 router.put("/roles/:roleId/permissions", updatePermissions);
+router.post("/sync-role-permissions", syncAllRolePermissions);
 
 export default router;
