@@ -5,9 +5,15 @@ import { Op } from "sequelize";
 
 // Create a new farmer
 export const createFarmer = async (req, res) => {
-
-  console.log(req.body);
   try {
+    const { mobileNumber } = req.body;
+
+    const existingFarmer = await Farmer.findOne({ where: { mobileNumber } });
+    if (existingFarmer) {
+      return res.status(400).json({ message: "Farmer with this mobile number already exists." });
+    }
+
+    // Create new farmer
     const farmer = await Farmer.create(req.body);
     res.status(201).json(farmer);
   } catch (error) {
