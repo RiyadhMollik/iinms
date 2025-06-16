@@ -61,7 +61,7 @@ app.use('/api', sunshineRoutes);
 app.post('/api/upload', upload.single('profileImage'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-  const imageUrl = `https://saads.brri.gov.bd/uploads/${req.file.filename}`;
+  const imageUrl = `https://iinms.brri.gov.bd/uploads/${req.file.filename}`;
   res.json({ imageUrl });
 });
 app.get("*", (req, res) => {

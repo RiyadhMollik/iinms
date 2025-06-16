@@ -244,8 +244,11 @@ const RegistedUser = sequelize.define("RegistedUser", {
   numberOfFarmers:{
     type: DataTypes.STRING,
     allowNull: true
-  }
-  
+  },
+  profileImage: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 
