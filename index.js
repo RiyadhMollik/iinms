@@ -25,6 +25,7 @@ import weatherRoutes from './routes/weatherRoutes.js';
 import statsRoutes from "./routes/statsRoutes.js";
 import sunshineRoutes from "./routes/sunshineRoutes.js";
 import deviceRoutes from './routes/deviceRoutes.js';
+import upload from "./middleware/upload.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
