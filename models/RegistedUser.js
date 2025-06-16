@@ -205,6 +205,10 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.BOOLEAN,
     allowNull: true,
   },
+  alternateContactRelation:{
+    type: DataTypes.STRING,
+    allowNull: true
+  }
 
 });
 
