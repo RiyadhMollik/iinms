@@ -208,8 +208,31 @@ const RegistedUser = sequelize.define("RegistedUser", {
   alternateContactRelation:{
     type: DataTypes.STRING,
     allowNull: true
-  }
-
+  },
+  designation: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  address: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  mediaType: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  mediaName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  expertise: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  emailOfficial: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 });
 
 
