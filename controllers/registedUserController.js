@@ -202,6 +202,9 @@ export const getUserStats = async (req, res) => {
     const totalUAO = await Farmer.count({
       where: { role: "UAO" },
     });
+    const totalJournalists = await Farmer.count({
+      where: { role: "Journalists" },
+    });
 
     const totalDD = await Farmer.count({
       where: { role: "Admin" },
@@ -216,6 +219,7 @@ export const getUserStats = async (req, res) => {
       totalUAO,
       totalDD,
       totalFeedback: 0,
+      totalJournalists
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
