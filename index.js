@@ -55,7 +55,7 @@ app.use('/api/devices', deviceRoutes);
 app.use(express.static(path.join(__dirname, "/client/dist")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', sunshineRoutes);
-app.use('/uploads', express.static('uploads')); // Serve images statically
+// app.use('/uploads', express.static('uploads')); 
 
 // Upload route
 app.post('/api/upload', upload.single('profileImage'), (req, res) => {
@@ -67,8 +67,6 @@ app.post('/api/upload', upload.single('profileImage'), (req, res) => {
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
 });
-
-
 
 const brokerIP = "180.211.163.243";
 const brokerPort = 1883;
