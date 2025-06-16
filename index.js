@@ -30,7 +30,7 @@ const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
 
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
@@ -47,16 +47,28 @@ app.use("/api/farmers", farmerRoutes);
 app.use("/api/saaOForms", saaOFormRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use('/api/unions', unionRoutes);
-app.use("/api/data", dataRoutes); 
+app.use("/api/data", dataRoutes);
 app.use('/api/weather', weatherRoutes);
 app.use("/api/stats", statsRoutes);
-app.use('/api/devices', deviceRoutes); 
+app.use('/api/devices', deviceRoutes);
 app.use(express.static(path.join(__dirname, "/client/dist")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', sunshineRoutes);
+app.use('/uploads', express.static('uploads')); // Serve images statically
+
+// Upload route
+app.post('/api/upload', upload.single('profileImage'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+  const imageUrl = `https://saads.brri.gov.bd/uploads/${req.file.filename}`;
+  res.json({ imageUrl });
+});
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
 });
+
+
+
 const brokerIP = "180.211.163.243";
 const brokerPort = 1883;
 const pumpID = "112233"; // Static pump ID for now
