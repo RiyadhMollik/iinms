@@ -8,7 +8,7 @@ const RegistedUser = sequelize.define("RegistedUser", {
   },
   fatherName: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   gender: {
     type: DataTypes.STRING,
