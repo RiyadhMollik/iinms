@@ -233,6 +233,19 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  majorClimateExtremes: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  totalCultivatedArea:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  numberOfFarmers:{
+    type: DataTypes.STRING,
+    allowNull: true
+  }
+  
 });
 
 
