@@ -272,6 +272,14 @@ const RegistedUser = sequelize.define("RegistedUser", {
   irrigationSourceType:{
     type: DataTypes.STRING,
     allowNull: true
+  },
+  lan:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  lat:{
+    type: DataTypes.STRING,
+    allowNull: true
   }
 });
 
