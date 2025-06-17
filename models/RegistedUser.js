@@ -249,6 +249,30 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  expectedHarvestPeriods:{
+    type: DataTypes.JSON,
+    allowNull: true
+  },
+  floweringDates:{
+    type: DataTypes.JSON,
+    allowNull: true
+  },
+  transplantingDates:{
+    type: DataTypes.JSON,
+    allowNull: true
+  },
+  seasonWiseDominantVarieties:{
+    type: DataTypes.JSON,
+    allowNull: true
+  },
+  communityInformation:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  irrigationSourceType:{
+    type: DataTypes.STRING,
+    allowNull: true
+  }
 });
 
 
