@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.js";
 import Farmer from "../models/RegistedUser.js";
-
+import { Op } from "sequelize";
 // Create a new user
 export const createUser = async (req, res) => {
   const { name, role, mobileNumber, password, farmerId , roleId } = req.body;
@@ -126,25 +126,35 @@ export const updateUserPassword = async (req, res) => {
   }
 };
 
-// Utility to get today's date range
-const getTodayRange = () => {
-  const start = new Date();
-  start.setHours(0, 0, 0, 0);
-  const end = new Date();
-  end.setHours(23, 59, 59, 999);
+const getTodayUtcRange = () => {
+  const now = new Date();
+
+  const start = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    0, 0, 0, 0
+  ));
+
+  const end = new Date(Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    23, 59, 59, 999
+  ));
+
   return { start, end };
 };
 
 export const createTodaySAAOUsers = async (req, res) => {
   try {
-    const { start, end } = getTodayRange();
+    const { start, end } = getTodayUtcRange();
 
-    // Find today's registered SAAOs
-    const todaySAAOs = await Farmer.findAll({
+    const todaySAAOs = await RegistedUser.findAll({
       where: {
         role: 'saao',
         createdAt: {
-          $between: [start, end],
+          [Op.between]: [start, end],
         },
       },
     });
@@ -153,20 +163,19 @@ export const createTodaySAAOUsers = async (req, res) => {
       return res.status(200).json({ message: "No SAAO registered today." });
     }
 
-    const defaultPassword = saao.mobileNumber; // You can change this or get from env
-    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
     const createdUsers = [];
 
     for (const saao of todaySAAOs) {
       const existingUser = await User.findOne({ where: { farmerId: saao.id } });
       if (!existingUser) {
+        const hashedPassword = await bcrypt.hash(saao.mobileNumber, 10);
         const user = await User.create({
           name: saao.name,
           role: "SAAO",
           mobileNumber: saao.mobileNumber,
           password: hashedPassword,
           farmerId: saao.id,
-          roleId: 4, // Replace this with your real roleId for SAAO
+          roleId: 4,
         });
         createdUsers.push(user);
       }
