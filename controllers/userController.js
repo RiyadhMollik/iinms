@@ -150,7 +150,7 @@ export const createTodaySAAOUsers = async (req, res) => {
   try {
     const { start, end } = getTodayUtcRange();
 
-    const todaySAAOs = await RegistedUser.findAll({
+    const todaySAAOs = await Farmer.findAll({
       where: {
         role: 'saao',
         createdAt: {
