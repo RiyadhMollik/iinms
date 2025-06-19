@@ -280,6 +280,22 @@ const RegistedUser = sequelize.define("RegistedUser", {
   lat:{
     type: DataTypes.STRING,
     allowNull: true
+  },
+  TSPUsage:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  MoPUsage:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  GypsumUsage:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  ZincUsage:{
+    type: DataTypes.STRING,
+    allowNull: true
   }
 });
 
