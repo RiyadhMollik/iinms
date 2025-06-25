@@ -1,5 +1,57 @@
 import fs from "fs";
 import nodemailer from "nodemailer";
+import axios from "axios";
+import cheerio from "cheerio";
+import { CookieJar } from "tough-cookie";
+import { wrapper } from "axios-cookiejar-support";
+
+
+
+export const Scraping = async (req, res) => {
+  const loginUrl = "http://123.0.31.250/iconiptsp/";
+  const dataUrl = "http://123.0.31.250/iconiptsp/pin/LastCallDisplay.jsp";
+
+  const jar = new CookieJar();
+  const client = wrapper(axios.create({ jar }));
+
+  try {
+    // Step 1: Login
+    await client.post(
+      loginUrl,
+      new URLSearchParams({
+        inpUserName: "09644300300",
+        inpPassword: "PHxsnDeh6E",
+      }),
+      {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      }
+    );
+
+    // Step 2: Fetch the data page
+    const { data: html } = await client.get(dataUrl);
+
+    // Step 3: Parse with Cheerio
+    const $ = cheerio.load(html);
+    const table = [];
+
+    $("table tr").each((i, row) => {
+      const cells = $(row)
+        .find("td")
+        .map((i, td) => $(td).text().trim())
+        .get();
+      if (cells.length > 0) {
+        table.push(cells);
+      }
+    });
+
+    return table;
+  } catch (err) {
+    console.error("Scraping error:", err.message);
+    return null;
+  }
+}
+
+
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -8,6 +60,9 @@ const transporter = nodemailer.createTransport({
         pass: "yibw sjul qonb bnap",  // Replace with your App Password
     },
 });
+
+
+
 
 export const sendAdvisoryEmail = async (req, res) => {
     const { to, subject } = req.body;
