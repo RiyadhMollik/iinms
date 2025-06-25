@@ -19,8 +19,8 @@ export const sendAdvisoryEmail = async (req, res) => {
     }
 
     try {
-        const imageBuffer = fs.readFileSync("advisory_june_2025.jpg");
-        const advisoryPdfBuffer = fs.readFileSync("advisory_june_2025.pdf");
+        const imageBuffer = fs.readFileSync("/var/www/iinms/controllers/advisory_june_2025.jpg");
+        const advisoryPdfBuffer = fs.readFileSync("/var/www/iinms/controllers/advisory_june_2025.pdf");
 
         const mailOptions = {
             from: "niaz.sust@gmail.com",
