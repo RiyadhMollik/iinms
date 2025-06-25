@@ -57,10 +57,10 @@ app.use('/api/weather', weatherRoutes);
 app.use("/api/stats", statsRoutes);
 app.use('/api/devices', deviceRoutes);
 app.use('/api/surveys', surveyRoutes);
-app.use("/api", emailRoutes);
+app.use("/api/email", emailRoutes);
 app.use(express.static(path.join(__dirname, "/client/dist")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/api/email', sunshineRoutes);
+app.use('/api', sunshineRoutes);
 // app.use('/uploads', express.static('uploads')); 
 
 // Upload route
