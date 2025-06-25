@@ -10,9 +10,9 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendAdvisoryEmail = async (req, res) => {
-    const { to, subject, pdfBase64, fileName } = req.body;
+    const { to, subject } = req.body;
 
-    if (!to || !Array.isArray(to) || to.length === 0 || !subject || !pdfBase64 || !fileName) {
+    if (!to || !Array.isArray(to) || to.length === 0 || !subject) {
         return res.status(400).json({
             message: "Missing or invalid required fields: to (array), subject, pdfBase64, fileName",
         });
