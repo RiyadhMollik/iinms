@@ -10,6 +10,10 @@ const RegistedUser = sequelize.define("RegistedUser", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  spouseName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   gender: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -296,7 +300,11 @@ const RegistedUser = sequelize.define("RegistedUser", {
   ZincUsage:{
     type: DataTypes.STRING,
     allowNull: true
-  }
+  },
+  dapUsage:{
+    type: DataTypes.STRING,
+    allowNull: true
+  },
 });
 
 
