@@ -150,14 +150,14 @@ export const getSaaoUserCounts = async (req, res) => {
         'role',
         'mobileNumber',
         [
-          sequelize.fn('COUNT', sequelize.col('RegistedUsers.id')),
+          sequelize.fn('COUNT', sequelize.col('RegistedUser.id')),
           'farmerCount',
         ],
       ],
       include: [
         {
           model: RegistedUser,
-          as: 'RegistedUsers',
+          as: 'RegistedUser', // Corrected alias to match model association
           attributes: [],
           where: { role: 'farmer' },
           required: false, // Left join to include users with 0 farmers
