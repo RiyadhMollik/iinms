@@ -172,10 +172,11 @@ export const getSaaoUserCounts = async (req, res) => {
             mobileNumber: item.mobileNumber,
             farmerCount: parseInt(item.farmerCount) || 0,
         }));
-
+        const totalFarmerCount = result.reduce((sum, item) => sum + item.farmerCount, 0);
         res.status(200).json({
             success: true,
             data: result,
+            totalFarmerCount
         });
     } catch (error) {
         console.error('Error fetching SAAO user counts:', error);
