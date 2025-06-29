@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
+import User from "./user.js";
 
 const RegistedUser = sequelize.define("RegistedUser", {
   name: {
@@ -307,5 +308,5 @@ const RegistedUser = sequelize.define("RegistedUser", {
   },
 });
 
-
+RegistedUser.belongsTo(User, { foreignKey: "saaoId", as: "Saao" });
 export default RegistedUser;
