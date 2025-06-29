@@ -149,18 +149,27 @@ export const getSaaoUserCounts = async (req, res) => {
                 'name',
                 'role',
                 'mobileNumber',
-                [fn('COUNT', col('Farmers.id')), 'farmerCount'], // using correct alias
+                [fn('COUNT', col('Farmers.id')), 'farmerCount'],
+
+                // 📍 Add distinct location info using GROUP_CONCAT
+                [literal('GROUP_CONCAT(DISTINCT Farmers.region)'), 'region'],
+                [literal('GROUP_CONCAT(DISTINCT Farmers.block)'), 'block'],
+                [literal('GROUP_CONCAT(DISTINCT Farmers.union)'), 'union'],
+                [literal('GROUP_CONCAT(DISTINCT Farmers.upazila)'), 'upazila'],
+                [literal('GROUP_CONCAT(DISTINCT Farmers.district)'), 'district'],
+                [literal('GROUP_CONCAT(DISTINCT Farmers.division)'), 'division'],
+                [literal('GROUP_CONCAT(DISTINCT Farmers.hotspot)'), 'hotspot'],
             ],
             include: [
                 {
                     model: RegistedUser,
-                    as: 'Farmers', // must match the alias you defined in model
+                    as: 'Farmers',
                     attributes: [],
                     where: { role: 'farmer' },
                     required: false,
                 },
             ],
-            where: { role: 'SAAO' }, // optional: only show SAAOs
+            where: { role: 'SAAO' },
             group: ['User.id'],
             raw: true,
         });
@@ -171,12 +180,21 @@ export const getSaaoUserCounts = async (req, res) => {
             role: item.role,
             mobileNumber: item.mobileNumber,
             farmerCount: parseInt(item.farmerCount) || 0,
+            region: item.region || '',
+            block: item.block || '',
+            union: item.union || '',
+            upazila: item.upazila || '',
+            district: item.district || '',
+            division: item.division || '',
+            hotspot: item.hotspot || '',
         }));
+
         const totalFarmerCount = result.reduce((sum, item) => sum + item.farmerCount, 0);
+
         res.status(200).json({
             success: true,
             data: result,
-            totalFarmerCount
+            totalFarmerCount,
         });
     } catch (error) {
         console.error('Error fetching SAAO user counts:', error);
