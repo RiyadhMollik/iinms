@@ -149,7 +149,7 @@ export const getSaaoUserCounts = async (req, res) => {
         'name',
         'role',
         'mobileNumber',
-        [fn('COUNT', col('RegistedUsers.id')), 'farmerCount'], // use the correct alias
+        [fn('COUNT', col('RegistedUser.id')), 'farmerCount'], // ✅ Fixed alias
       ],
       include: [
         {
