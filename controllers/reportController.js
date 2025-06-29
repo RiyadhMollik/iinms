@@ -1,4 +1,5 @@
 import RegistedUser from "../models/RegistedUser.js";
+import sequelize from "../config/db.js";
 import { Op } from 'sequelize';
 export const getLocationCounts = async (req, res) => {
   try {
