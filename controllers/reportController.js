@@ -204,3 +204,59 @@ export const getSaaoUserCounts = async (req, res) => {
         });
     }
 };
+
+
+export const assignSaaosToFarmers = async (req, res) => {
+  try {
+    const unassignedFarmers = await RegistedUser.findAll({
+      where: {
+        role: 'farmer',
+        saaoId: null,
+      },
+    });
+
+    let updatedCount = 0;
+
+    for (const farmer of unassignedFarmers) {
+      if (!farmer.block) continue;
+
+      // Step 1: Find SAAO from RegistedUser
+      const saaoRegisted = await RegistedUser.findOne({
+        where: {
+          role: 'SAAO',
+          block: farmer.block,
+        },
+      });
+
+      if (!saaoRegisted) continue;
+
+      // Step 2: Find corresponding User whose farmerId = saaoRegisted.id
+      const saaoUser = await User.findOne({
+        where: {
+          farmerId: saaoRegisted.id,
+        },
+      });
+
+      if (!saaoUser) continue;
+
+      // Step 3: Update farmer with User ID and name
+      await farmer.update({
+        saaoId: saaoUser.id,
+        saaoName: saaoUser.name,
+      });
+
+      updatedCount++;
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `✅ Assigned ${updatedCount} farmers to SAAOs.`,
+    });
+  } catch (error) {
+    console.error('❌ Error assigning SAAOs to farmers:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
+};
