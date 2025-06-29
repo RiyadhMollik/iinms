@@ -1,7 +1,7 @@
 import RegistedUser from "../models/RegistedUser.js";
 import User from '../models/user.js';
 import sequelize from "../config/db.js";
-import { Op } from 'sequelize';
+import { Op, fn, col, literal } from 'sequelize';
 export const getLocationCounts = async (req, res) => {
   try {
     const { date, locationType } = req.query;
@@ -149,31 +149,26 @@ export const getSaaoUserCounts = async (req, res) => {
         'name',
         'role',
         'mobileNumber',
-        [
-          sequelize.fn('COUNT', sequelize.col('RegistedUser.id')),
-          'farmerCount',
-        ],
+        [fn('COUNT', col('RegistedUsers.id')), 'farmerCount'], // use the correct alias
       ],
       include: [
         {
           model: RegistedUser,
-          as: 'RegistedUser', // Corrected alias to match model association
           attributes: [],
           where: { role: 'farmer' },
-          required: false, // Left join to include users with 0 farmers
+          required: false,
         },
       ],
-      group: ['User.id', 'User.name', 'User.role', 'User.mobileNumber'],
+      group: ['User.id'],
       raw: true,
     });
 
-    // Format response
     const result = counts.map(item => ({
       id: item.id,
       name: item.name,
       role: item.role,
       mobileNumber: item.mobileNumber,
-      farmerCount: parseInt(item.farmerCount),
+      farmerCount: parseInt(item.farmerCount) || 0,
     }));
 
     res.status(200).json({
