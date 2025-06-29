@@ -150,7 +150,7 @@ export const getSaaoUserCounts = async (req, res) => {
         'role',
         'mobileNumber',
         [
-          Sequelize.fn('COUNT', Sequelize.col('RegistedUsers.id')),
+          sequelize.fn('COUNT', sequelize.col('RegistedUsers.id')),
           'farmerCount',
         ],
       ],
