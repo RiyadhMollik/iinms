@@ -1,4 +1,5 @@
 import RegistedUser from "../models/RegistedUser.js";
+import User from '../models/user.js';
 import sequelize from "../config/db.js";
 import { Op } from 'sequelize';
 export const getLocationCounts = async (req, res) => {
@@ -133,6 +134,54 @@ export const getBlockCounts = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching block counts:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
+};
+
+export const getSaaoUserCounts = async (req, res) => {
+  try {
+    const counts = await User.findAll({
+      attributes: [
+        'id',
+        'name',
+        'role',
+        'mobileNumber',
+        [
+          Sequelize.fn('COUNT', Sequelize.col('RegistedUsers.id')),
+          'farmerCount',
+        ],
+      ],
+      include: [
+        {
+          model: RegistedUser,
+          as: 'RegistedUsers',
+          attributes: [],
+          where: { role: 'farmer' },
+          required: false, // Left join to include users with 0 farmers
+        },
+      ],
+      group: ['User.id', 'User.name', 'User.role', 'User.mobileNumber'],
+      raw: true,
+    });
+
+    // Format response
+    const result = counts.map(item => ({
+      id: item.id,
+      name: item.name,
+      role: item.role,
+      mobileNumber: item.mobileNumber,
+      farmerCount: parseInt(item.farmerCount),
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error fetching SAAO user counts:', error);
     res.status(500).json({
       success: false,
       error: 'Internal server error',
