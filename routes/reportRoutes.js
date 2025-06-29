@@ -1,5 +1,5 @@
 import express from 'express';
-import { getLocationCounts } from '../controllers/reportController';
+import { getLocationCounts } from '../controllers/reportController.js';
 
 
 const router = express.Router();
