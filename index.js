@@ -30,7 +30,7 @@ import surveyRoutes from './routes/surveyRoutes.js';
 import upload from "./middleware/upload.js";
 import emailRoutes from "./routes/emailRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
-import './models/association.js';
+import "./models/associations.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
