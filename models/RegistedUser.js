@@ -308,5 +308,5 @@ const RegistedUser = sequelize.define("RegistedUser", {
   },
 });
 
-RegistedUser.belongsTo(User, { foreignKey: "saaoId", as: "Saao" });
+// RegistedUser.belongsTo(User, { foreignKey: "saaoId", as: "Saao" });
 export default RegistedUser;

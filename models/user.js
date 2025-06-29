@@ -41,7 +41,7 @@ const User = sequelize.define("User", {
 });
 
 // Associations
-User.belongsTo(RegistedUser, { foreignKey: "farmerId" });
-RegistedUser.hasMany(User, { foreignKey: "farmerId" });
-User.hasMany(RegistedUser, { foreignKey: "saaoId", as: "Farmers" });
+// User.belongsTo(RegistedUser, { foreignKey: "farmerId" });
+// RegistedUser.hasMany(User, { foreignKey: "farmerId" });
+// User.hasMany(RegistedUser, { foreignKey: "saaoId", as: "Farmers" });
 export default User;
