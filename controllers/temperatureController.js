@@ -1,10 +1,7 @@
 import db from "../config/db.js";
 
-import db from "../config/db.js";
-
 export const getTemperatureStats = async (req, res) => {
-    const { startTime, endTime, device } = req.query;
-
+    const { startTime, endTime ,device } = req.query;
     try {
         const queryLast20 = `
             SELECT 
@@ -17,7 +14,7 @@ export const getTemperatureStats = async (req, res) => {
             LIMIT 10;
         `;
 
-        let query = `
+        const query = `
             SELECT 
                 \`timestamp\`,
                 temperature
@@ -25,16 +22,14 @@ export const getTemperatureStats = async (req, res) => {
             ORDER BY \`timestamp\` DESC
             LIMIT 20;
         `;
-
-        let queryParams = [];
-
-        if (startTime && endTime) {
-            const start = new Date(startTime).toISOString();
-            const end = new Date(endTime).toISOString();
-
-            console.log("Start Date (UTC):", start);
-            console.log("End Date (UTC):", end);
-
+         // Convert local time to UTC
+         const start = startTime ? new Date(startTime).toISOString() : null;  // UTC time
+         const end = endTime ? new Date(endTime).toISOString() : null;        // UTC time
+ 
+         console.log("Start Date (UTC):", start);
+         console.log("End Date (UTC):", end);
+         
+        if (start && end) {
             query = `
                 SELECT 
                     \`timestamp\`,
@@ -44,14 +39,8 @@ export const getTemperatureStats = async (req, res) => {
                 ORDER BY \`timestamp\` DESC
                 LIMIT 20;
             `;
-            queryParams = [start, end];
         }
-
-        const [last20Results] = await db.query(
-            query,
-            queryParams.length ? { replacements: queryParams } : undefined
-        );
-
+        const [last20Results] = await db.query(query, { replacements: [start, end] });
         const [avgResult] = await db.query(queryLast20);
 
         res.json({
@@ -64,7 +53,6 @@ export const getTemperatureStats = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
-
 export const getTemperatureStatsTest = async (req, res) => {
     try {
         const queryLast20 = `

@@ -155,7 +155,7 @@ export const getSaaoUserCounts = async (req, res) => {
         [literal('GROUP_CONCAT(DISTINCT RegistedUser.union)'), 'union'],
         [literal('GROUP_CONCAT(DISTINCT RegistedUser.block)'), 'block'],
       ],
-      where: { role: 'farmer', saaoId: { [fn('IS NOT'), null] } },
+      where: { role: 'farmer', saaoId: { [Op.ne]: null } },
       include: [
         {
           model: User,
