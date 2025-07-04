@@ -142,67 +142,60 @@ export const getBlockCounts = async (req, res) => {
 };
 
 export const getSaaoUserCounts = async (req, res) => {
-    try {
-        const counts = await User.findAll({
-            attributes: [
-                'id',
-                'name',
-                'role',
-                'mobileNumber',
-                [fn('COUNT', col('Farmers.id')), 'farmerCount'],
+  try {
+    const saaoGroups = await RegistedUser.findAll({
+      attributes: [
+        'saaoId',
+        [fn('COUNT', col('RegistedUser.id')), 'farmerCount'],
+        [literal('GROUP_CONCAT(DISTINCT RegistedUser.hotspot)'), 'hotspot'],
+        [literal('GROUP_CONCAT(DISTINCT RegistedUser.region)'), 'region'],
+        [literal('GROUP_CONCAT(DISTINCT RegistedUser.division)'), 'division'],
+        [literal('GROUP_CONCAT(DISTINCT RegistedUser.district)'), 'district'],
+        [literal('GROUP_CONCAT(DISTINCT RegistedUser.upazila)'), 'upazila'],
+        [literal('GROUP_CONCAT(DISTINCT RegistedUser.union)'), 'union'],
+        [literal('GROUP_CONCAT(DISTINCT RegistedUser.block)'), 'block'],
+      ],
+      where: { role: 'farmer', saaoId: { [fn('IS NOT'), null] } },
+      include: [
+        {
+          model: User,
+          as: 'Saao',
+          attributes: ['id', 'name', 'role', 'mobileNumber'],
+        },
+      ],
+      group: ['saaoId'],
+      raw: true,
+    });
 
-                // 📍 Add distinct location info using GROUP_CONCAT
-                [literal('GROUP_CONCAT(DISTINCT Farmers.region)'), 'region'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.block)'), 'block'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.union)'), 'union'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.upazila)'), 'upazila'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.district)'), 'district'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.division)'), 'division'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.hotspot)'), 'hotspot'],
-            ],
-            include: [
-                {
-                    model: RegistedUser,
-                    as: 'Farmers',
-                    attributes: [],
-                    where: { role: 'farmer' },
-                    required: false,
-                },
-            ],
-            where: { role: 'SAAO' },
-            group: ['User.id'],
-            raw: true,
-        });
+    const result = saaoGroups.map(item => ({
+      id: item['Saao.id'],
+      name: item['Saao.name'],
+      role: item['Saao.role'],
+      mobileNumber: item['Saao.mobileNumber'],
+      farmerCount: parseInt(item.farmerCount) || 0,
+      hotspot: item.hotspot || '',
+      region: item.region || '',
+      division: item.division || '',
+      district: item.district || '',
+      upazila: item.upazila || '',
+      union: item.union || '',
+      block: item.block || '',
+    }));
 
-        const result = counts.map(item => ({
-            id: item.id,
-            name: item.name,
-            role: item.role,
-            mobileNumber: item.mobileNumber,
-            farmerCount: parseInt(item.farmerCount) || 0,
-            region: item.region || '',
-            block: item.block || '',
-            union: item.union || '',
-            upazila: item.upazila || '',
-            district: item.district || '',
-            division: item.division || '',
-            hotspot: item.hotspot || '',
-        }));
+    const totalFarmerCount = result.reduce((sum, saao) => sum + saao.farmerCount, 0);
 
-        const totalFarmerCount = result.reduce((sum, item) => sum + item.farmerCount, 0);
-
-        res.status(200).json({
-            success: true,
-            data: result,
-            totalFarmerCount,
-        });
-    } catch (error) {
-        console.error('Error fetching SAAO user counts:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Internal server error',
-        });
-    }
+    res.status(200).json({
+      success: true,
+      data: result,
+      totalFarmerCount,
+    });
+  } catch (error) {
+    console.error('Error fetching SAAO user counts:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
 };
 
 
