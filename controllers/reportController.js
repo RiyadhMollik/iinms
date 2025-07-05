@@ -68,77 +68,69 @@ export const getLocationCounts = async (req, res) => {
 
 
 export const getBlockCounts = async (req, res) => {
-    try {
-        const { date, upazila, union, hotspots } = req.query;
+  try {
+    const { startDate, endDate, upazila, union } = req.query;
 
-        // Validate inputs
-        if (!date) {
-            return res.status(400).json({ error: 'Date is required' });
-        }
-        if (!upazila && !union) {
-            return res.status(400).json({ error: 'Upazila or Union is required' });
-        }
-
-        // Parse and validate date
-        const startDate = new Date(date);
-        const endDate = new Date(date);
-        endDate.setDate(endDate.getDate() + 1); // Include entire day
-        if (isNaN(startDate.getTime())) {
-            return res.status(400).json({ error: 'Invalid date format' });
-        }
-
-        // Build where clause
-        const whereClause = {
-            role: 'farmer',
-            createdAt: {
-                [Op.gte]: startDate,
-                [Op.lt]: endDate,
-            },
-        };
-
-        // Add upazila or union filter
-        if (union) {
-            whereClause.union = union;
-        } else if (upazila) {
-            whereClause.upazila = upazila;
-        }
-
-        // Add hotspot filter if provided
-        if (hotspots) {
-            const hotspotArray = hotspots.split(',');
-            whereClause.hotspot = {
-                [Op.in]: hotspotArray,
-            };
-        }
-
-        // Query to get block counts
-        const counts = await RegistedUser.findAll({
-            attributes: [
-                'block',
-                [sequelize.fn('COUNT', sequelize.col('block')), 'count'],
-            ],
-            where: whereClause,
-            group: ['block'],
-            raw: true,
-        });
-
-        // Format response
-        const result = counts.map(item => ({
-            block: item.block || 'Unknown',
-            count: parseInt(item.count),
-        }));
-
-        res.status(200).json({
-            success: true,
-            data: result,
-        });
-    } catch (error) {
-        console.error('Error fetching block counts:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Internal server error',
-        });
+    // Input validation
+    if (!startDate || !endDate) {
+      return res.status(400).json({ error: 'Start date and end date are required' });
     }
+
+    if (!upazila && !union) {
+      return res.status(400).json({ error: 'Upazila or Union is required' });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    if (isNaN(start) || isNaN(end)) {
+      return res.status(400).json({ error: 'Invalid date format' });
+    }
+
+    // Include full day for endDate
+    end.setDate(end.getDate() + 1);
+
+    // Build where clause
+    const whereClause = {
+      role: 'farmer',
+      createdAt: {
+        [Op.gte]: start,
+        [Op.lt]: end,
+      },
+    };
+
+    if (union) {
+      whereClause.union = union;
+    } else if (upazila) {
+      whereClause.upazila = upazila;
+    }
+
+    const counts = await RegistedUser.findAll({
+      attributes: [
+        'block',
+        [sequelize.fn('COUNT', sequelize.col('block')), 'count'],
+      ],
+      where: whereClause,
+      group: ['block'],
+      raw: true,
+    });
+
+    const result = counts.map(item => ({
+      block: item.block || 'Unknown',
+      count: parseInt(item.count),
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error fetching block counts:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Internal server error',
+    });
+  }
 };
 
 export const getSaaoUserCounts = async (req, res) => {
