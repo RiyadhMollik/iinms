@@ -4,7 +4,7 @@ import sequelize from "../config/db.js";
 import { Op, fn, col, literal } from 'sequelize';
 export const getLocationCounts = async (req, res) => {
     try {
-        const { date, locationType } = req.query;
+        const { startDate, endDate, locationType } = req.query;
 
         // Validate locationType
         const validLocationTypes = ['upazila', 'district', 'division', 'region', 'hotspot'];
@@ -12,25 +12,41 @@ export const getLocationCounts = async (req, res) => {
             return res.status(400).json({ error: 'Invalid location type' });
         }
 
-        // Parse and validate date
-        let startDate, endDate;
-        if (date) {
-            startDate = new Date(date);
-            endDate = new Date(date);
-            endDate.setDate(endDate.getDate() + 1); // Include entire day
+        // Parse and validate dates
+        let queryStartDate, queryEndDate;
+        if (startDate) {
+            queryStartDate = new Date(startDate);
+            if (isNaN(queryStartDate.getTime())) {
+                return res.status(400).json({ error: 'Invalid start date format' });
+            }
 
-            if (isNaN(startDate.getTime())) {
-                return res.status(400).json({ error: 'Invalid date format' });
+            // If endDate is provided, use it; otherwise, use startDate for single-day query
+            if (endDate) {
+                queryEndDate = new Date(endDate);
+                if (isNaN(queryEndDate.getTime())) {
+                    return res.status(400).json({ error: 'Invalid end date format' });
+                }
+                // Ensure endDate is inclusive by adding one day
+                queryEndDate.setDate(queryEndDate.getDate() + 1);
+            } else {
+                // For single day query
+                queryEndDate = new Date(startDate);
+                queryEndDate.setDate(queryEndDate.getDate() + 1);
+            }
+
+            // Validate that endDate is not before startDate
+            if (queryEndDate <= queryStartDate && endDate) {
+                return res.status(400).json({ error: 'End date must be after start date' });
             }
         }
 
         // Build where clause for date and role
         const whereClause = {
             role: 'farmer', // Filter for farmer role
-            ...(date && {
+            ...(startDate && {
                 createdAt: {
-                    [Op.gte]: startDate,
-                    [Op.lt]: endDate
+                    [Op.gte]: queryStartDate,
+                    [Op.lt]: queryEndDate
                 }
             })
         };
