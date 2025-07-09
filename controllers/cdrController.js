@@ -1,6 +1,6 @@
 
 import { Op } from 'sequelize';
-import CdrData from '../models/CdrData';
+import CdrData from '../models/CdrData.js';
 
 export const getFilteredCdr = async (req, res) => {
   try {
