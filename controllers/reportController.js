@@ -98,7 +98,7 @@ export const getLocationCounts = async (req, res) => {
 
 export const getBlockCounts = async (req, res) => {
   try {
-    const { startDate, endDate, upazila, union } = req.query;
+    const { startDate, endDate, district, upazila, union } = req.query;
 
     // Input validation
     if (!startDate || !endDate) {
@@ -127,6 +127,10 @@ export const getBlockCounts = async (req, res) => {
         [Op.lt]: end,
       },
     };
+
+    if (district) {
+      whereClause.district = district;
+    }
 
     if (union) {
       whereClause.union = union;
@@ -161,6 +165,7 @@ export const getBlockCounts = async (req, res) => {
     });
   }
 };
+
 
 export const getSaaoUserCounts = async (req, res) => {
     try {
