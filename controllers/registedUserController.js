@@ -167,7 +167,7 @@ export const getStatsBySaaoId = async (req, res) => {
       }
 
       whereClause.createdAt = {
-        [sequelize.Op.between]: [new Date(startDate), new Date(endDate)],
+        [Op.between]: [new Date(startDate), new Date(endDate)],
       };
     }
 
