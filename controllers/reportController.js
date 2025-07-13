@@ -6,7 +6,7 @@ export const getLocationCounts = async (req, res) => {
     try {
         const { startDate, endDate, locationType } = req.query;
 
-        const validLocationTypes = ['upazila', 'district', 'division', 'region', 'hotspot'];
+        const validLocationTypes = ['union','upazila', 'district', 'division', 'region', 'hotspot'];
         if (!validLocationTypes.includes(locationType)) {
             return res.status(400).json({ error: 'Invalid location type' });
         }
