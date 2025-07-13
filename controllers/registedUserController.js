@@ -138,17 +138,42 @@ export const getFarmersByRole = async (req, res) => {
 export const getStatsBySaaoId = async (req, res) => {
   try {
     const { saaoId } = req.params;
+    const { startDate, endDate } = req.query;
 
     // Check if saaoId is provided
     if (!saaoId) {
       return res.status(400).json({ error: 'saaoId is required' });
     }
 
+    // Validate date parameters
+    if ((startDate && !endDate) || (!startDate && endDate)) {
+      return res.status(400).json({ error: 'Both startDate and endDate are required together' });
+    }
+
+    // Build where clause with optional date range
+    const whereClause = {
+      saaoId: saaoId,
+    };
+
+    if (startDate && endDate) {
+      // Validate date formats
+      if (!Date.parse(startDate) || !Date.parse(endDate)) {
+        return res.status(400).json({ error: 'Invalid date format' });
+      }
+
+      // Ensure startDate is not after endDate
+      if (new Date(startDate) > new Date(endDate)) {
+        return res.status(400).json({ error: 'startDate cannot be after endDate' });
+      }
+
+      whereClause.createdAt = {
+        [sequelize.Op.between]: [new Date(startDate), new Date(endDate)],
+      };
+    }
+
     // Query the database to get the total count of entries per day for the given saaoId
     const stats = await Farmer.findAll({
-      where: {
-        saaoId: saaoId,
-      },
+      where: whereClause,
       attributes: [
         [sequelize.fn('DATE', sequelize.col('createdAt')), 'date'], // Extract date from createdAt
         [sequelize.fn('COUNT', sequelize.col('id')), 'totalEntries'], // Count the number of records
@@ -159,7 +184,7 @@ export const getStatsBySaaoId = async (req, res) => {
 
     // If no records found, return an empty array
     if (!stats.length) {
-      return res.status(404).json({ message: 'No data found for the provided saaoId.' });
+      return res.status(404).json({ message: 'No data found for the provided saaoId and date range.' });
     }
 
     // Return the stats in the response
