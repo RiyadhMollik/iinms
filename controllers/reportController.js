@@ -6,13 +6,11 @@ export const getLocationCounts = async (req, res) => {
     try {
         const { startDate, endDate, locationType } = req.query;
 
-        // Validate locationType
         const validLocationTypes = ['upazila', 'district', 'division', 'region', 'hotspot'];
         if (!validLocationTypes.includes(locationType)) {
             return res.status(400).json({ error: 'Invalid location type' });
         }
 
-        // Parse and validate dates
         let queryStartDate, queryEndDate;
         if (startDate) {
             queryStartDate = new Date(startDate);
@@ -36,7 +34,6 @@ export const getLocationCounts = async (req, res) => {
             }
         }
 
-        // Build where clause
         const whereClause = {
             role: 'farmer',
             ...(startDate && {
@@ -57,28 +54,30 @@ export const getLocationCounts = async (req, res) => {
             raw: true
         });
 
-        // Format result with hotspot conversion
-        const result = counts.map(item => {
-            let keyValue = item[locationType];
+        const result = counts
+            .filter(item => {
+                const value = item[locationType];
 
-            // If locationType is 'hotspot', convert array to comma-separated string
-            if (locationType === 'hotspot') {
-                if (Array.isArray(keyValue)) {
-                    keyValue = keyValue.length > 0 ? keyValue.join(', ') : 'Unknown';
-                } else if (!keyValue) {
-                    keyValue = 'Unknown';
+                if (locationType === 'hotspot') {
+                    // Exclude if not array or has more than one value
+                    return Array.isArray(value) && value.length === 1;
                 }
-            } else {
-                if (!keyValue) {
-                    keyValue = 'Unknown';
-                }
-            }
 
-            return {
-                [locationType]: keyValue,
-                count: parseInt(item.count)
-            };
-        });
+                // For other location types, exclude falsy values (like null or '')
+                return value;
+            })
+            .map(item => {
+                let keyValue = item[locationType];
+
+                if (locationType === 'hotspot' && Array.isArray(keyValue)) {
+                    keyValue = keyValue[0]; // Use the single value from the array
+                }
+
+                return {
+                    [locationType]: keyValue,
+                    count: parseInt(item.count)
+                };
+            });
 
         res.status(200).json({
             success: true,
@@ -93,6 +92,7 @@ export const getLocationCounts = async (req, res) => {
         });
     }
 };
+
 
 
 
