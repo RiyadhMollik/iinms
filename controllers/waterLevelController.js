@@ -1,7 +1,7 @@
 import db from "../config/db.js";
 
 export const getWaterLevelStats = async (req, res) => {
-    const { startTime, endTime ,device } = req.query;
+    const { startTime, endTime, device } = req.query;
     try {
         const queryLast20 = `
             SELECT 
@@ -28,7 +28,7 @@ export const getWaterLevelStats = async (req, res) => {
 
         console.log("Start Date (UTC):", start);
         console.log("End Date (UTC):", end);
-        
+
         if (start && end) {
             query = `
                 SELECT 
@@ -89,3 +89,19 @@ export const getWaterLevelStatstest = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
+
+
+export const getYoutubeStats = async (req, res) => {
+    try {
+        const { broadcastId } = req.query;
+        const response = await fetch(
+            `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${broadcastId}&key=AIzaSyC9c1nSAZhlXRaZhuCGU9E1aL5skA9VNAA`
+        );
+        const data = await response.json();
+    res.json(data);
+    } catch (error) {
+        console.error("Error fetching water level data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
