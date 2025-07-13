@@ -20,29 +20,25 @@ export const getLocationCounts = async (req, res) => {
                 return res.status(400).json({ error: 'Invalid start date format' });
             }
 
-            // If endDate is provided, use it; otherwise, use startDate for single-day query
             if (endDate) {
                 queryEndDate = new Date(endDate);
                 if (isNaN(queryEndDate.getTime())) {
                     return res.status(400).json({ error: 'Invalid end date format' });
                 }
-                // Ensure endDate is inclusive by adding one day
                 queryEndDate.setDate(queryEndDate.getDate() + 1);
             } else {
-                // For single day query
                 queryEndDate = new Date(startDate);
                 queryEndDate.setDate(queryEndDate.getDate() + 1);
             }
 
-            // Validate that endDate is not before startDate
             if (queryEndDate <= queryStartDate && endDate) {
                 return res.status(400).json({ error: 'End date must be after start date' });
             }
         }
 
-        // Build where clause for date and role
+        // Build where clause
         const whereClause = {
-            role: 'farmer', // Filter for farmer role
+            role: 'farmer',
             ...(startDate && {
                 createdAt: {
                     [Op.gte]: queryStartDate,
@@ -51,7 +47,6 @@ export const getLocationCounts = async (req, res) => {
             })
         };
 
-        // Query to get counts grouped by locationType
         const counts = await RegistedUser.findAll({
             attributes: [
                 locationType,
@@ -62,11 +57,28 @@ export const getLocationCounts = async (req, res) => {
             raw: true
         });
 
-        // Format response
-        const result = counts.map(item => ({
-            [locationType]: item[locationType] || 'Unknown',
-            count: parseInt(item.count)
-        }));
+        // Format result with hotspot conversion
+        const result = counts.map(item => {
+            let keyValue = item[locationType];
+
+            // If locationType is 'hotspot', convert array to comma-separated string
+            if (locationType === 'hotspot') {
+                if (Array.isArray(keyValue)) {
+                    keyValue = keyValue.length > 0 ? keyValue.join(', ') : 'Unknown';
+                } else if (!keyValue) {
+                    keyValue = 'Unknown';
+                }
+            } else {
+                if (!keyValue) {
+                    keyValue = 'Unknown';
+                }
+            }
+
+            return {
+                [locationType]: keyValue,
+                count: parseInt(item.count)
+            };
+        });
 
         res.status(200).json({
             success: true,
@@ -81,6 +93,7 @@ export const getLocationCounts = async (req, res) => {
         });
     }
 };
+
 
 
 export const getBlockCounts = async (req, res) => {
