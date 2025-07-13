@@ -105,8 +105,8 @@ export const getBlockCounts = async (req, res) => {
       return res.status(400).json({ error: 'Start date and end date are required' });
     }
 
-    if (!upazila && !union) {
-      return res.status(400).json({ error: 'Upazila or Union is required' });
+    if (!upazila && !union && !district) {
+      return res.status(400).json({ error: 'Upazila or Union or district is required' });
     }
 
     const start = new Date(startDate);
