@@ -136,7 +136,14 @@ const csvFilePath = path.join(publicPath, 'numbers.csv');
 if (!fs.existsSync(csvFilePath)) {
   fs.writeFileSync(csvFilePath, 'mobile,phone\n');
 }
-
+app.get('/api/viewers', async (req, res) => {
+  const { broadcastId } = req.query;
+  const response = await fetch(
+    `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${broadcastId}&key=AIzaSyC9c1nSAZhlXRaZhuCGU9E1aL5skA9VNAA`
+  );
+  const data = await response.json();
+  res.json(data);
+});
 // API endpoint
 app.post('/api/save-number', (req, res) => {
   const { mobile, phone } = req.body;
