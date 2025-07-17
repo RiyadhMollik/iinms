@@ -74,7 +74,7 @@ export const deleteFarmer = async (req, res) => {
 };
 
 
-export const getAllFarmers = async (req, res) => {
+export const getFarmersByRole = async (req, res) => {
   try {
     const { page = 1, limit = 10, search, type, hotspot } = req.query;
 
