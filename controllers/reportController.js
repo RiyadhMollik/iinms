@@ -168,77 +168,75 @@ export const getBlockCounts = async (req, res) => {
 
 
 export const getSaaoUserCounts = async (req, res) => {
-    try {
-        const { hotspot } = req.query;
+  try {
+    const { hotspot } = req.query;
+    const farmerWhere = { role: "farmer" };
+    if (hotspot) {
+      const hotspotArray = hotspot.split(",").map((h) => h.trim());
 
-        const farmerWhere = { role: 'farmer' };
-
-        // Add hotspot filter if provided
-        if (hotspot) {
-            const hotspotArray = hotspot.split(',').map(item => item.trim());
-            farmerWhere.hotspot = hotspotArray.length === 1
-                ? hotspotArray[0]
-                : { [Op.in]: hotspotArray };
-        }
-
-        const counts = await User.findAll({
-            attributes: [
-                'id',
-                'name',
-                'role',
-                'mobileNumber',
-                [fn('COUNT', col('Farmers.id')), 'farmerCount'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.region)'), 'region'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.block)'), 'block'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.union)'), 'union'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.upazila)'), 'upazila'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.district)'), 'district'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.division)'), 'division'],
-                [literal('GROUP_CONCAT(DISTINCT Farmers.hotspot)'), 'hotspot'],
-            ],
-            include: [
-                {
-                    model: RegistedUser,
-                    as: 'Farmers',
-                    attributes: [],
-                    where: farmerWhere,
-                    required: true,
-                },
-            ],
-            where: { role: 'SAAO' },
-            group: ['User.id'],
-            raw: true,
-        });
-
-        const result = counts.map(item => ({
-            id: item.id,
-            name: item.name,
-            role: item.role,
-            mobileNumber: item.mobileNumber,
-            farmerCount: parseInt(item.farmerCount) || 0,
-            region: item.region || '',
-            block: item.block || '',
-            union: item.union || '',
-            upazila: item.upazila || '',
-            district: item.district || '',
-            division: item.division || '',
-            hotspot: item.hotspot || '',
-        }));
-
-        const totalFarmerCount = result.reduce((sum, item) => sum + item.farmerCount, 0);
-
-        res.status(200).json({
-            success: true,
-            data: result,
-            totalFarmerCount,
-        });
-    } catch (error) {
-        console.error('Error fetching SAAO user counts:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Internal server error',
-        });
+      // Filter farmers where hotspot JSON array contains ANY of the hotspots
+      farmerWhere[Op.or] = hotspotArray.map(
+        (h) => literal(`JSON_CONTAINS(hotspot, '"${h}"')`)
+      );
     }
+    const counts = await User.findAll({
+      attributes: [
+        "id",
+        "name",
+        "role",
+        "mobileNumber",
+        [fn("COUNT", col("Farmers.id")), "farmerCount"],
+        [literal("GROUP_CONCAT(DISTINCT Farmers.region)"), "region"],
+        [literal("GROUP_CONCAT(DISTINCT Farmers.block)"), "block"],
+        [literal("GROUP_CONCAT(DISTINCT Farmers.union)"), "union"],
+        [literal("GROUP_CONCAT(DISTINCT Farmers.upazila)"), "upazila"],
+        [literal("GROUP_CONCAT(DISTINCT Farmers.district)"), "district"],
+        [literal("GROUP_CONCAT(DISTINCT Farmers.division)"), "division"],
+        [literal("GROUP_CONCAT(DISTINCT Farmers.hotspot)"), "hotspot"],
+      ],
+      include: [
+        {
+          model: RegistedUser,
+          as: "Farmers",
+          attributes: [],
+          where: farmerWhere,
+          required: true, // Inner join so only SAAOs with matching farmers returned
+        },
+      ],
+      where: { role: "SAAO" },
+      group: ["User.id"],
+      raw: true,
+    });
+
+    const result = counts.map((item) => ({
+      id: item.id,
+      name: item.name,
+      role: item.role,
+      mobileNumber: item.mobileNumber,
+      farmerCount: parseInt(item.farmerCount) || 0,
+      region: item.region || "",
+      block: item.block || "",
+      union: item.union || "",
+      upazila: item.upazila || "",
+      district: item.district || "",
+      division: item.division || "",
+      hotspot: item.hotspot || "",
+    }));
+
+    const totalFarmerCount = result.reduce((sum, item) => sum + item.farmerCount, 0);
+
+    res.status(200).json({
+      success: true,
+      data: result,
+      totalFarmerCount,
+    });
+  } catch (error) {
+    console.error("Error fetching SAAO user counts:", error);
+    res.status(500).json({
+      success: false,
+      error: "Internal server error",
+    });
+  }
 };
 
 
