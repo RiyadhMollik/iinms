@@ -74,16 +74,26 @@ export const deleteFarmer = async (req, res) => {
 };
 
 
+
 export const getFarmersByRole = async (req, res) => {
   try {
+    const { saaoId } = req.query;
+    const { role } = req.params;
+
+
+
+
+
     const { page = 1, limit = 10, search, type, hotspot } = req.query;
 
     const parsedPage = parseInt(page);
     const parsedLimit = parseInt(limit);
     const offset = (parsedPage - 1) * parsedLimit;
 
-    const whereClause = {};
-
+    const whereClause = { role };
+    if (saaoId && saaoId !== "null") {
+      whereClause.saaoId = parseInt(saaoId, 10);
+    }
     // Search by name, mobileNumber, or address
     if (search) {
       whereClause[Op.or] = [
