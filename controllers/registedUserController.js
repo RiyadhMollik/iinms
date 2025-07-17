@@ -90,8 +90,12 @@ export const getFarmersByRole = async (req, res) => {
     }
 
     if (hotspot && hotspot !== "null") {
+      const hotspotList = hotspot.split(',').map((tag) => tag.trim());
+
       whereClause.hotspot = {
-        [Op.like]: `%${hotspot}%`, // Works if hotspot is stored as JSON or stringified object
+        [Op.or]: hotspotList.map(tag => ({
+          [Op.like]: `%${tag}%`
+        }))
       };
     }
 
