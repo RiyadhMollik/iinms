@@ -76,7 +76,7 @@ export const deleteFarmer = async (req, res) => {
 
 export const getFarmersByRole = async (req, res) => {
   try {
-    const { saaoId, search } = req.query;
+    const { saaoId, search, hotspot } = req.query;
     const { role } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
@@ -87,6 +87,12 @@ export const getFarmersByRole = async (req, res) => {
 
     if (saaoId && saaoId !== "null") {
       whereClause.saaoId = parseInt(saaoId, 10);
+    }
+
+    if (hotspot && hotspot !== "null") {
+      whereClause.hotspot = {
+        [Op.like]: `%${hotspot}%`, // Works if hotspot is stored as JSON or stringified object
+      };
     }
 
     if (search) {
@@ -100,7 +106,7 @@ export const getFarmersByRole = async (req, res) => {
       ];
     }
 
-    const farmers = await Farmer.findAll({
+    const farmers = await RegistedUser.findAll({
       where: whereClause,
       limit: parsedLimit,
       offset: offset,
@@ -118,7 +124,7 @@ export const getFarmersByRole = async (req, res) => {
       });
     }
 
-    const totalFarmers = await Farmer.count({ where: whereClause });
+    const totalFarmers = await RegistedUser.count({ where: whereClause });
     const totalPages = Math.ceil(totalFarmers / parsedLimit);
 
     res.status(200).json({
