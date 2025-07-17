@@ -80,10 +80,6 @@ export const getFarmersByRole = async (req, res) => {
     const { saaoId } = req.query;
     const { role } = req.params;
 
-
-
-
-
     const { page = 1, limit = 10, search, type, hotspot } = req.query;
 
     const parsedPage = parseInt(page);
@@ -100,9 +96,15 @@ export const getFarmersByRole = async (req, res) => {
         { name: { [Op.like]: `%${search}%` } },
         { mobileNumber: { [Op.like]: `%${search}%` } },
         { address: { [Op.like]: `%${search}%` } },
+        { village: { [Op.like]: `%${search}%` } },
+        { block: { [Op.like]: `%${search}%` } },
+        { union: { [Op.like]: `%${search}%` } },
+        { upazila: { [Op.like]: `%${search}%` } },
+        { district: { [Op.like]: `%${search}%` } },
+        { division: { [Op.like]: `%${search}%` } },
+        { region: { [Op.like]: `%${search}%` } },
       ];
     }
-
     // Filter by type
     if (type) {
       whereClause.type = type;
