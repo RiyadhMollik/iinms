@@ -74,74 +74,63 @@ export const deleteFarmer = async (req, res) => {
 };
 
 
-export const getFarmersByRole = async (req, res) => {
+export const getAllFarmers = async (req, res) => {
   try {
-    const { saaoId, search, hotspot } = req.query;
-    const { role } = req.params;
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, search, type, hotspot } = req.query;
 
-    const offset = (page - 1) * limit;
-    const parsedLimit = parseInt(limit, 10);
+    const parsedPage = parseInt(page);
+    const parsedLimit = parseInt(limit);
+    const offset = (parsedPage - 1) * parsedLimit;
 
-    const whereClause = { role };
+    const whereClause = {};
 
-    if (saaoId && saaoId !== "null") {
-      whereClause.saaoId = parseInt(saaoId, 10);
-    }
-
-    if (hotspot && hotspot !== "null") {
-      const hotspotList = hotspot.split(',').map((tag) => tag.trim());
-
-      whereClause.hotspot = {
-        [Op.or]: hotspotList.map(tag => ({
-          [Op.like]: `%${tag}%`
-        }))
-      };
-    }
-
+    // Search by name, mobileNumber, or address
     if (search) {
       whereClause[Op.or] = [
         { name: { [Op.like]: `%${search}%` } },
         { mobileNumber: { [Op.like]: `%${search}%` } },
-        { block: { [Op.like]: `%${search}%` } },
-        { village: { [Op.like]: `%${search}%` } },
-        { district: { [Op.like]: `%${search}%` } },
-        { upazila: { [Op.like]: `%${search}%` } },
+        { address: { [Op.like]: `%${search}%` } },
       ];
     }
 
-    const farmers = await Farmer.findAll({
-      where: whereClause,
-      limit: parsedLimit,
-      offset: offset,
-    });
-
-    if (farmers.length === 0) {
-      return res.status(200).json({
-        data: [],
-        pagination: {
-          currentPage: 0,
-          totalPages: 0,
-          totalFarmers: 0,
-          limit: parsedLimit,
-        },
-      });
+    // Filter by type
+    if (type) {
+      whereClause.type = type;
     }
 
-    const totalFarmers = await Farmer.count({ where: whereClause });
-    const totalPages = Math.ceil(totalFarmers / parsedLimit);
+    // Filter by hotspot (only if provided and not "null")
+    if (hotspot && hotspot !== "null") {
+      whereClause[Op.and] = [
+        sequelize.where(
+          sequelize.fn(
+            "JSON_CONTAINS",
+            sequelize.col("hotspot"),
+            JSON.stringify(hotspot)
+          ),
+          1
+        ),
+      ];
+    }
+
+    const { rows, count } = await Farmer.findAndCountAll({
+      where: whereClause,
+      offset,
+      limit: parsedLimit,
+      order: [["createdAt", "DESC"]],
+    });
 
     res.status(200).json({
-      data: farmers,
+      data: rows,
       pagination: {
-        currentPage: parseInt(page),
-        totalPages,
-        totalFarmers,
+        currentPage: parsedPage,
+        totalPages: Math.ceil(count / parsedLimit),
+        totalFarmers: count,
         limit: parsedLimit,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching farmers:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 };
 
