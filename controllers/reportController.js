@@ -173,7 +173,7 @@ export const getSaaoUserCounts = async (req, res) => {
 
         const farmerWhere = { role: 'farmer' };
 
-        // If hotspot is provided (can be multiple, comma-separated), add it to the where clause
+        // Add hotspot filter if provided
         if (hotspot) {
             const hotspotArray = hotspot.split(',').map(item => item.trim());
             farmerWhere.hotspot = hotspotArray.length === 1
