@@ -106,7 +106,7 @@ export const getFarmersByRole = async (req, res) => {
       ];
     }
 
-    const farmers = await RegistedUser.findAll({
+    const farmers = await Farmer.findAll({
       where: whereClause,
       limit: parsedLimit,
       offset: offset,
