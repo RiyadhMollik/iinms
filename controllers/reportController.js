@@ -202,7 +202,7 @@ export const getSaaoUserCounts = async (req, res) => {
                     as: 'Farmers',
                     attributes: [],
                     where: farmerWhere,
-                    required: false,
+                    required: true,
                 },
             ],
             where: { role: 'SAAO' },
