@@ -169,6 +169,18 @@ export const getBlockCounts = async (req, res) => {
 
 export const getSaaoUserCounts = async (req, res) => {
     try {
+        const { hotspot } = req.query;
+
+        const farmerWhere = { role: 'farmer' };
+
+        // If hotspot is provided (can be multiple, comma-separated), add it to the where clause
+        if (hotspot) {
+            const hotspotArray = hotspot.split(',').map(item => item.trim());
+            farmerWhere.hotspot = hotspotArray.length === 1
+                ? hotspotArray[0]
+                : { [Op.in]: hotspotArray };
+        }
+
         const counts = await User.findAll({
             attributes: [
                 'id',
@@ -176,8 +188,6 @@ export const getSaaoUserCounts = async (req, res) => {
                 'role',
                 'mobileNumber',
                 [fn('COUNT', col('Farmers.id')), 'farmerCount'],
-
-                // 📍 Add distinct location info using GROUP_CONCAT
                 [literal('GROUP_CONCAT(DISTINCT Farmers.region)'), 'region'],
                 [literal('GROUP_CONCAT(DISTINCT Farmers.block)'), 'block'],
                 [literal('GROUP_CONCAT(DISTINCT Farmers.union)'), 'union'],
@@ -191,7 +201,7 @@ export const getSaaoUserCounts = async (req, res) => {
                     model: RegistedUser,
                     as: 'Farmers',
                     attributes: [],
-                    where: { role: 'farmer' },
+                    where: farmerWhere,
                     required: false,
                 },
             ],
@@ -230,6 +240,7 @@ export const getSaaoUserCounts = async (req, res) => {
         });
     }
 };
+
 
 
 export const assignSaaosToFarmers = async (req, res) => {

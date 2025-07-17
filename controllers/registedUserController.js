@@ -90,7 +90,6 @@ export const getFarmersByRole = async (req, res) => {
     if (saaoId && saaoId !== "null") {
       whereClause.saaoId = parseInt(saaoId, 10);
     }
-    // Search by name, mobileNumber, or address
     if (search) {
       whereClause[Op.or] = [
         { name: { [Op.like]: `%${search}%` } },
@@ -105,11 +104,9 @@ export const getFarmersByRole = async (req, res) => {
         { region: { [Op.like]: `%${search}%` } },
       ];
     }
-    // Filter by type
     if (type) {
       whereClause.type = type;
     }
-    // Filter by hotspot (only if provided and not "null")
     if (hotspot && hotspot !== "null") {
       whereClause[Op.and] = [
         sequelize.where(
@@ -122,7 +119,6 @@ export const getFarmersByRole = async (req, res) => {
         ),
       ];
     }
-
     const { rows, count } = await Farmer.findAndCountAll({
       where: whereClause,
       offset,
