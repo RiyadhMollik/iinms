@@ -97,7 +97,7 @@ export const getFarmersByRole = async (req, res) => {
     if (type) {
       whereClause.type = type;
     }
-
+    whereClause.role = "saao";
     // Filter by hotspot (only if provided and not "null")
     if (hotspot && hotspot !== "null") {
       whereClause[Op.and] = [
