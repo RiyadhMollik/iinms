@@ -124,7 +124,7 @@ export const getFarmersByRole = async (req, res) => {
       });
     }
 
-    const totalFarmers = await RegistedUser.count({ where: whereClause });
+    const totalFarmers = await Farmer.count({ where: whereClause });
     const totalPages = Math.ceil(totalFarmers / parsedLimit);
 
     res.status(200).json({
