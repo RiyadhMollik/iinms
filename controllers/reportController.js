@@ -171,14 +171,14 @@ export const getSaaoUserCounts = async (req, res) => {
   try {
     const { hotspot } = req.query;
     const farmerWhere = { role: "farmer" };
+
     if (hotspot) {
       const hotspotArray = hotspot.split(",").map((h) => h.trim());
-
-      // Filter farmers where hotspot JSON array contains ANY of the hotspots
       farmerWhere[Op.or] = hotspotArray.map(
         (h) => literal(`JSON_CONTAINS(hotspot, '"${h}"')`)
       );
     }
+
     const counts = await User.findAll({
       attributes: [
         "id",
@@ -186,6 +186,14 @@ export const getSaaoUserCounts = async (req, res) => {
         "role",
         "mobileNumber",
         [fn("COUNT", col("Farmers.id")), "farmerCount"],
+        [
+          fn("SUM", literal("CASE WHEN Farmers.nationalId IS NOT NULL AND Farmers.nationalId != '' THEN 1 ELSE 0 END")),
+          "withNationalIdCount",
+        ],
+        [
+          fn("SUM", literal("CASE WHEN Farmers.nationalId IS NULL OR Farmers.nationalId = '' THEN 1 ELSE 0 END")),
+          "withoutNationalIdCount",
+        ],
         [literal("GROUP_CONCAT(DISTINCT Farmers.region)"), "region"],
         [literal("GROUP_CONCAT(DISTINCT Farmers.block)"), "block"],
         [literal("GROUP_CONCAT(DISTINCT Farmers.union)"), "union"],
@@ -200,7 +208,7 @@ export const getSaaoUserCounts = async (req, res) => {
           as: "Farmers",
           attributes: [],
           where: farmerWhere,
-          required: true, // Inner join so only SAAOs with matching farmers returned
+          required: true,
         },
       ],
       where: { role: "SAAO" },
@@ -214,6 +222,8 @@ export const getSaaoUserCounts = async (req, res) => {
       role: item.role,
       mobileNumber: item.mobileNumber,
       farmerCount: parseInt(item.farmerCount) || 0,
+      withNationalIdCount: parseInt(item.withNationalIdCount) || 0,
+      withoutNationalIdCount: parseInt(item.withoutNationalIdCount) || 0,
       region: item.region || "",
       block: item.block || "",
       union: item.union || "",
@@ -238,6 +248,7 @@ export const getSaaoUserCounts = async (req, res) => {
     });
   }
 };
+
 
 
 
