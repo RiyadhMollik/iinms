@@ -45,7 +45,7 @@ export const getFarmers = async (req, res) => {
       queryOptions.limit = 5;
     }
 
-    const farmers = await RegistedUser.findAll(queryOptions);
+    const farmers = await Farmer.findAll(queryOptions);
 
     res.status(200).json(farmers);
   } catch (error) {
