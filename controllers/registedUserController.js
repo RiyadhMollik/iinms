@@ -38,12 +38,8 @@ export const getFarmers = async (req, res) => {
 
     const queryOptions = {
       where: whereClause,
+      limit : 5
     };
-
-    // Apply limit of 5 only when no search term is provided
-    if (!search) {
-      queryOptions.limit = 5;
-    }
 
     const farmers = await Farmer.findAll(queryOptions);
 
