@@ -25,7 +25,28 @@ export const createFarmer = async (req, res) => {
 // Get all farmers
 export const getFarmers = async (req, res) => {
   try {
-    const farmers = await Farmer.findAll();
+    const { search } = req.query;
+
+    const whereClause = search
+      ? {
+        [Op.or]: [
+          { name: { [Op.like]: `%${search}%` } },
+          { mobileNumber: { [Op.like]: `%${search}%` } },
+        ],
+      }
+      : {};
+
+    const queryOptions = {
+      where: whereClause,
+    };
+
+    // Apply limit of 5 only when no search term is provided
+    if (!search) {
+      queryOptions.limit = 5;
+    }
+
+    const farmers = await RegistedUser.findAll(queryOptions);
+
     res.status(200).json(farmers);
   } catch (error) {
     res.status(500).json({ message: error.message });
