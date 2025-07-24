@@ -25,7 +25,7 @@ export const createFarmer = async (req, res) => {
 // Get all farmers
 export const getFarmers = async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search , role } = req.query;
 
     const whereClause = search
       ? {
@@ -40,7 +40,9 @@ export const getFarmers = async (req, res) => {
       where: whereClause,
       limit : 5
     };
-
+    if (role) {
+      queryOptions.where.role = role;
+    }
     const farmers = await Farmer.findAll(queryOptions);
 
     res.status(200).json(farmers);
