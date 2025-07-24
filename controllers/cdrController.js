@@ -2,6 +2,9 @@
 import { Op } from 'sequelize';
 import CdrData from '../models/CdrData.js';
 
+import { Op } from 'sequelize';
+import CdrData from '../models/CdrData.js';
+
 export const getFilteredCdr = async (req, res) => {
   try {
     const {
@@ -9,6 +12,11 @@ export const getFilteredCdr = async (req, res) => {
       limit = 10,
       destination = '',
       status = '',
+      startDate = '',
+      endDate = '',
+      source = '',
+      location = '',
+      problem = '',
     } = req.query;
 
     const where = {};
@@ -19,6 +27,32 @@ export const getFilteredCdr = async (req, res) => {
 
     if (status) {
       where.status = { [Op.like]: `%${status}%` };
+    }
+
+    if (source) {
+      where.source = { [Op.like]: `%${source}%` };
+    }
+
+    if (location) {
+      where.address = { [Op.like]: `%${location}%` };
+    }
+
+    if (problem) {
+      where.user_field = { [Op.like]: `%${problem}%` };
+    }
+
+    if (startDate && endDate) {
+      where.date = {
+        [Op.between]: [new Date(startDate), new Date(endDate)],
+      };
+    } else if (startDate) {
+      where.date = {
+        [Op.gte]: new Date(startDate),
+      };
+    } else if (endDate) {
+      where.date = {
+        [Op.lte]: new Date(endDate),
+      };
     }
 
     const offset = (parseInt(page) - 1) * parseInt(limit);
@@ -44,6 +78,7 @@ export const getFilteredCdr = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
 
 
 export const updateCdrField = async (req, res) => {
