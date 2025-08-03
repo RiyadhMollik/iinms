@@ -65,8 +65,18 @@ const Attendance = () => {
   // Create meeting
   const createMeeting = async (e) => {
     e.preventDefault();
+    
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      toast.error('User not authenticated. Please login again.');
+      return;
+    }
+
     try {
-      await axios.post(`${API_BASE_URL}/meetings`, meetingForm);
+      await axios.post(`${API_BASE_URL}/meetings`, {
+        ...meetingForm,
+        createdBy: parseInt(userId)
+      });
       toast.success('Meeting created successfully');
       setShowCreateModal(false);
       setMeetingForm({
@@ -93,9 +103,15 @@ const Attendance = () => {
       return;
     }
 
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      toast.error('User not authenticated. Please login again.');
+      return;
+    }
+
     try {
       const response = await axios.post(`${API_BASE_URL}/meetings/${meetingId}/attendance`, {
-        userId: 1, // This should come from user context
+        userId: parseInt(userId),
         checkInLat: currentLocation.lat,
         checkInLng: currentLocation.lng,
       });

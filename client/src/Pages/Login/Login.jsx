@@ -1,12 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 function Login() {
   const [mobileNumber, setMobileNumber] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
+  const [locationPermission, setLocationPermission] = useState(false);
 
   const API_URL = "https://iinms.brri.gov.bd/api/users/login";
+
+  // Get user location
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          setLocationPermission(true);
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          setLocationPermission(false);
+          toast.error('Location access denied. Meeting attendance features may be limited.');
+        }
+      );
+    } else {
+      setLocationPermission(false);
+      toast.error('Geolocation is not supported by this browser.');
+    }
+  };
+
+  // Get location on component mount
+  useEffect(() => {
+    getUserLocation();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
@@ -22,6 +53,8 @@ function Login() {
         body: JSON.stringify({
           mobileNumber,
           password,
+          userLat: userLocation?.lat,
+          userLng: userLocation?.lng,
         }),
       });
 
@@ -33,16 +66,34 @@ function Login() {
 
       // Store user ID in localStorage
       localStorage.setItem("userId", data.user.id);
-     
-      // Redirect to the home page
-      window.location.href = '/' 
-      alert("Login successful!");
-    } catch (error) {
-      alert(" Login failed. Please try again.");
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
+      
+      // Check if user is Agromet Scientist and has active meetings
+      if (data.isAgrometScientist && data.activeMeetings && data.activeMeetings.length > 0) {
+        const meetingMessages = data.activeMeetings.map(meeting => 
+          `${meeting.title}: ${meeting.message}`
+        ).join('\n');
+        
+        const shouldProceed = window.confirm(
+          `Welcome! You have active meetings:\n\n${meetingMessages}\n\nWould you like to proceed to the attendance page?`
+        );
+        
+        if (shouldProceed) {
+          window.location.href = '/attendance';
+        } else {
+          window.location.href = '/';
+        }
+      } else {
+        // Redirect to the home page
+        window.location.href = '/';
+      }
+      
+      toast.success("Login successful!");
+          } catch (error) {
+        toast.error("Login failed. Please try again.");
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
   };
 
   return (
@@ -87,6 +138,27 @@ function Login() {
           {error && (
             <div className="mb-4 text-center text-red-500 font-semibold">{error}</div>
           )}
+          
+          {/* Location Status */}
+          {/* <div className="mb-4 p-3 rounded-lg border">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">Location Access:</span>
+              <span className={`text-sm font-semibold ${locationPermission ? 'text-green-600' : 'text-red-600'}`}>
+                {locationPermission ? '✓ Enabled' : '✗ Disabled'}
+              </span>
+            </div>
+            {userLocation && (
+              <div className="text-xs text-gray-500 mt-1">
+                Lat: {userLocation.lat.toFixed(6)}, Lng: {userLocation.lng.toFixed(6)}
+              </div>
+            )}
+            {!locationPermission && (
+              <div className="text-xs text-red-500 mt-1">
+                Meeting attendance features may be limited without location access
+              </div>
+            )}
+          </div> */}
+          
           <div className="flex items-center justify-center">
             <button
               type="submit"

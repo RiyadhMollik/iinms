@@ -1,7 +1,105 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.js";
 import Farmer from "../models/RegistedUser.js";
+import Meeting from "../models/Meeting.js";
+import Attendance from "../models/Attendance.js";
 import { Op } from "sequelize";
+
+// Calculate distance between two points using Haversine formula
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c; // Distance in meters
+};
+
+// Check for active meetings for Agromet Scientists
+const checkActiveMeetingsForUser = async (userId, userLat, userLng) => {
+  try {
+    const now = new Date();
+    const currentTime = now.toTimeString().split(' ')[0]; // Get current time in HH:MM:SS format
+    const currentDate = now.toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+
+    // Find active meetings
+    const activeMeetings = await Meeting.findAll({
+      where: {
+        meetingDate: currentDate,
+        startTime: { [Op.lte]: currentTime },
+        endTime: { [Op.gte]: currentTime },
+        status: { [Op.in]: ['scheduled', 'ongoing'] }
+      },
+      include: [
+        {
+          model: User,
+          as: "creator",
+          attributes: ["id", "name", "mobileNumber"],
+        },
+      ],
+    });
+
+    const meetingsWithDistance = [];
+
+    for (const meeting of activeMeetings) {
+      // Check if user already marked attendance for this meeting
+      const existingAttendance = await Attendance.findOne({
+        where: { meetingId: meeting.id, userId }
+      });
+
+      if (!existingAttendance && userLat && userLng) {
+        // Calculate distance from meeting location
+        const distance = calculateDistance(
+          parseFloat(meeting.locationLat),
+          parseFloat(meeting.locationLng),
+          parseFloat(userLat),
+          parseFloat(userLng)
+        );
+
+        // Check if within 10 meters
+        if (distance <= 10) {
+          meetingsWithDistance.push({
+            ...meeting.toJSON(),
+            distance: distance.toFixed(2),
+            canMarkAttendance: true,
+            message: "You are at the meeting location. You can mark attendance."
+          });
+        } else {
+          meetingsWithDistance.push({
+            ...meeting.toJSON(),
+            distance: distance.toFixed(2),
+            canMarkAttendance: false,
+            message: `You are ${distance.toFixed(2)}m away from the meeting location. Please move closer to mark attendance.`
+          });
+        }
+      } else if (existingAttendance) {
+        meetingsWithDistance.push({
+          ...meeting.toJSON(),
+          canMarkAttendance: false,
+          message: "Attendance already marked for this meeting.",
+          attendanceStatus: existingAttendance.status
+        });
+      } else {
+        meetingsWithDistance.push({
+          ...meeting.toJSON(),
+          canMarkAttendance: false,
+          message: "Location not provided. Please enable location services."
+        });
+      }
+    }
+
+    return meetingsWithDistance;
+  } catch (error) {
+    console.error("Error checking active meetings:", error);
+    return [];
+  }
+};
 // Create a new user
 export const createUser = async (req, res) => {
   const { name, role, mobileNumber, password, farmerId , roleId } = req.body;
@@ -17,7 +115,7 @@ export const createUser = async (req, res) => {
 
 // User login
 export const loginUser = async (req, res) => {
-  const { mobileNumber, password } = req.body;
+  const { mobileNumber, password, userLat, userLng } = req.body;
 
   try {
     const user = await User.findOne({ where: { mobileNumber } });
@@ -30,7 +128,23 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    res.json({ message: "Login successful", user });
+    // Check if user is Agromet Scientist (roleId: 12)
+    if (user.roleId === 12) {
+      const activeMeetings = await checkActiveMeetingsForUser(user.id, userLat, userLng);
+      
+      res.json({ 
+        message: "Login successful", 
+        user,
+        activeMeetings,
+        isAgrometScientist: true
+      });
+    } else {
+      res.json({ 
+        message: "Login successful", 
+        user,
+        isAgrometScientist: false
+      });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
