@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
-import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle, FaPumpSoap, FaSeedling, FaCloud, FaLeaf, FaTint, FaGasPump, FaUsers } from "react-icons/fa";
+import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle, FaPumpSoap, FaSeedling, FaCloud, FaLeaf, FaTint, FaGasPump, FaUsers, FaChartBar } from "react-icons/fa";
 import { IoIosAddCircle, IoMdSwitch } from "react-icons/io";
 import logo from "../../assets/brri.png";
 import useLogout from "../../Hook/useLogout";
@@ -94,6 +94,13 @@ const Sidebar = () => {
           <Link to="/attendance">
             <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/attendance") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
               <FaUsers className="mr-3" /> Meeting Attendance
+            </button>
+          </Link>
+        </div>
+        <div>
+          <Link to="/cdr-report">
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/cdr-report") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <FaChartBar className="mr-3" /> CDR Report
             </button>
           </Link>
         </div>

@@ -96,3 +96,72 @@ export const updateCdrField = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+export const getCdrReportData = async (req, res) => {
+  try {
+    const {
+      startDate = '',
+      endDate = '',
+      status = '',
+      source = '',
+      destination = '',
+      address = '',
+      limit = 1000
+    } = req.query;
+
+    const where = {};
+
+    if (status && status !== 'all') {
+      where.status = { [Op.like]: `%${status}%` };
+    }
+
+    if (source) {
+      where.source = { [Op.like]: `%${source}%` };
+    }
+
+    if (destination) {
+      where.destination = { [Op.like]: `%${destination}%` };
+    }
+
+    if (address) {
+      where.address = { [Op.like]: `%${address}%` };
+    }
+
+    if (startDate && endDate) {
+      where.date = {
+        [Op.between]: [new Date(startDate), new Date(endDate)],
+      };
+    } else if (startDate) {
+      where.date = {
+        [Op.gte]: new Date(startDate),
+      };
+    } else if (endDate) {
+      where.date = {
+        [Op.lte]: new Date(endDate),
+      };
+    }
+
+    const cdrData = await CdrData.findAll({
+      where,
+      limit: parseInt(limit),
+      order: [['date', 'DESC']],
+      attributes: [
+        'id', 'date', 'source', 'destination', 'status', 'duration', 
+        'address', 'ring_group', 'account_code', 'uniqueid', 'user_field', 'name'
+      ]
+    });
+
+    res.json({
+      success: true,
+      data: cdrData,
+      total: cdrData.length
+    });
+  } catch (error) {
+    console.error('❌ Error fetching CDR report data:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Internal Server Error',
+      error: error.message 
+    });
+  }
+};

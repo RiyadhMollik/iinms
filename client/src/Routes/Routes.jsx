@@ -40,6 +40,7 @@ import MLModel from "../Pages/MLModel/MLModel";
 import Protentiometer1 from "../Pages/Protentiometer/ProtentiometerTest1";
 import AddDevice from "../Pages/AddDevice/AddDevice";
 import Attendance from "../Pages/Attendance/Attendance";
+import CDRReport from "../Pages/CDRReport/CDRReport";
 
 export const router = createBrowserRouter([
   {
@@ -174,6 +175,10 @@ export const router = createBrowserRouter([
       {
         path: "/attendance",
         element: <Attendance/> , 
+      },  
+      {
+        path: "/cdr-report",
+        element: <CDRReport/> , 
       },  
         
     ],
