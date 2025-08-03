@@ -126,9 +126,11 @@ export const getMeetingById = async (req, res) => {
         },
         {
           model: Attendance,
+          as: "Attendances",
           include: [
             {
               model: User,
+              as: "User",
               attributes: ["id", "name", "mobileNumber", "role"],
             },
           ],
@@ -380,6 +382,7 @@ export const getAttendanceReport = async (req, res) => {
       include: [
         {
           model: User,
+          as: "User",
           attributes: ["id", "name", "mobileNumber", "role"],
         },
       ],

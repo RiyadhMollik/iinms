@@ -171,6 +171,10 @@ export const router = createBrowserRouter([
         path: "/pump-control",
         element: <PumpControl/> , 
       },  
+      {
+        path: "/attendance",
+        element: <Attendance/> , 
+      },  
         
     ],
   },

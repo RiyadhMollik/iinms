@@ -90,6 +90,13 @@ const Sidebar = () => {
             </button>
           </Link>
         </div>
+        <div>
+          <Link to="/attendance">
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/attendance") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <FaUsers className="mr-3" /> Meeting Attendance
+            </button>
+          </Link>
+        </div>
        
         <div>
           <button
