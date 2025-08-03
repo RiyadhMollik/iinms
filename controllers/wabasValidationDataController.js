@@ -173,7 +173,7 @@ export const getAllWABASValidationDataBySaao = async (req, res) => {
       return res.status(400).json({ success: false, message: 'SAAO ID is required' });
     }
 
-    const list = await FarmerData.findAll({
+    const list = await WABASValidationData.findAll({
       where: { saaoId },
       order: [['updatedAt', 'DESC']]
     });
