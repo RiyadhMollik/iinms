@@ -3,7 +3,7 @@ import {
   createWABASValidationData,
   getWABASValidationData,
   updateWABASValidationData,
-  getAllWABASValidationDataBySaao,
+//   getAllWABASValidationDataBySaao,
   deleteWABASValidationData
 } from '../controllers/wabasValidationDataController.js';
 
