@@ -16,10 +16,10 @@ RegistedUser.hasMany(User, { foreignKey: 'farmerId' });
 
 export { User, RegistedUser };
 
-RegistedUser.hasMany(WABASValidationData, { foreignKey: 'farmerId' });
-User.hasMany(WABASValidationData, { foreignKey: 'saaoId' });
+RegistedUser.hasMany(WABASValidationData, { foreignKey: 'farmerId', as: 'wabasData' });
+User.hasMany(WABASValidationData, { foreignKey: 'saaoId', as: 'wabasData' });
 
-WABASValidationData.belongsTo(RegistedUser, { foreignKey: 'farmerId' });
-WABASValidationData.belongsTo(User, { foreignKey: 'saaoId' });
+WABASValidationData.belongsTo(RegistedUser, { foreignKey: 'farmerId', as: 'farmer' });
+WABASValidationData.belongsTo(User, { foreignKey: 'saaoId', as: 'saao' });
 
 User.belongsTo(RegistedUser, { foreignKey: 'farmerId' });

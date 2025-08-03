@@ -1,4 +1,5 @@
 import WABASValidationData from '../models/WABASValidationData.js';
+import RegistedUser from '../models/RegistedUser.js';
 
 // Create
 export const createWABASValidationData = async (req, res) => {
@@ -103,12 +104,19 @@ export const getAllFarmerDataBySaao = async (req, res) => {
       });
     }
 
-    const farmerDataList = await FarmerData.findAll({
+    const farmerDataList = await WABASValidationData.findAll({
       where: {
         saaoId
       },
-      order: [['updatedAt', 'DESC']],
-      attributes: ['id', 'farmerId', 'saaoId', 'formData', 'createdAt', 'updatedAt']
+      include: [
+        {
+          model: RegistedUser,
+          as: 'farmer',
+          attributes: ['id', 'name', 'mobileNumber', 'village'],
+          foreignKey: 'farmerId'
+        }
+      ],
+      order: [['updatedAt', 'DESC']]
     });
 
     // Transform data to include farmer information
@@ -116,9 +124,9 @@ export const getAllFarmerDataBySaao = async (req, res) => {
       id: item.id,
       farmerId: item.farmerId,
       saaoId: item.saaoId,
-      farmerName: `Farmer ${item.farmerId}`, // You can join with farmers table if needed
-      phone: '', // You can join with farmers table if needed
-      village: '', // You can join with farmers table if needed
+      farmerName: item.farmer?.name || `Farmer ${item.farmerId}`,
+      phone: item.farmer?.mobileNumber || '',
+      village: item.farmer?.village || '',
       formData: item.formData,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt
@@ -175,10 +183,31 @@ export const getAllWABASValidationDataBySaao = async (req, res) => {
 
     const list = await WABASValidationData.findAll({
       where: { saaoId },
+      include: [
+        {
+          model: RegistedUser,
+          as: 'farmer',
+          attributes: ['id', 'name', 'mobileNumber', 'village'],
+          foreignKey: 'farmerId'
+        }
+      ],
       order: [['updatedAt', 'DESC']]
     });
 
-    res.status(200).json({ success: true, data: list, count: list.length });
+    // Transform data to include farmer information
+    const transformedData = list.map(item => ({
+      id: item.id,
+      farmerId: item.farmerId,
+      saaoId: item.saaoId,
+      farmerName: item.farmer?.name || `Farmer ${item.farmerId}`,
+      phone: item.farmer?.mobileNumber || '',
+      village: item.farmer?.village || '',
+      formData: item.formData,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    }));
+
+    res.status(200).json({ success: true, data: transformedData, count: transformedData.length });
 
   } catch (error) {
     console.error('Error fetching list:', error);

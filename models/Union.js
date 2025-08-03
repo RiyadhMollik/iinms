@@ -14,7 +14,7 @@ const Union = sequelize.define('Union', {
     },
 }, {
     tableName: 'unions',
-    timestamps: false, // Disable createdAt & updatedAt fields
+    timestamps: false, 
 });
 
 export default Union;
