@@ -92,24 +92,52 @@ export const updateWABASValidationData = async (req, res) => {
 };
 
 // Get all by saaoId
-export const getAllWABASValidationDataBySaao = async (req, res) => {
+export const getAllFarmerDataBySaao = async (req, res) => {
   try {
     const { saaoId } = req.params;
 
     if (!saaoId) {
-      return res.status(400).json({ success: false, message: 'SAAO ID is required' });
+      return res.status(400).json({
+        success: false,
+        message: 'SAAO ID is required'
+      });
     }
 
-    const list = await WABASValidationData.findAll({
-      where: { saaoId },
-      order: [['updatedAt', 'DESC']]
+    const farmerDataList = await FarmerData.findAll({
+      where: {
+        saaoId
+      },
+      order: [['updatedAt', 'DESC']],
+      attributes: ['id', 'farmerId', 'saaoId', 'formData', 'createdAt', 'updatedAt']
     });
 
-    res.status(200).json({ success: true, data: list, count: list.length });
+    // Transform data to include farmer information
+    const transformedData = farmerDataList.map(item => ({
+      id: item.id,
+      farmerId: item.farmerId,
+      saaoId: item.saaoId,
+      farmerName: `Farmer ${item.farmerId}`, // You can join with farmers table if needed
+      phone: '', // You can join with farmers table if needed
+      village: '', // You can join with farmers table if needed
+      formData: item.formData,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    }));
+
+    res.status(200).json({
+      success: true,
+      message: 'Farmer data list retrieved successfully',
+      data: transformedData,
+      count: transformedData.length
+    });
 
   } catch (error) {
-    console.error('Error fetching list:', error);
-    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+    console.error('Error getting all farmer data:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
   }
 };
 
@@ -136,3 +164,24 @@ export const deleteWABASValidationData = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 };
+
+// export const getAllWABASValidationDataBySaao = async (req, res) => {
+//   try {
+//     const { saaoId } = req.params;
+
+//     if (!saaoId) {
+//       return res.status(400).json({ success: false, message: 'SAAO ID is required' });
+//     }
+
+//     const list = await FarmerData.findAll({
+//       where: { saaoId },
+//       order: [['updatedAt', 'DESC']]
+//     });
+
+//     res.status(200).json({ success: true, data: list, count: list.length });
+
+//   } catch (error) {
+//     console.error('Error fetching list:', error);
+//     res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+//   }
+// };
