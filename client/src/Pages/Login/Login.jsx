@@ -68,18 +68,37 @@ function Login() {
       localStorage.setItem("userId", data.user.id);
       
       // Check if user is Agromet Scientist and has active meetings
-      if (data.isAgrometScientist && data.activeMeetings && data.activeMeetings.length > 0) {
-        const meetingMessages = data.activeMeetings.map(meeting => 
-          `${meeting.title}: ${meeting.message}`
-        ).join('\n');
+      if (data.isAgrometScientist) {
+        let message = "Welcome! ";
         
-        const shouldProceed = window.confirm(
-          `Welcome! You have active meetings:\n\n${meetingMessages}\n\nWould you like to proceed to the attendance page?`
-        );
+        // Check for auto-marked meetings
+        if (data.autoMarkedMeetings && data.autoMarkedMeetings.length > 0) {
+          const autoMarkedMessages = data.autoMarkedMeetings.map(meeting => 
+            `✅ ${meeting.title}: ${meeting.message}`
+          ).join('\n');
+          message += `\n\n🎉 Attendance automatically marked for:\n${autoMarkedMessages}`;
+        }
         
-        if (shouldProceed) {
-          window.location.href = '/attendance';
+        // Check for other meetings (too far, etc.)
+        if (data.otherMeetings && data.otherMeetings.length > 0) {
+          const otherMessages = data.otherMeetings.map(meeting => 
+            `ℹ️ ${meeting.title}: ${meeting.message}`
+          ).join('\n');
+          message += `\n\n📋 Other meetings:\n${otherMessages}`;
+        }
+        
+        if (data.autoMarkedMeetings?.length > 0 || data.otherMeetings?.length > 0) {
+          const shouldProceed = window.confirm(
+            `${message}\n\nWould you like to proceed to the attendance page?`
+          );
+          
+          if (shouldProceed) {
+            window.location.href = '/attendance';
+          } else {
+            window.location.href = '/';
+          }
         } else {
+          // No active meetings
           window.location.href = '/';
         }
       } else {

@@ -21,7 +21,7 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
   return R * c; // Distance in meters
 };
 
-// Check for active meetings for Agromet Scientists
+// Check for active meetings for Agromet Scientists and auto-mark attendance
 const checkActiveMeetingsForUser = async (userId, userLat, userLng) => {
   try {
     const now = new Date();
@@ -46,6 +46,7 @@ const checkActiveMeetingsForUser = async (userId, userLat, userLng) => {
     });
 
     const meetingsWithDistance = [];
+    const autoMarkedMeetings = [];
 
     for (const meeting of activeMeetings) {
       // Check if user already marked attendance for this meeting
@@ -62,13 +63,28 @@ const checkActiveMeetingsForUser = async (userId, userLat, userLng) => {
           parseFloat(userLng)
         );
 
-        // Check if within 10 meters
+        // Check if within 10 meters - AUTO MARK ATTENDANCE
         if (distance <= 10) {
-          meetingsWithDistance.push({
+          // Determine if late (more than 15 minutes after start time)
+          const meetingDateTime = new Date(`${meeting.meetingDate} ${meeting.startTime}`);
+          const isLate = now > new Date(meetingDateTime.getTime() + 15 * 60 * 1000);
+
+          // Auto-mark attendance
+          const attendance = await Attendance.create({
+            meetingId: meeting.id,
+            userId,
+            checkInTime: now,
+            checkInLat: userLat,
+            checkInLng: userLng,
+            distance,
+            status: isLate ? "late" : "present",
+          });
+
+          autoMarkedMeetings.push({
             ...meeting.toJSON(),
             distance: distance.toFixed(2),
-            canMarkAttendance: true,
-            message: "You are at the meeting location. You can mark attendance."
+            attendanceStatus: attendance.status,
+            message: `Attendance automatically marked as ${attendance.status}!`
           });
         } else {
           meetingsWithDistance.push({
@@ -94,10 +110,13 @@ const checkActiveMeetingsForUser = async (userId, userLat, userLng) => {
       }
     }
 
-    return meetingsWithDistance;
+    return {
+      autoMarkedMeetings,
+      otherMeetings: meetingsWithDistance
+    };
   } catch (error) {
     console.error("Error checking active meetings:", error);
-    return [];
+    return { autoMarkedMeetings: [], otherMeetings: [] };
   }
 };
 // Create a new user
@@ -130,12 +149,13 @@ export const loginUser = async (req, res) => {
 
     // Check if user is Agromet Scientist (roleId: 12)
     if (user.roleId === 12) {
-      const activeMeetings = await checkActiveMeetingsForUser(user.id, userLat, userLng);
+      const meetingResults = await checkActiveMeetingsForUser(user.id, userLat, userLng);
       
       res.json({ 
         message: "Login successful", 
         user,
-        activeMeetings,
+        autoMarkedMeetings: meetingResults.autoMarkedMeetings,
+        otherMeetings: meetingResults.otherMeetings,
         isAgrometScientist: true
       });
     } else {
