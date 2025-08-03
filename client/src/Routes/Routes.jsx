@@ -39,6 +39,7 @@ import CISTable from "../Pages/CIS/CISTable";
 import MLModel from "../Pages/MLModel/MLModel";
 import Protentiometer1 from "../Pages/Protentiometer/ProtentiometerTest1";
 import AddDevice from "../Pages/AddDevice/AddDevice";
+import Attendance from "../Pages/Attendance/Attendance";
 
 export const router = createBrowserRouter([
   {
@@ -170,7 +171,6 @@ export const router = createBrowserRouter([
         path: "/pump-control",
         element: <PumpControl/> , 
       },  
-      
         
     ],
   },

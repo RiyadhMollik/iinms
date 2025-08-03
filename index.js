@@ -34,6 +34,7 @@ import cdrRoutes from "./routes/cdrRoutes.js";
 import awsRoutes from "./routes/awsRoutes.js";
 import "./models/associations.js";
 import wabasValidationDataRoutes from "./routes/wabasValidationDataRoutes.js";
+import meetingRoutes from "./routes/meetingRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
@@ -70,6 +71,7 @@ app.use(express.static(path.join(__dirname, "/client/dist")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', sunshineRoutes);
 app.use('/api/wabas', wabasValidationDataRoutes);
+app.use('/api/meetings', meetingRoutes);
 // app.use('/uploads', express.static('uploads')); 
 
 // Upload route
