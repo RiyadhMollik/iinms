@@ -3,7 +3,7 @@ import {
   createWABASValidationData,
   getWABASValidationData,
   updateWABASValidationData,
-//   getAllWABASValidationDataBySaao,
+  getAllWABASValidationDataBySaao,
   deleteWABASValidationData
 } from '../controllers/wabasValidationDataController.js';
 
@@ -14,5 +14,5 @@ router.get('/:farmerId', getWABASValidationData);
 router.put('/:farmerId', updateWABASValidationData);
 router.get('/saao/:saaoId', getAllWABASValidationDataBySaao);
 router.delete('/:farmerId', deleteWABASValidationData);
-// router.get('/validation/:saaoId', getAllWABASValidationDataBySaao);
+
 export default router;

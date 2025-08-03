@@ -165,23 +165,23 @@ export const deleteWABASValidationData = async (req, res) => {
   }
 };
 
-// export const getAllWABASValidationDataBySaao = async (req, res) => {
-//   try {
-//     const { saaoId } = req.params;
+export const getAllWABASValidationDataBySaao = async (req, res) => {
+  try {
+    const { saaoId } = req.params;
 
-//     if (!saaoId) {
-//       return res.status(400).json({ success: false, message: 'SAAO ID is required' });
-//     }
+    if (!saaoId) {
+      return res.status(400).json({ success: false, message: 'SAAO ID is required' });
+    }
 
-//     const list = await FarmerData.findAll({
-//       where: { saaoId },
-//       order: [['updatedAt', 'DESC']]
-//     });
+    const list = await FarmerData.findAll({
+      where: { saaoId },
+      order: [['updatedAt', 'DESC']]
+    });
 
-//     res.status(200).json({ success: true, data: list, count: list.length });
+    res.status(200).json({ success: true, data: list, count: list.length });
 
-//   } catch (error) {
-//     console.error('Error fetching list:', error);
-//     res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
-//   }
-// };
+  } catch (error) {
+    console.error('Error fetching list:', error);
+    res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
+  }
+};
