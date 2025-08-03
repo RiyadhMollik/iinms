@@ -1,5 +1,6 @@
 import User from './user.js';
 import RegistedUser from './RegistedUser.js';
+import WABASValidationData from './WABASValidationData.js';
 
 // 1. User (SAAO) has many farmers
 User.hasMany(RegistedUser, { foreignKey: 'saaoId', as: 'Farmers' });
@@ -14,3 +15,11 @@ User.belongsTo(RegistedUser, { foreignKey: 'farmerId' });
 RegistedUser.hasMany(User, { foreignKey: 'farmerId' });
 
 export { User, RegistedUser };
+
+RegistedUser.hasMany(WABASValidationData, { foreignKey: 'farmerId' });
+User.hasMany(WABASValidationData, { foreignKey: 'saaoId' });
+
+WABASValidationData.belongsTo(RegistedUser, { foreignKey: 'farmerId' });
+WABASValidationData.belongsTo(User, { foreignKey: 'saaoId' });
+
+User.belongsTo(RegistedUser, { foreignKey: 'farmerId' });
