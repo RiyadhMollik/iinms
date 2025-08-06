@@ -5,7 +5,8 @@ import {
   updateWABASValidationData,
   getAllWABASValidationDataBySaao,
   deleteWABASValidationData,
-  getUserReportData
+  getUserReportData,
+  getSaaosForReport
 } from '../controllers/wabasValidationDataController.js';
 
 const router = express.Router();
@@ -15,6 +16,7 @@ router.get('/:farmerId', getWABASValidationData);
 router.put('/:farmerId', updateWABASValidationData);
 router.get('/saao/:saaoId', getAllWABASValidationDataBySaao);
 router.get('/report/user-data', getUserReportData);
+router.get('/report/saaos', getSaaosForReport);
 router.delete('/:farmerId', deleteWABASValidationData);
 
 export default router;

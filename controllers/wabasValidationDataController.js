@@ -1,5 +1,7 @@
 import WABASValidationData from '../models/WABASValidationData.js';
 import RegistedUser from '../models/RegistedUser.js';
+import User from '../models/user.js';
+import { Op } from 'sequelize';
 
 // Create
 export const createWABASValidationData = async (req, res) => {
@@ -278,6 +280,37 @@ export const getUserReportData = async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Error fetching user report data:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Internal Server Error',
+      error: error.message 
+    });
+  }
+};
+
+export const getSaaosForReport = async (req, res) => {
+  try {
+    // Get all users with SAAO role
+    const saaos = await User.findAll({
+      where: {
+        role: 'SAAO'
+      },
+      attributes: ['id', 'name', 'mobileNumber'],
+      order: [['name', 'ASC']]
+    });
+
+    const transformedSaaos = saaos.map(saao => ({
+      id: saao.id,
+      name: saao.name,
+      phone: saao.mobileNumber
+    }));
+
+    res.json({
+      success: true,
+      data: transformedSaaos
+    });
+  } catch (error) {
+    console.error('❌ Error fetching SAAOs:', error);
     res.status(500).json({ 
       success: false,
       message: 'Internal Server Error',

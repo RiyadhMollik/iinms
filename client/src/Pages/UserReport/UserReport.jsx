@@ -24,82 +24,7 @@ const UserReport = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSaao, setSelectedSaao] = useState('all');
   const [saaos, setSaaos] = useState([]);
-
-  // Sample data for demonstration
-  const sampleData = [
-    {
-      id: 1,
-      farmerId: 101,
-      saaoId: 201,
-      farmerName: 'Abdul Rahman',
-      phone: '+8801712345678',
-      village: 'Dhaka Village',
-      formData: {
-        0: { irrigation: ['Sprinkler'], other: { notes: 'Good irrigation system' } },
-        1: { other: { notes: 'Soil preparation completed' } },
-        2: { other: { notes: 'Seed selection done' } },
-        3: { herbicide: ['Glyphosate'], other: { notes: 'Weed control applied' } },
-        4: { other: { notes: 'Fertilizer planning' } },
-        5: { fertilizer: ['NPK', 'Urea'], other: { notes: 'Nutrient management' } },
-        6: { other: { notes: 'Water management' } },
-        7: { pesticide: ['Neem oil'], other: { notes: 'Pest control' } },
-        8: { fungicide: ['Copper sulfate'], other: { notes: 'Disease prevention' } },
-        9: { other: { notes: 'Harvest planning' } },
-        10: { other: { notes: 'Post-harvest care' } },
-        11: { other: { notes: 'Storage preparation' } }
-      },
-      createdAt: '2024-01-15',
-      updatedAt: '2024-01-20'
-    },
-    {
-      id: 2,
-      farmerId: 102,
-      saaoId: 202,
-      farmerName: 'Fatima Begum',
-      phone: '+8801723456789',
-      village: 'Chittagong Village',
-      formData: {
-        0: { irrigation: ['Drip'], other: { notes: 'Efficient water use' } },
-        1: { other: { notes: 'Organic farming approach' } },
-        2: { other: { notes: 'Local seed varieties' } },
-        3: { herbicide: [], other: { notes: 'Manual weeding preferred' } },
-        4: { other: { notes: 'Natural pest control' } },
-        5: { fertilizer: ['Compost'], other: { notes: 'Organic fertilizers' } },
-        6: { other: { notes: 'Sustainable practices' } },
-        7: { pesticide: [], other: { notes: 'Biological control' } },
-        8: { fungicide: [], other: { notes: 'Preventive measures' } },
-        9: { other: { notes: 'Quality focus' } },
-        10: { other: { notes: 'Market preparation' } },
-        11: { other: { notes: 'Value addition' } }
-      },
-      createdAt: '2024-01-10',
-      updatedAt: '2024-01-18'
-    },
-    {
-      id: 3,
-      farmerId: 103,
-      saaoId: 201,
-      farmerName: 'Mohammad Ali',
-      phone: '+8801734567890',
-      village: 'Sylhet Village',
-      formData: {
-        0: { irrigation: ['Flood'], other: { notes: 'Traditional method' } },
-        1: { other: { notes: 'Rice cultivation focus' } },
-        2: { other: { notes: 'High-yield varieties' } },
-        3: { herbicide: ['2,4-D'], other: { notes: 'Chemical weed control' } },
-        4: { other: { notes: 'Intensive farming' } },
-        5: { fertilizer: ['NPK', 'DAP'], other: { notes: 'Balanced nutrition' } },
-        6: { other: { notes: 'Water level monitoring' } },
-        7: { pesticide: ['Carbaryl'], other: { notes: 'Pest management' } },
-        8: { fungicide: ['Mancozeb'], other: { notes: 'Disease control' } },
-        9: { other: { notes: 'Yield optimization' } },
-        10: { other: { notes: 'Quality maintenance' } },
-        11: { other: { notes: 'Storage facilities' } }
-      },
-      createdAt: '2024-01-12',
-      updatedAt: '2024-01-25'
-    }
-  ];
+  const [loadingSaaos, setLoadingSaaos] = useState(true);
 
   useEffect(() => {
     fetchUserData();
@@ -108,15 +33,19 @@ const UserReport = () => {
 
   const fetchSaaos = async () => {
     try {
-      // This would be replaced with actual API call to get SAAO list
-      const sampleSaaos = [
-        { id: 201, name: 'SAAO Dhaka' },
-        { id: 202, name: 'SAAO Chittagong' },
-        { id: 203, name: 'SAAO Sylhet' }
-      ];
-      setSaaos(sampleSaaos);
+      setLoadingSaaos(true);
+      const response = await axios.get('/api/wabas-validation-data/report/saaos');
+      if (response.data.success) {
+        setSaaos(response.data.data);
+      } else {
+        console.error('Failed to fetch SAAOs:', response.data.message);
+        setSaaos([]);
+      }
     } catch (error) {
       console.error('Error fetching SAAOs:', error);
+      setSaaos([]);
+    } finally {
+      setLoadingSaaos(false);
     }
   };
 
@@ -139,15 +68,14 @@ const UserReport = () => {
         setUserData(response.data.data);
         setFilteredData(response.data.data);
       } else {
-        // Fallback to sample data if API fails
-        setUserData(sampleData);
-        setFilteredData(sampleData);
+        console.error('Failed to fetch user data:', response.data.message);
+        setUserData([]);
+        setFilteredData([]);
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
-      // Fallback to sample data
-      setUserData(sampleData);
-      setFilteredData(sampleData);
+      setUserData([]);
+      setFilteredData([]);
     } finally {
       setLoading(false);
     }
@@ -311,20 +239,27 @@ const UserReport = () => {
               )}
             </div>
 
-            {/* SAAO Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">SAAO</label>
-              <select
-                value={selectedSaao}
-                onChange={(e) => setSelectedSaao(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All SAAOs</option>
-                {saaos.map(saao => (
-                  <option key={saao.id} value={saao.id}>{saao.name}</option>
-                ))}
-              </select>
-            </div>
+                         {/* SAAO Filter */}
+             <div>
+               <label className="block text-sm font-medium text-gray-700 mb-2">SAAO</label>
+               <select
+                 value={selectedSaao}
+                 onChange={(e) => setSelectedSaao(e.target.value)}
+                 disabled={loadingSaaos}
+                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+               >
+                 <option value="all">
+                   {loadingSaaos ? 'Loading SAAOs...' : 'All SAAOs'}
+                 </option>
+                 {!loadingSaaos && saaos.length > 0 ? (
+                   saaos.map(saao => (
+                     <option key={saao.id} value={saao.id}>{saao.name}</option>
+                   ))
+                 ) : !loadingSaaos && saaos.length === 0 ? (
+                   <option value="" disabled>No SAAOs available</option>
+                 ) : null}
+               </select>
+             </div>
 
             {/* Search */}
             <div>
@@ -363,6 +298,20 @@ const UserReport = () => {
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : filteredData.length === 0 ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="text-center">
+              <div className="text-gray-400 text-6xl mb-4">📊</div>
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">No Data Available</h3>
+              <p className="text-gray-500">No user data found for the selected criteria.</p>
+              <button
+                onClick={fetchUserData}
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                Refresh Data
+              </button>
+            </div>
           </div>
         ) : (
           <>
