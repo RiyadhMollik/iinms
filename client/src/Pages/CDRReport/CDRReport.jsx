@@ -114,10 +114,10 @@ const CDRReport = () => {
     // Search filter only (date and status are handled by API)
     if (searchTerm) {
       filtered = filtered.filter(item =>
-        item.source.includes(searchTerm) ||
-        item.destination.includes(searchTerm) ||
-        item.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.ring_group.toLowerCase().includes(searchTerm.toLowerCase())
+        (item.source && item.source.includes(searchTerm)) ||
+        (item.destination && item.destination.includes(searchTerm)) ||
+        (item.address && item.address.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (item.ring_group && item.ring_group.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -152,12 +152,20 @@ const CDRReport = () => {
     };
 
     filteredData.forEach(item => {
-      const duration = parseInt(item.duration);
-      if (duration <= 30) durationRanges['0-30s']++;
-      else if (duration <= 60) durationRanges['31-60s']++;
-      else if (duration <= 120) durationRanges['61-120s']++;
-      else if (duration <= 300) durationRanges['121-300s']++;
-      else durationRanges['300s+']++;
+      const duration = parseInt(item.duration || 0);
+      if (isNaN(duration)) {
+        durationRanges['0-30s']++; // Default to 0-30s for invalid durations
+      } else if (duration <= 30) {
+        durationRanges['0-30s']++;
+      } else if (duration <= 60) {
+        durationRanges['31-60s']++;
+      } else if (duration <= 120) {
+        durationRanges['61-120s']++;
+      } else if (duration <= 300) {
+        durationRanges['121-300s']++;
+      } else {
+        durationRanges['300s+']++;
+      }
     });
 
     return Object.entries(durationRanges).map(([range, count]) => ({ range, count }));
@@ -166,8 +174,13 @@ const CDRReport = () => {
   const getAddressDistribution = () => {
     const addressCount = {};
     filteredData.forEach(item => {
-      const city = item.address.split(',')[0];
-      addressCount[city] = (addressCount[city] || 0) + 1;
+      if (item.address && typeof item.address === 'string') {
+        const city = item.address.split(',')[0];
+        addressCount[city] = (addressCount[city] || 0) + 1;
+      } else {
+        // Handle null/undefined addresses
+        addressCount['Unknown'] = (addressCount['Unknown'] || 0) + 1;
+      }
     });
     return Object.entries(addressCount).map(([city, count]) => ({ city, count }));
   };
@@ -177,7 +190,10 @@ const CDRReport = () => {
     const answeredCalls = filteredData.filter(item => item.status === 'ANSWERED').length;
     const noAnswerCalls = filteredData.filter(item => item.status === 'NO ANSWER').length;
     const busyCalls = filteredData.filter(item => item.status === 'BUSY').length;
-    const totalDuration = filteredData.reduce((sum, item) => sum + parseInt(item.duration || 0), 0);
+    const totalDuration = filteredData.reduce((sum, item) => {
+      const duration = parseInt(item.duration || 0);
+      return sum + (isNaN(duration) ? 0 : duration);
+    }, 0);
     const avgDuration = totalCalls > 0 ? Math.round(totalDuration / totalCalls) : 0;
     const successRate = totalCalls > 0 ? Math.round((answeredCalls / totalCalls) * 100) : 0;
 
@@ -458,24 +474,24 @@ const CDRReport = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {filteredData.map((item) => (
                       <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {dayjs(item.date).format('MMM DD, YYYY')}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.source}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.destination}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            item.status === 'ANSWERED' ? 'bg-green-100 text-green-800' :
-                            item.status === 'NO ANSWER' ? 'bg-yellow-100 text-yellow-800' :
-                            item.status === 'BUSY' ? 'bg-red-100 text-red-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {item.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.duration}s</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.address}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.ring_group}</td>
+                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                           {item.date ? dayjs(item.date).format('MMM DD, YYYY') : 'N/A'}
+                         </td>
+                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.source || 'N/A'}</td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.destination || 'N/A'}</td>
+                         <td className="px-6 py-4 whitespace-nowrap">
+                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                             item.status === 'ANSWERED' ? 'bg-green-100 text-green-800' :
+                             item.status === 'NO ANSWER' ? 'bg-yellow-100 text-yellow-800' :
+                             item.status === 'BUSY' ? 'bg-red-100 text-red-800' :
+                             'bg-gray-100 text-gray-800'
+                           }`}>
+                             {item.status || 'UNKNOWN'}
+                           </span>
+                         </td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.duration || 0}s</td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.address || 'N/A'}</td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.ring_group || 'N/A'}</td>
                       </tr>
                     ))}
                   </tbody>

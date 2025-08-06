@@ -41,6 +41,7 @@ import Protentiometer1 from "../Pages/Protentiometer/ProtentiometerTest1";
 import AddDevice from "../Pages/AddDevice/AddDevice";
 import Attendance from "../Pages/Attendance/Attendance";
 import CDRReport from "../Pages/CDRReport/CDRReport";
+import UserReport from "../Pages/UserReport/UserReport";
 
 export const router = createBrowserRouter([
   {
@@ -179,6 +180,10 @@ export const router = createBrowserRouter([
       {
         path: "/cdr-report",
         element: <CDRReport/> , 
+      },  
+      {
+        path: "/user-report",
+        element: <UserReport/> , 
       },  
         
     ],

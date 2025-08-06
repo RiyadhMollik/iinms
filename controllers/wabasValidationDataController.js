@@ -214,3 +214,74 @@ export const getAllWABASValidationDataBySaao = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error', error: error.message });
   }
 };
+
+export const getUserReportData = async (req, res) => {
+  try {
+    const {
+      startDate = '',
+      endDate = '',
+      saaoId = '',
+      limit = 1000
+    } = req.query;
+
+    const where = {};
+
+    if (saaoId && saaoId !== 'all') {
+      where.saaoId = saaoId;
+    }
+
+    if (startDate && endDate) {
+      where.createdAt = {
+        [Op.between]: [new Date(startDate), new Date(endDate)],
+      };
+    } else if (startDate) {
+      where.createdAt = {
+        [Op.gte]: new Date(startDate),
+      };
+    } else if (endDate) {
+      where.createdAt = {
+        [Op.lte]: new Date(endDate),
+      };
+    }
+
+    const userData = await WABASValidationData.findAll({
+      where,
+      include: [
+        {
+          model: RegistedUser,
+          as: 'farmer',
+          attributes: ['id', 'name', 'mobileNumber', 'village'],
+          foreignKey: 'farmerId'
+        }
+      ],
+      limit: parseInt(limit),
+      order: [['updatedAt', 'DESC']]
+    });
+
+    // Transform data to include farmer information
+    const transformedData = userData.map(item => ({
+      id: item.id,
+      farmerId: item.farmerId,
+      saaoId: item.saaoId,
+      farmerName: item.farmer?.name || `Farmer ${item.farmerId}`,
+      phone: item.farmer?.mobileNumber || '',
+      village: item.farmer?.village || '',
+      formData: item.formData,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    }));
+
+    res.json({
+      success: true,
+      data: transformedData,
+      total: transformedData.length
+    });
+  } catch (error) {
+    console.error('❌ Error fetching user report data:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Internal Server Error',
+      error: error.message 
+    });
+  }
+};
